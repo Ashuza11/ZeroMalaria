@@ -326,7 +326,16 @@ export function TriagePage() {
 
   const finish = useCallback(async () => {
     if (aiSuggested) return;
-    const result = localDecide(form, lang);
+    const answeredFields = Array.from(answered).flatMap((s) => {
+      if (s === 'feverDays') return ['fever_days'];
+      if (s === 'breathing') return ['severe_breathing_difficulty'];
+      if (s === 'tdr') return ['tdr_result'];
+      if (s === 'temperature') return ['temperature_c'];
+      if (s === 'age') return ['age_months'];
+      if (s === 'freetext') return [];
+      return [s];
+    });
+    const result = localDecide(form, lang, answeredFields);
     const endedAt = new Date().toISOString();
     const durationMs = Date.now() - new Date(startedAt).getTime();
     // Timing kept local: TriageRequest schema has no started_at / answered_at / duration.
@@ -337,6 +346,7 @@ export function TriagePage() {
         result,
         demo,
         ai_extract_used: aiExtractUsed,
+        answered_fields: answeredFields,
         timing: { started_at: startedAt, ended_at: endedAt, duration_ms: durationMs, step_answered_at: stepAnsweredAt },
       }),
     );
@@ -366,7 +376,19 @@ export function TriagePage() {
       },
       onComplete: (completed) => {
         setForm(completed);
-        const result = localDecide(completed, lang);
+        const answeredFields = [
+          'age_months',
+          'sex',
+          'temperature_c',
+          'fever_days',
+          'convulsions',
+          'unable_to_drink',
+          'vomiting_everything',
+          'lethargy',
+          'severe_breathing_difficulty',
+          'tdr_result',
+        ];
+        const result = localDecide(completed, lang, answeredFields);
         const endedAt = new Date().toISOString();
         const durationMs = Date.now() - new Date(startedAt).getTime();
         sessionStorage.setItem(
@@ -376,6 +398,7 @@ export function TriagePage() {
             result,
             demo,
             ai_extract_used: aiExtractUsed,
+            answered_fields: answeredFields,
             timing: { started_at: startedAt, ended_at: endedAt, duration_ms: durationMs, step_answered_at: stepAnsweredAt },
           }),
         );

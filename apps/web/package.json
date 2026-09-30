@@ -16,7 +16,9 @@
     "i18n:glossary": "node scripts/apply-phase1-glossary.mjs",
     "i18n:clean": "node scripts/i18n-clean.mjs",
     "gen:types": "node scripts/gen-types.mjs",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "audio:manifest": "node scripts/gen-audio-manifest.mjs",
+    "audio:check": "node scripts/check-audio.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

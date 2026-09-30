@@ -20,5 +20,17 @@
   "provenanceMl": "ML",
   "provenanceAi": "AI",
   "onlineAssistant": "Umufasha kuri interineti",
-  "offlineGuide": "Ubuyobozi buda online"
+  "offlineGuide": "Ubuyobozi buda online",
+  "rulesDecision": "Icyemezo cy'amategeko",
+  "aiSuggestion": "Igitekerezo cya AI",
+  "aiNeedsReview": "Bisaba isuzuma (Kinyarwanda)",
+  "aiCitations": "Ingingo z'amabwiriza",
+  "aiInconsistencies": "Ibintu bishobora kutahuza",
+  "aiCaregiverAdvice": "Inama ku murezi",
+  "aiHandoverPreview": "Incamake yo guha umuforomo",
+  "aiEscalateHint": "AI isaba kongera ubwihutirwa — emeza cyangwa hindura",
+  "chwFollowAi": "Komeza n'igitekerezo cya AI",
+  "chwOverrideAi": "Komeza n'icyemezo cy'amategeko gusa",
+  "chwFeedbackLogged": "Igisubizo cyabitswe",
+  "protocolRef": "Amabwiriza"
 }

@@ -439,14 +439,19 @@ def alerts(chw_id: Optional[str] = None, db: Session = Depends(get_db)) -> list[
     if chw_id:
         q = q.filter(Referral.chw_id == chw_id)
     rows = q.order_by(Referral.created_at.asc()).all()
-    return [
-        {
-            "type": "referral_not_arrived",
-            "message": "Patient has not arrived, follow up",
-            "referral": _referral_out(r, now).model_dump(),
-        }
-        for r in rows
-    ]
+    out = []
+    for r in rows:
+        ref = _referral_out(r, now).model_dump()
+        out.append(
+            {
+                "id": ref.get("id") or r.id,
+                "type": "referral_not_arrived",
+                "message": "Patient has not arrived, follow up",
+                "summary": ref.get("summary") or r.summary or "Patient has not arrived, follow up",
+                "referral": ref,
+            }
+        )
+    return out
 
 
 def _compute_analytics_surge(

@@ -1,0 +1,87 @@
+# ZERO MALARIA - CLINICAL THRESHOLDS (single config)
+# Cite protocol sections. Values marked TODO_CLINICAL_REVIEW need clinician sign-off
+# against Rwanda National Malaria Guidelines / WHO iCCM. Do not invent doses.
+#
+# Loaded by rules engines via malaria_rules.yaml (keeps thresholds co-located).
+# This file is the human-readable register of every numeric / categorical cut-off.
+
+meta:
+  protocol_name: "WHO iCCM / Rwanda national malaria community care (PLACEHOLDER pending clinician validation)"
+  protocol_version: "TODO_CLINICAL_REVIEW"
+  synthetic_demo: true
+
+thresholds:
+  # Young infants are referred from community care under common iCCM practice.
+  # TODO_CLINICAL_REVIEW: confirm exact age cutoff used by Rwanda CHW / iCCM job aids.
+  infant_refer_months:
+    value: 2
+    unit: months
+    protocol_section: "iCCM young infant / Rwanda CHW job aid (PLACEHOLDER)"
+    status: TODO_CLINICAL_REVIEW
+
+  # Follow-up interval when fever persists and RDT is negative (not a severe-malaria grade).
+  # TODO_CLINICAL_REVIEW: confirm day-3 (or other) follow-up wording in national guidelines.
+  persistent_fever_days:
+    value: 3
+    unit: days
+    protocol_section: "iCCM fever follow-up / RDT-negative persistent fever (PLACEHOLDER)"
+    status: TODO_CLINICAL_REVIEW
+
+  # Temperature band accepted by the form (device / measurement sanity), not a clinical grade.
+  # TODO_CLINICAL_REVIEW: align with facility thermometry SOPs if different.
+  temperature_c_min:
+    value: 30
+    unit: celsius
+    protocol_section: "Form validation only (not a treatment threshold)"
+    status: TODO_CLINICAL_REVIEW
+  temperature_c_max:
+    value: 45
+    unit: celsius
+    protocol_section: "Form validation only (not a treatment threshold)"
+    status: TODO_CLINICAL_REVIEW
+
+  # ML Layer-2 escalate-only score cut-offs (demo). Never downgrade rules.
+  # TODO_CLINICAL_REVIEW: not for clinical deployment until validated.
+  ml_escalate_treat_to_refer:
+    value: 0.35
+    protocol_section: "Internal ML demo threshold (not protocol)"
+    status: TODO_CLINICAL_REVIEW
+  ml_escalate_refer_to_urgent:
+    value: 0.55
+    protocol_section: "Internal ML demo threshold (not protocol)"
+    status: TODO_CLINICAL_REVIEW
+  ml_referral_noncompletion_high:
+    value: 0.45
+    protocol_section: "Internal ML demo threshold (not protocol)"
+    status: TODO_CLINICAL_REVIEW
+
+  # Pre-referral treatment doses are intentionally ABSENT.
+  # TODO_CLINICAL_REVIEW: do not add artesunate/AL doses without RBC clinician approval.
+  prereferral_treatment:
+    value: null
+    protocol_section: "Pre-referral treatment (NOT IMPLEMENTED - clinician required)"
+    status: TODO_CLINICAL_REVIEW
+
+danger_signs:
+  # Any true danger sign => urgent referral. Unanswered is never treated as No.
+  - id: convulsions
+    protocol_section: "iCCM danger signs - convulsions / fits"
+    status: TODO_CLINICAL_REVIEW
+  - id: unable_to_drink
+    protocol_section: "iCCM danger signs - unable to drink or feed"
+    status: TODO_CLINICAL_REVIEW
+  - id: vomiting_everything
+    protocol_section: "iCCM danger signs - vomiting everything"
+    status: TODO_CLINICAL_REVIEW
+  - id: lethargy
+    protocol_section: "iCCM danger signs - lethargy / unconscious"
+    status: TODO_CLINICAL_REVIEW
+  - id: severe_breathing_difficulty
+    protocol_section: "iCCM danger signs - severe breathing difficulty"
+    status: TODO_CLINICAL_REVIEW
+
+# Public decision labels (UI / eval). Engines keep treat_at_home|refer|urgent_refer internally.
+public_decision_map:
+  treat_at_home: treat_locally
+  refer: monitor
+  urgent_refer: urgent_referral

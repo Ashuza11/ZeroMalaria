@@ -1,6 +1,8 @@
 {
   "listen": "Umva",
   "mic": "Mikoro",
+  "micExperimental": "Mikoro (igerageza)",
+  "micExperimentalHint": "Kumenya ijwi mu Kinyarwanda ntibishoboka neza kuri browser. Gerageza gusa.",
   "help": "Ubufasha",
   "replay": "Subiramo",
   "slower": "Buhoro",

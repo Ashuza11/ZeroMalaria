@@ -1,6 +1,8 @@
 {
   "listen": "Listen",
   "mic": "Mic",
+  "micExperimental": "Mic (experimental)",
+  "micExperimentalHint": "Browser speech recognition rarely supports Kinyarwanda. Experimental only.",
   "help": "Help",
   "replay": "Replay",
   "slower": "Slower",

@@ -277,6 +277,26 @@ export const api = {
     triggered_rules?: string[];
     language?: string;
   }) => request<Record<string, unknown>>('/ai/explain', { method: 'POST', body: JSON.stringify(body) }),
+  aiAdvisory: (body: {
+    answers: Record<string, unknown>;
+    rules_decision: string;
+    public_decision?: string;
+    reasons?: string[];
+    triggered_rules?: string[];
+    reason_details?: unknown[];
+    missing_info?: string[];
+    protocol_reference?: string;
+    language?: string;
+  }) => request<Record<string, unknown>>('/ai/advisory', { method: 'POST', body: JSON.stringify(body) }),
+  aiAdvisoryFeedback: (body: {
+    rules_decision: string;
+    chw_followed: boolean;
+    suggested_escalation?: boolean;
+  }) =>
+    request<Record<string, unknown>>('/ai/advisory-feedback', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
   aiInsights: (body: { aggregated_stats: Record<string, unknown>; language?: string }) =>
     request<Record<string, unknown>>('/ai/insights', { method: 'POST', body: JSON.stringify(body) }),
   assistantChat: (body: { message: string; language?: string; decision?: string }) =>

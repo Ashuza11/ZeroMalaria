@@ -138,6 +138,17 @@ function estimateSilentMs(text: string, speed: VoiceSpeed): number {
   return Math.round(base / speed);
 }
 
+const missingAudioLogged = new Set<string>();
+
+function warnMissingAudio(lang: VoiceLang, id: string) {
+  const key = `${lang}/${id}`;
+  if (missingAudioLogged.has(key)) return;
+  missingAudioLogged.add(key);
+  if (import.meta.env.DEV) {
+    console.warn(`[voice] Missing pre-recorded audio: /audio/${lang}/${id}.mp3 (falling back to text)`);
+  }
+}
+
 async function tryMp3(id: PhraseId, lang: VoiceLang, speed: VoiceSpeed): Promise<boolean> {
   const url = `/audio/${lang}/${id}.mp3`;
   return new Promise((resolve) => {
@@ -145,8 +156,14 @@ async function tryMp3(id: PhraseId, lang: VoiceLang, speed: VoiceSpeed): Promise
     audio.playbackRate = speed;
     currentAudio = audio;
     audio.onended = () => resolve(true);
-    audio.onerror = () => resolve(false);
-    void audio.play().catch(() => resolve(false));
+    audio.onerror = () => {
+      warnMissingAudio(lang, id);
+      resolve(false);
+    };
+    void audio.play().catch(() => {
+      warnMissingAudio(lang, id);
+      resolve(false);
+    });
   });
 }
 
@@ -207,16 +224,22 @@ export async function speakPhrase(
     return { source: 'text' };
   }
 
+  // Prefer pre-recorded pack (required for Kinyarwanda - browsers lack rw TTS voices).
   if (audioUnlocked && (await tryMp3(id, lang, speed))) {
+    audioPackCache[lang] = true;
     return { source: 'audio_pack' };
   }
 
-  const cloudUrl = await tryCloudTts(id, lang, text);
-  if (cloudUrl && audioUnlocked && (await tryCloudMp3(cloudUrl, speed))) {
-    return { source: 'cloud' };
+  // Cloud TTS optional when online
+  if (typeof navigator === 'undefined' || navigator.onLine) {
+    const cloudUrl = await tryCloudTts(id, lang, text);
+    if (cloudUrl && audioUnlocked && (await tryCloudMp3(cloudUrl, speed))) {
+      return { source: 'cloud' };
+    }
   }
 
-  if (await trySpeechSynthesis(text, lang, speed)) {
+  // Never use English browser TTS for Kinyarwanda. Silent text fallback only.
+  if (lang !== 'rw' && (await trySpeechSynthesis(text, lang, speed))) {
     return { source: 'browser' };
   }
 

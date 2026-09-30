@@ -20,5 +20,17 @@
   "provenanceMl": "ML layer",
   "provenanceAi": "AI input",
   "onlineAssistant": "Online assistant",
-  "offlineGuide": "Offline guide"
+  "offlineGuide": "Offline guide",
+  "rulesDecision": "Rules decision",
+  "aiSuggestion": "AI suggestion",
+  "aiNeedsReview": "Needs review (Kinyarwanda)",
+  "aiCitations": "Protocol citations",
+  "aiInconsistencies": "Possible inconsistencies",
+  "aiCaregiverAdvice": "Caregiver advice",
+  "aiHandoverPreview": "Handover summary for nurse",
+  "aiEscalateHint": "AI suggests higher urgency — confirm or keep rules decision",
+  "chwFollowAi": "Continue with AI suggestion noted",
+  "chwOverrideAi": "Continue with rules decision only",
+  "chwFeedbackLogged": "Feedback saved",
+  "protocolRef": "Protocol"
 }

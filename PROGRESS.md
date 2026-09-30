@@ -3,29 +3,36 @@
 **Decision support tool. Not a replacement for clinical judgment.**  
 **Synthetic demo data** only.
 
-## Current sprint: guided triage UX (2026-09-30) - DONE
+## Current sprint: RBC hackathon AI triage (2026-09-30) - DONE
 
 **Branch:** `test-merge-ardent` (do not touch `main`).
 
-### Problems fixed
+### Delivered
 
-1. **Empty question card / filter blur** - Removed `filter: blur()` from spring/step transitions (tween opacity+y only). `AnimatePresence mode="wait"` with keyed step card always ends at opacity 1, y 0.
-2. **Auto-save on answer** - Choice chips/yes-no/sex/TDR advance after ~250 ms with selection checkmark. Stepper +/- debounced 800 ms (Continue stays). Free-text keeps Continue/Confirm. Input locked during transitions. Voice uses the same `selectChoice` path.
-3. **Time + draft** - `started_at`, per-step `answered_at`, `duration_ms` stored in IndexedDB draft + `sessionStorage` result payload. **API `TriageRequest` has no timing fields** (kept local only). Draft resumes after refresh; cleared on submit.
-4. **Answers so far** - Only user-answered steps show values; others show translated `-`.
-5. **Layout** - ConversationBar is inline (not sticky overlay). Voice control labels no longer duplicated. Age chips follow Months/Years unit.
-6. **Console** - `motion.create(Link)`; scroll mains `position: relative`; blur/filter keyframes removed from triage-adjacent motion.
+1. **Kinyarwanda audio** - Pre-recorded `/audio/rw/<id>.mp3` preferred; browser TTS skipped for `rw`; silent text fallback + DEV missing-file warnings; PWA CacheFirst + mp3 glob; `audio:manifest` / `audio:check` (+ repo-root wrappers). RW mic labelled experimental.
+2. **Rules** - Thresholds in `rules/clinical_config.yaml` with protocol citations / `TODO_CLINICAL_REVIEW`; danger → urgent; unanswered ≠ No; public decisions `treat_locally|monitor|urgent_referral`; reason_details + missing_info; 30+ coverage tests.
+3. **AI advisory** - `POST /ai/advisory` after rules; strict JSON; escalate-only code guardrail; Result UI rules-first + AI suggestion card (RW first, needs review) + CHW follow/override audit; handover attaches AI summary; overdue alerts keep `id`/`summary`.
+4. **Eval / safety** - `apps/api/tests/eval_cases.json` (40) + `eval_rules_agreement.py`; `docs/ai_safety.md` + `docs/protocol/excerpts.md`.
+
+### Measured eval
+
+| Metric | Value |
+| --- | --- |
+| Agreement | **40/40 (100.0%)** |
+| Mean triage duration_ms | **147175.0** (from vignette timestamps) |
 
 ### Gates
 
 | Check | Result |
 | --- | --- |
-| pytest | **56 passed** |
+| pytest | **93 passed** |
 | npm run build | **OK** |
-| npm run lint | **OK** |
-| npm run i18n:check | **OK** (652 keys) |
+| npm run lint | **OK** (2 existing warnings) |
+| npm run i18n:check | **OK** (666 keys) |
+| audio:check | **0/53 mp3 present** (native recording pending) |
 
 ### Assumptions
 
-- Timing is local-only until API schema is extended.
-- Demo `?demo=A|B` still pre-fills and marks clinical steps answered.
+- No live Gemini/Groq calls without keys; local provider supplies advisory JSON.
+- Pre-recorded RW audio files not yet recorded (checklist generated).
+- Clinical cut-offs remain PLACEHOLDER pending clinician review.

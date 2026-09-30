@@ -1,10 +1,15 @@
 {
   "language": "en",
-  "generated_at": "2026-09-30T05:42:40.605131+00:00",
+  "generated_at": "2026-09-30T14:53:58.701Z",
   "phrases": [
     {
       "id": "age",
       "file": "age.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "confirm_danger_sign",
+      "file": "confirm_danger_sign.mp3",
       "reviewed": false
     },
     {
@@ -18,11 +23,6 @@
       "reviewed": false
     },
     {
-      "id": "disclaimer",
-      "file": "disclaimer.mp3",
-      "reviewed": false
-    },
-    {
       "id": "fever",
       "file": "fever.mp3",
       "reviewed": false
@@ -30,6 +30,11 @@
     {
       "id": "fever_days",
       "file": "fever_days.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "guided_greeting",
+      "file": "guided_greeting.mp3",
       "reviewed": false
     },
     {
@@ -93,6 +98,56 @@
       "reviewed": false
     },
     {
+      "id": "locale_triage_age",
+      "file": "locale_triage_age.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_breathing",
+      "file": "locale_triage_breathing.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_convulsions",
+      "file": "locale_triage_convulsions.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_feverDays",
+      "file": "locale_triage_feverDays.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_lethargy",
+      "file": "locale_triage_lethargy.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_sex",
+      "file": "locale_triage_sex.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_tdr",
+      "file": "locale_triage_tdr.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_temperature",
+      "file": "locale_triage_temperature.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_unableToDrink",
+      "file": "locale_triage_unableToDrink.mp3",
+      "reviewed": false
+    },
+    {
+      "id": "locale_triage_vomitingEverything",
+      "file": "locale_triage_vomitingEverything.mp3",
+      "reviewed": false
+    },
+    {
       "id": "next_refer",
       "file": "next_refer.mp3",
       "reviewed": false
@@ -128,48 +183,23 @@
       "reviewed": false
     },
     {
-      "id": "reason_convulsions",
-      "file": "reason_convulsions.mp3",
+      "id": "prompt_no",
+      "file": "prompt_no.mp3",
       "reviewed": false
     },
     {
-      "id": "reason_default_treat_at_home",
-      "file": "reason_default_treat_at_home.mp3",
+      "id": "prompt_no_common",
+      "file": "prompt_no_common.mp3",
       "reviewed": false
     },
     {
-      "id": "reason_infant_age_referral",
-      "file": "reason_infant_age_referral.mp3",
+      "id": "prompt_yes",
+      "file": "prompt_yes.mp3",
       "reviewed": false
     },
     {
-      "id": "reason_invalid_tdr_refer",
-      "file": "reason_invalid_tdr_refer.mp3",
-      "reviewed": false
-    },
-    {
-      "id": "reason_lethargy",
-      "file": "reason_lethargy.mp3",
-      "reviewed": false
-    },
-    {
-      "id": "reason_persistent_fever_negative_tdr",
-      "file": "reason_persistent_fever_negative_tdr.mp3",
-      "reviewed": false
-    },
-    {
-      "id": "reason_severe_breathing_difficulty",
-      "file": "reason_severe_breathing_difficulty.mp3",
-      "reviewed": false
-    },
-    {
-      "id": "reason_unable_to_drink",
-      "file": "reason_unable_to_drink.mp3",
-      "reviewed": false
-    },
-    {
-      "id": "reason_vomiting_everything",
-      "file": "reason_vomiting_everything.mp3",
+      "id": "prompt_yes_common",
+      "file": "prompt_yes_common.mp3",
       "reviewed": false
     },
     {

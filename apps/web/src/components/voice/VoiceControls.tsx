@@ -32,6 +32,7 @@ export function VoiceControls({
   showLabels = false,
   compact = false,
   onTranscriptConfirmed,
+  language,
 }: {
   phraseIds: PhraseId[];
   helpPhraseId?: PhraseId;
@@ -39,10 +40,14 @@ export function VoiceControls({
   showLabels?: boolean;
   compact?: boolean;
   onTranscriptConfirmed?: (payload: { transcript: string; intents: VoiceIntents }) => void;
+  /** When rw, mic is experimental (browser STT rarely supports Kinyarwanda). */
+  language?: 'rw' | 'en';
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const voice = useVoice();
   const { capabilities, playbackSource, unlocked, mute, state } = voice;
+  const lang = language || (i18n.language.startsWith('rw') ? 'rw' : 'en');
+  const micExperimental = lang === 'rw';
 
   const onListen = () => {
     voice.unlock();
@@ -88,7 +93,7 @@ export function VoiceControls({
         >
           <Volume2 className="h-4 w-4" />
         </IconButton>
-        {capabilities.sttBrowser ? (
+        {capabilities.sttBrowser && !micExperimental ? (
           <IconButton
             label={t('voice.mic')}
             showLabel={showLabels}
@@ -96,6 +101,16 @@ export function VoiceControls({
             disabled={state === 'listening'}
           >
             <Mic className="h-4 w-4" />
+          </IconButton>
+        ) : null}
+        {capabilities.sttBrowser && micExperimental ? (
+          <IconButton
+            label={`${t('voice.micExperimental')}. ${t('voice.micExperimentalHint')}`}
+            showLabel={showLabels}
+            onClick={onMic}
+            disabled={state === 'listening'}
+          >
+            <Mic className="h-4 w-4 opacity-70" aria-hidden />
           </IconButton>
         ) : null}
         {helpPhraseId ? (

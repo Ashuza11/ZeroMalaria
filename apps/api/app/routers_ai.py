@@ -49,6 +49,81 @@ class SpeakBody(BaseModel):
     text: str
 
 
+class AdvisoryBody(BaseModel):
+    answers: dict[str, Any] = Field(default_factory=dict)
+    rules_decision: str
+    public_decision: str | None = None
+    reasons: list[str] = Field(default_factory=list)
+    triggered_rules: list[str] = Field(default_factory=list)
+    reason_details: list[dict[str, Any]] = Field(default_factory=list)
+    missing_info: list[str] = Field(default_factory=list)
+    protocol_reference: str = ""
+    language: str = "rw"
+
+
+class AdvisoryFeedbackBody(BaseModel):
+    rules_decision: str
+    chw_followed: bool
+    suggested_escalation: bool = False
+
+
+@router.post("/ai/advisory")
+def ai_advisory(
+    body: AdvisoryBody,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+) -> dict:
+    """Advisory-only layer. Rules decision is authoritative; failures return ok=false silently for UI."""
+    from app.services.ai.router import load_protocol_excerpts
+
+    payload = {
+        **body.model_dump(),
+        "decision": body.rules_decision,
+        "protocol_excerpts": load_protocol_excerpts(),
+    }
+    try:
+        result = get_ai_router().run("advisory", payload)
+        write_audit(
+            db,
+            action="ai_used",
+            actor_id=user.id,
+            actor_username=user.username,
+            resource_type="ai",
+            detail=f"advisory via {result.provider_used}",
+        )
+        return result.model_dump()
+    except Exception:
+        # Never surface provider errors to the CHW; UI keeps rules result alone.
+        return {
+            "ok": False,
+            "task": "advisory",
+            "data": {},
+            "provider_used": "none",
+            "latency_ms": 0,
+            "fallback_reason": "advisory_unavailable",
+        }
+
+
+@router.post("/ai/advisory-feedback")
+def ai_advisory_feedback(
+    body: AdvisoryFeedbackBody,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+) -> dict:
+    write_audit(
+        db,
+        action="ai_advisory_feedback",
+        actor_id=user.id,
+        actor_username=user.username,
+        resource_type="ai",
+        detail=(
+            f"chw_followed={body.chw_followed}; rules={body.rules_decision}; "
+            f"suggested_escalation={body.suggested_escalation}"
+        ),
+    )
+    return {"ok": True}
+
+
 @router.post("/ai/extract-symptoms")
 def ai_extract(
     body: ExtractBody,

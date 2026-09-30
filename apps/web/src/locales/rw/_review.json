@@ -2001,6 +2001,62 @@
   "triage.chipYears": {
     "status": "draft",
     "note": "Guided triage UX: age chip in years"
+  },
+  "voice.micExperimental": {
+    "status": "draft",
+    "note": "RW STT experimental label"
+  },
+  "voice.micExperimentalHint": {
+    "status": "draft",
+    "note": "RW STT experimental hint"
+  },
+  "result.rulesDecision": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiSuggestion": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiNeedsReview": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiCitations": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiInconsistencies": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiCaregiverAdvice": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiHandoverPreview": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.aiEscalateHint": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.chwFollowAi": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.chwOverrideAi": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.chwFeedbackLogged": {
+    "status": "draft",
+    "note": "AI advisory UI"
+  },
+  "result.protocolRef": {
+    "status": "draft",
+    "note": "AI advisory UI"
   }
 }
 

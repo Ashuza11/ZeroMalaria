@@ -14,6 +14,8 @@ ALLOWED_KEYS = frozenset(
         "fever_days",
         "tdr_result",
         "decision",
+        "rules_decision",
+        "public_decision",
         "convulsions",
         "unable_to_drink",
         "vomiting_everything",
@@ -25,6 +27,11 @@ ALLOWED_KEYS = frozenset(
         "summary_seed",
         "triggered_rules",
         "reasons",
+        "reason_details",
+        "missing_info",
+        "protocol_reference",
+        "protocol_excerpts",
+        "answers",
         "aggregated_stats",
     }
 )

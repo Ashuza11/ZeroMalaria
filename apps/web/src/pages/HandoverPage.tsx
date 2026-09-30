@@ -34,15 +34,24 @@ export function HandoverPage() {
   const summary = useMemo(() => {
     if (!triage) return '';
     const { input, result } = triage;
-    return [
+    const aiSummary = result.ai_advisory?.handover_summary;
+    const lines = [
       `ZeroMalaria REFERRAL (${result.decision.toUpperCase()})`,
       `Age: ${input.age_months} months | Sex: ${input.sex}`,
       `Temp: ${input.temperature_c}°C | Fever days: ${input.fever_days} | TDR: ${input.tdr_result}`,
       `Reasons: ${result.reasons.join('; ')}`,
+      result.protocol_reference ? `Protocol: ${result.protocol_reference}` : '',
+      aiSummary ? `AI handover (advisory): ${aiSummary}` : '',
+      result.ai_advisory?.chw_followed === true
+        ? 'CHW noted AI suggestion'
+        : result.ai_advisory?.chw_followed === false
+          ? 'CHW kept rules decision only'
+          : '',
       `Facility: ${DEMO_FACILITY.name} (${DEMO_FACILITY.facility_id})`,
       'Decision support tool. Not a replacement for clinical judgment.',
       'Synthetic demo data',
-    ].join('\n');
+    ];
+    return lines.filter(Boolean).join('\n');
   }, [triage]);
 
   useEffect(() => {

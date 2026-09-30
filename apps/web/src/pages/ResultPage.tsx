@@ -1,12 +1,13 @@
-import { CheckCircle2, CircleAlert, Home, Mic, Siren } from 'lucide-react';
+import { CheckCircle2, CircleAlert, Home, Mic, Siren, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { api } from '../api/client';
 import { ChwShell, WebShell } from '../components/shells';
 import { VoiceControls } from '../components/voice/VoiceControls';
 import { Badge, Button, Card, EmptyState, PageHeader, ProgressBar } from '../components/ui';
-import type { DecisionResult, TriageInput } from '../types';
+import type { AiAdvisory, DecisionResult, TriageInput } from '../types';
 import { cn } from '../lib/cn';
 import { useTheme } from '../theme/ThemeContext';
 import {
@@ -25,6 +26,18 @@ type SavedTriage = {
   ai_extract_used?: boolean;
 };
 
+function persistAdvisory(advisory: AiAdvisory | null) {
+  const raw = sessionStorage.getItem('zm_last_triage');
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw) as SavedTriage;
+    parsed.result = { ...parsed.result, ai_advisory: advisory };
+    sessionStorage.setItem('zm_last_triage', JSON.stringify(parsed));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function ResultPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -33,6 +46,8 @@ export function ResultPage() {
   const { offlineSim } = useTheme();
   const voice = useVoice();
   const [confirmed, setConfirmed] = useState(false);
+  const [advisory, setAdvisory] = useState<AiAdvisory | null>(null);
+  const [chwFeedback, setChwFeedback] = useState<'followed' | 'overrode' | null>(null);
 
   const lang: VoiceLang = i18n.language.startsWith('rw') ? 'rw' : 'en';
   const online = !offlineSim && (typeof navigator !== 'undefined' ? navigator.onLine : true);
@@ -52,12 +67,52 @@ export function ResultPage() {
   );
 
   const autoPlayed = useRef(false);
+  const advisoryFetched = useRef(false);
 
   useEffect(() => {
     if (!saved || !voice.unlocked || !mainSequence.length || autoPlayed.current) return;
     autoPlayed.current = true;
     void voice.play(mainSequence);
   }, [saved, voice.unlocked, mainSequence, voice]);
+
+  useEffect(() => {
+    if (!saved || !online || advisoryFetched.current) return;
+    advisoryFetched.current = true;
+    const { input, result } = saved;
+    void api
+      .aiAdvisory({
+        answers: input as unknown as Record<string, unknown>,
+        rules_decision: result.rules_decision || result.decision,
+        public_decision: result.public_decision,
+        reasons: result.reasons,
+        triggered_rules: result.triggered_rules,
+        reason_details: result.reason_details,
+        missing_info: result.missing_info,
+        protocol_reference: result.protocol_reference,
+        language: lang,
+      })
+      .then((res) => {
+        if (!res?.ok || !res.data || typeof res.data !== 'object') return;
+        const d = res.data as Record<string, unknown>;
+        if (typeof d.explanation_rw !== 'string' || typeof d.explanation_en !== 'string') return;
+        const next: AiAdvisory = {
+          explanation_rw: String(d.explanation_rw),
+          explanation_en: String(d.explanation_en),
+          inconsistencies: Array.isArray(d.inconsistencies) ? d.inconsistencies.map(String) : [],
+          caregiver_advice_rw: String(d.caregiver_advice_rw || ''),
+          handover_summary: String(d.handover_summary || ''),
+          suggested_escalation: Boolean(d.suggested_escalation),
+          citations: Array.isArray(d.citations) ? d.citations.map(String) : [],
+          needs_native_review: d.needs_native_review !== false,
+          chw_followed: null,
+        };
+        setAdvisory(next);
+        persistAdvisory(next);
+      })
+      .catch(() => {
+        /* silent: rules result alone */
+      });
+  }, [saved, online, lang]);
 
   if (!saved) {
     const empty = (
@@ -116,6 +171,24 @@ export function ResultPage() {
 
   const highlightId = voice.highlightId;
 
+  const onChwFeedback = (followed: boolean) => {
+    const next = advisory
+      ? { ...advisory, chw_followed: followed }
+      : null;
+    setAdvisory(next);
+    persistAdvisory(next);
+    setChwFeedback(followed ? 'followed' : 'overrode');
+    void api
+      .aiAdvisoryFeedback({
+        rules_decision: result.rules_decision || result.decision,
+        chw_followed: followed,
+        suggested_escalation: Boolean(advisory?.suggested_escalation),
+      })
+      .catch(() => {
+        /* offline: feedback stays local in session */
+      });
+  };
+
   const body = (
     <>
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -127,6 +200,9 @@ export function ResultPage() {
         {showAi ? <Badge tone="accent">{t('result.provenanceAi')}</Badge> : null}
       </div>
 
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        {t('result.rulesDecision')}
+      </p>
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -135,7 +211,98 @@ export function ResultPage() {
         <conf.Icon className="h-8 w-8" strokeWidth={1.75} />
         <p className="mt-3 text-xs uppercase tracking-wide opacity-90">{t('result.title')}</p>
         <h2 className="mt-1 text-2xl font-semibold">{conf.label}</h2>
+        {result.protocol_reference ? (
+          <p className="mt-2 text-xs opacity-90">
+            {t('result.protocolRef')}: {result.protocol_reference}
+          </p>
+        ) : null}
       </motion.div>
+
+      {advisory ? (
+        <Card className="mt-4 border-2 border-info/40" aria-label={t('result.aiSuggestion')}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Sparkles className="h-5 w-5 text-info" strokeWidth={1.75} aria-hidden />
+            <h3 className="font-semibold">{t('result.aiSuggestion')}</h3>
+            {advisory.needs_native_review ? (
+              <Badge tone="warning">{t('result.aiNeedsReview')}</Badge>
+            ) : null}
+          </div>
+          <p className="mt-3 text-sm leading-relaxed">{advisory.explanation_rw}</p>
+          <p className="mt-2 text-sm text-ink-muted leading-relaxed">{advisory.explanation_en}</p>
+          {advisory.suggested_escalation ? (
+            <p className="mt-3 rounded-control bg-warning-soft p-3 text-sm font-medium text-warning">
+              {t('result.aiEscalateHint')}
+            </p>
+          ) : null}
+          {advisory.citations.length ? (
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                {t('result.aiCitations')}
+              </p>
+              <ul className="mt-1 flex flex-wrap gap-2">
+                {advisory.citations.map((c) => (
+                  <li key={c}>
+                    <Badge tone="neutral">{c}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {advisory.inconsistencies.length ? (
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                {t('result.aiInconsistencies')}
+              </p>
+              <ul className="mt-1 list-disc space-y-1 pl-5 text-sm">
+                {advisory.inconsistencies.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {advisory.caregiver_advice_rw ? (
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                {t('result.aiCaregiverAdvice')}
+              </p>
+              <p className="mt-1 text-sm">{advisory.caregiver_advice_rw}</p>
+            </div>
+          ) : null}
+          {advisory.handover_summary ? (
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                {t('result.aiHandoverPreview')}
+              </p>
+              <p className="mt-1 rounded-control bg-surface-muted p-2 text-xs leading-relaxed">
+                {advisory.handover_summary}
+              </p>
+            </div>
+          ) : null}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={chwFeedback !== null}
+              onClick={() => onChwFeedback(true)}
+            >
+              {t('result.chwFollowAi')}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={chwFeedback !== null}
+              onClick={() => onChwFeedback(false)}
+            >
+              {t('result.chwOverrideAi')}
+            </Button>
+          </div>
+          {chwFeedback ? (
+            <p className="mt-2 text-xs text-ink-muted" role="status">
+              {t('result.chwFeedbackLogged')}
+            </p>
+          ) : null}
+        </Card>
+      ) : null}
 
       <Card className="mt-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -146,6 +313,7 @@ export function ResultPage() {
           phraseIds={mainSequence}
           showLabels={isApp}
           compact={!isApp}
+          language={lang}
         />
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" variant="outline" onClick={() => void voice.play(['repeat_hint', ...mainSequence])}>

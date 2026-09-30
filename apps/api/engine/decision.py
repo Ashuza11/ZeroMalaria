@@ -55,14 +55,22 @@ class DecisionResult:
     confidence: float | None = None
     human_confirmation_required: bool = True
     disclaimer: str = "Decision support tool. Not a replacement for clinical judgment."
-    synthetic_note: str = "Synthetic demo data / architecture demo — not clinical performance."
+    synthetic_note: str = "Synthetic demo data / architecture demo - not clinical performance."
+    public_decision: str = ""
+    reason_details: list[dict[str, Any]] = field(default_factory=list)
+    missing_info: list[str] = field(default_factory=list)
+    protocol_reference: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "decision": self.decision,
+            "public_decision": self.public_decision,
             "rules_decision": self.rules_decision,
             "reasons": self.reasons,
             "triggered_rules": self.triggered_rules,
+            "reason_details": self.reason_details,
+            "missing_info": self.missing_info,
+            "protocol_reference": self.protocol_reference,
             "ml_escalated": self.ml_escalated,
             "severe_risk": self.severe_risk,
             "referral_noncompletion_risk": self.referral_noncompletion_risk,
@@ -208,6 +216,8 @@ def combine_decision(
     else:
         confidence = 0.7
 
+    from engine.rules import PUBLIC_DECISION
+
     return DecisionResult(
         decision=final,
         rules_decision=rules_result.decision,
@@ -218,6 +228,10 @@ def combine_decision(
         referral_noncompletion_risk=referral_risk,
         shap_factors=shap_factors,
         confidence=confidence,
+        public_decision=PUBLIC_DECISION.get(final, final),
+        reason_details=[r.to_dict() for r in rules_result.reason_details],
+        missing_info=list(rules_result.missing_info),
+        protocol_reference=rules_result.protocol_reference,
     )
 
 
