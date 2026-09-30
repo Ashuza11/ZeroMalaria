@@ -242,6 +242,16 @@ export const PHRASES = {
     'Optional notes in Kinyarwanda or English. AI may suggest fields — you must verify before applying.',
     'Inyandiko z\'ubushobozi mu Kinyarwanda cyangwa Icyongereza. AI ishobora gusaba ibice — ugomba kubigenzura mbere yo kubikoresha.',
   ),
+  guided_greeting: p(
+    'guided_greeting',
+    'Voice guided triage. I will ask each question — answer clearly, then confirm what I heard.',
+    'Gupima mu ijwi. Nzakubaza ibibazo — subiza neza, hanyuma wemeze ibyo numvise.',
+  ),
+  confirm_danger_sign: p(
+    'confirm_danger_sign',
+    'This is a danger sign. Please say yes to confirm, or no if I misunderstood.',
+    'Iki ni ikimenyetso cy\'akaga. Vuga yego niba ari ukuri, cyangwa oya niba nabitumvise nabi.',
+  ),
 } as const satisfies Record<string, PhraseEntry>;
 
 export type PhraseId = keyof typeof PHRASES;

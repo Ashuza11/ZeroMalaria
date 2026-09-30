@@ -238,7 +238,7 @@ export function ResultPage() {
           <Button
             className="w-full"
             disabled={!confirmed}
-            onClick={() => navigate(demo === 'A' ? `${triagePath}?demo=B` : isApp ? '/app/chw' : '/m/home')}
+            onClick={() => navigate(demo === 'A' ? `${triagePath}?demo=B` : isApp ? '/app/home' : '/m/home')}
           >
             {demo === 'A' ? `${t('result.done')} → Case B` : t('result.done')}
           </Button>

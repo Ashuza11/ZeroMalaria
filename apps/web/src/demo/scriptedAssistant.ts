@@ -3,7 +3,7 @@
 import { buildResultSequence, type PhraseId, type VoiceLang } from '../voice/phrases';
 import { speakSequence, stopSpeaking } from '../voice/speak';
 import { localDecide } from '../rules/engine';
-import { DEMO_CASE_A } from './scenario';
+import { DEMO_CASE_A, DEMO_CASE_B } from './scenario';
 
 export type DemoLine = { atMs: number; phraseId: PhraseId; note?: string };
 
@@ -19,6 +19,21 @@ export const SCRIPTED_DEMO_LINES: DemoLine[] = [
   { atMs: 24000, phraseId: 'disclaimer' },
   { atMs: 27000, phraseId: 'confirm_reminder' },
 ];
+
+/** Mock STT transcripts for Case B (convulsions → urgent refer). */
+export const CASE_B_MOCK_STT_SEQUENCE = [
+  '28',
+  'male',
+  '39.4',
+  '2',
+  'yes',
+  'yes',
+  'no',
+  'no',
+  'no',
+  'no',
+  'positive',
+] as const;
 
 let demoAbort: (() => void) | null = null;
 
@@ -61,6 +76,39 @@ export function runScriptedDemo(
       }, 30000),
     );
   });
+}
+
+export type VoiceTriageRunner = {
+  startGuidedTriage: (
+    base: typeof DEMO_CASE_B,
+    handlers: {
+      onNode?: (nodeId: string) => void;
+      onPatch?: (patch: Partial<typeof DEMO_CASE_B>) => void;
+      onComplete?: (form: typeof DEMO_CASE_B) => void;
+    },
+    options?: { mockTranscripts?: string[] },
+  ) => Promise<void>;
+};
+
+/** Scripted voice triage: mocked STT for convulsions case → URGENT result phrases. */
+export async function runScriptedVoiceTriageDemo(
+  lang: VoiceLang,
+  runner: VoiceTriageRunner,
+  onHighlight?: (id: PhraseId) => void,
+): Promise<void> {
+  cancelScriptedDemo();
+  const base = { ...DEMO_CASE_B };
+  await runner.startGuidedTriage(
+    base,
+    {
+      onComplete: async (form) => {
+        const result = localDecide(form, lang);
+        const seq = buildResultSequence(result.decision, result.triggered_rules);
+        await speakSequence(seq, lang, onHighlight);
+      },
+    },
+    { mockTranscripts: [...CASE_B_MOCK_STT_SEQUENCE] },
+  );
 }
 
 /** Phrase ids for Case A result read-aloud (full sequence). */

@@ -4,17 +4,28 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { Disclaimer } from '../components/ui';
+import { DESKTOP_MIN_WIDTH, setPreferredView } from '../auth/roleAccess';
+import { Button, Disclaimer } from '../components/ui';
 
+/** Desktop entry for scanning a QR to open the phone CHW app. Phones redirect to /m/home. */
 export function MobileLandingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [qr, setQr] = useState('');
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= DESKTOP_MIN_WIDTH,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= DESKTOP_MIN_WIDTH);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) {
       navigate(user ? '/m/home' : '/login', { replace: true });
       return;
     }
@@ -22,7 +33,7 @@ export function MobileLandingPage() {
     void QRCode.toDataURL(target, { margin: 1, width: 220 }).then(setQr);
   }, [navigate, user]);
 
-  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+  if (typeof window !== 'undefined' && window.innerWidth < DESKTOP_MIN_WIDTH) {
     return <Navigate to={user ? '/m/home' : '/login'} replace />;
   }
 
@@ -37,16 +48,31 @@ export function MobileLandingPage() {
             <h1 className="text-2xl font-bold">{t('common.appName')}</h1>
           </div>
           <p className="text-ink-muted">{t('login.mobileLandingHint')}</p>
+          {isDesktop ? (
+            <div className="mt-4 rounded-card border border-primary/20 bg-primary-soft p-4" data-testid="open-web-banner">
+              <p className="text-sm text-ink">{t('common.openWebVersionHint')}</p>
+              <Button
+                className="mt-3"
+                size="sm"
+                onClick={() => {
+                  setPreferredView('web');
+                  navigate('/app/home');
+                }}
+              >
+                {t('common.openWebVersion')}
+              </Button>
+            </div>
+          ) : null}
           <Disclaimer text={t('common.disclaimer')} />
         </div>
         <div className="mx-auto w-[280px] rounded-[2rem] border-[10px] border-ink/90 bg-ink p-3 shadow-lift">
           <div className="overflow-hidden rounded-[1.25rem] bg-app">
             <div className="border-b border-border bg-surface px-4 py-3 text-center text-xs font-semibold">
-              CHW · {t('nav.home')}
+              {t('auth.roleChwShort')} · {t('nav.home')}
             </div>
             <div className="flex flex-col items-center px-4 py-8">
               {qr ? (
-                <img src={qr} alt="QR code to open CHW home" className="rounded-card border border-border bg-white p-2" />
+                <img src={qr} alt={t('common.qrAlt')} className="rounded-card border border-border bg-white p-2" />
               ) : (
                 <div className="h-[220px] w-[220px] animate-pulse rounded-card bg-surface-muted" />
               )}

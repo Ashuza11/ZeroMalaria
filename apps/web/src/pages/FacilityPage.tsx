@@ -15,10 +15,14 @@ import {
   StatusPill,
   SyntheticBadge,
   Tabs,
+  Button,
 } from '../components/ui';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 import { cn } from '../lib/cn';
+import { useAuth } from '../auth/AuthContext';
+import { useLiveEventRefresh } from '../events/EventContext';
+import type { ReferralMessage } from '../api/client';
 
 type Referral = {
   id: string;
@@ -38,7 +42,11 @@ type Referral = {
 export function FacilityPage() {
   const { t } = useTranslation();
   const { push } = useToast();
+  const { user } = useAuth();
   const [rows, setRows] = useState<Referral[]>([]);
+  const [messages, setMessages] = useState<ReferralMessage[]>([]);
+  const [messageDraft, setMessageDraft] = useState('');
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -72,6 +80,37 @@ export function FacilityPage() {
     return () => window.clearInterval(id);
   }, [load]);
 
+  useLiveEventRefresh(
+    useCallback(() => {
+      void load();
+    }, [load]),
+    ['referral.created', 'referral.status_changed', 'referral.message'],
+  );
+
+  const loadMessages = useCallback(
+    async (referralId: string) => {
+      if (!user) {
+        setMessages([]);
+        return;
+      }
+      setMessagesLoading(true);
+      try {
+        const data = await api.listReferralMessages(referralId);
+        setMessages(data);
+      } catch {
+        setMessages([]);
+      } finally {
+        setMessagesLoading(false);
+      }
+    },
+    [user],
+  );
+
+  useEffect(() => {
+    if (selectedId) void loadMessages(selectedId);
+    else setMessages([]);
+  }, [selectedId, loadMessages]);
+
   const filtered = useMemo(() => {
     if (tab === 'urgent') return rows.filter((r) => r.decision === 'urgent_refer');
     if (tab === 'new') return rows.filter((r) => r.status === 'sent');
@@ -84,6 +123,18 @@ export function FacilityPage() {
     new: rows.filter((r) => r.status === 'sent').length,
     urgent: rows.filter((r) => r.decision === 'urgent_refer').length,
     notArrived: rows.filter((r) => r.status === 'sent' || r.overdue).length,
+  };
+
+  const sendMessage = async (text: string) => {
+    if (!selected || !text.trim() || !user) return;
+    try {
+      await api.postReferralMessage(selected.id, text.trim());
+      setMessageDraft('');
+      push(t('messages.sent'), 'success');
+      await loadMessages(selected.id);
+    } catch {
+      push(t('common.error'), 'danger');
+    }
   };
 
   const patch = async (id: string, status: string) => {
@@ -204,12 +255,14 @@ export function FacilityPage() {
                     <p className="font-semibold capitalize">{selected.status}</p>
                   </div>
                   <div className="rounded-control bg-surface-muted p-3 text-sm">
-                    <p className="text-ink-muted">Sent</p>
+                    <p className="text-ink-muted">{t('referrals.sent')}</p>
                     <p className="font-semibold">{relativeTime(selected.created_at)}</p>
                   </div>
                   <div className="rounded-control bg-surface-muted p-3 text-sm">
                     <p className="text-ink-muted">{t('facility.notArrived')}</p>
-                    <p className="font-semibold">{selected.overdue || selected.status === 'sent' ? 'Yes' : 'No'}</p>
+                    <p className="font-semibold">
+                      {selected.overdue || selected.status === 'sent' ? t('common.yes') : t('common.no')}
+                    </p>
                   </div>
                 </div>
                 <h3 className="mt-5 text-sm font-semibold">{t('result.why')}</h3>
@@ -218,8 +271,51 @@ export function FacilityPage() {
                     <li key={r}>{r}</li>
                   ))}
                 </ul>
+                <div className="mt-6 border-t border-border pt-5">
+                  <h3 className="text-sm font-semibold">{t('messages.threadTitle')}</h3>
+                  <p className="mt-1 text-xs text-ink-muted">{t('messages.threadHint')}</p>
+                  <div className="mt-3 max-h-48 space-y-2 overflow-y-auto">
+                    {messagesLoading ? <Skeleton className="h-16" /> : null}
+                    {!messagesLoading && messages.length === 0 ? (
+                      <p className="text-sm text-ink-muted">{t('messages.empty')}</p>
+                    ) : null}
+                    {messages.map((m) => (
+                      <div key={m.id} className="rounded-control bg-surface-muted px-3 py-2 text-sm">
+                        <p className="text-xs font-semibold uppercase text-ink-muted">{m.sender_role}</p>
+                        <p>{m.body}</p>
+                        <p className="text-xs text-ink-muted">{relativeTime(m.created_at)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {user ? (
+                    <>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Button size="sm" variant="secondary" type="button" onClick={() => void sendMessage(t('messages.chipTransport'))}>
+                          {t('messages.chipTransport')}
+                        </Button>
+                        <Button size="sm" variant="secondary" type="button" onClick={() => void sendMessage(t('messages.chipMoreInfo'))}>
+                          {t('messages.chipMoreInfo')}
+                        </Button>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          className="min-w-0 flex-1 rounded-control border border-border bg-surface px-3 py-2 text-sm"
+                          placeholder={t('messages.customPlaceholder')}
+                          value={messageDraft}
+                          onChange={(e) => setMessageDraft(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') void sendMessage(messageDraft);
+                          }}
+                        />
+                        <Button type="button" size="sm" onClick={() => void sendMessage(messageDraft)}>
+                          {t('messages.send')}
+                        </Button>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
                 <div className="mt-6">
-                  <p className="mb-2 text-sm font-semibold">Update status</p>
+                  <p className="mb-2 text-sm font-semibold">{t('facility.updateStatus')}</p>
                   <SegmentedControl
                     value={
                       selected.status === 'treated'

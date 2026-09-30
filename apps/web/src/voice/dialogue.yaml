@@ -1,0 +1,92 @@
+# Voice triage dialogue graph (DRAFT — phrases status in locales/rw/_review.json).
+# Runtime source of truth is dialogue.ts (kept in sync). Result speech = rules catalog only.
+version: 1
+default_language: rw
+nodes:
+  - id: greeting
+    phrase_id: greeting
+    expected_intents: []
+    next: age
+  - id: age
+    phrase_id: age
+    slot: age_months
+    expected_intents: [number, unknown]
+    confirmation: confirm
+    reprompt: age
+    next: sex
+  - id: sex
+    phrase_id: sex
+    slot: sex
+    expected_intents: [choice, unknown]
+    reprompt: sex
+    next: temperature
+  - id: temperature
+    phrase_id: temperature
+    slot: temperature_c
+    expected_intents: [number, unknown]
+    reprompt: temperature
+    next: fever_days
+  - id: fever_days
+    phrase_id: fever_days
+    slot: fever_days
+    expected_intents: [number, unknown]
+    reprompt: fever_days
+    next: convulsions
+  - id: convulsions
+    phrase_id: convulsions
+    slot: convulsions
+    expected_intents: [yes, no, unknown]
+    danger: true
+    confirmation: confirm
+    reprompt: convulsions
+    next: unable_to_drink
+  - id: unable_to_drink
+    phrase_id: unable_to_drink
+    slot: unable_to_drink
+    expected_intents: [yes, no, unknown]
+    danger: true
+    confirmation: confirm
+    reprompt: unable_to_drink
+    next: vomiting_everything
+  - id: vomiting_everything
+    phrase_id: vomiting_everything
+    slot: vomiting_everything
+    expected_intents: [yes, no, unknown]
+    danger: true
+    confirmation: confirm
+    reprompt: vomiting_everything
+    next: lethargy
+  - id: lethargy
+    phrase_id: lethargy
+    slot: lethargy
+    expected_intents: [yes, no, unknown]
+    danger: true
+    confirmation: confirm
+    reprompt: lethargy
+    next: breathing
+  - id: breathing
+    phrase_id: breathing
+    slot: severe_breathing_difficulty
+    expected_intents: [yes, no, unknown]
+    danger: true
+    confirmation: confirm
+    reprompt: breathing
+    next: tdr
+  - id: tdr
+    phrase_id: tdr
+    slot: tdr_result
+    expected_intents: [choice, unknown]
+    reprompt: tdr
+    next: null
+commands:
+  subiramo: repeat
+  buhoro: slower
+  "subira inyuma": back
+  simbizi: unknown
+  hagarika: stop
+  "kubera iki?": why
+  "nkore iki?": what_now
+guardrails:
+  never_diagnose: true
+  never_drug_names: true
+  result_from_rules_only: true

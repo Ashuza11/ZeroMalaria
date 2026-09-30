@@ -11,6 +11,7 @@ import {
   Languages,
   LayoutDashboard,
   LogOut,
+  Monitor,
   Moon,
   Package,
   PanelLeft,
@@ -20,45 +21,57 @@ import {
   Stethoscope,
   Sun,
   User,
+  UserCog,
   Users,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+  type UIEvent,
+} from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSync } from '../sync/SyncContext';
 import { useTheme } from '../theme/ThemeContext';
 import { setLanguage } from '../i18n';
 import { db } from '../db';
-import { Badge, Disclaimer, IconButton, StatusPill, SyntheticBadge } from './ui';
+import { Badge, Button, Disclaimer, IconButton, StatusPill, SyntheticBadge } from './ui';
 import { PresenterMenu } from './PresenterMenu';
 import { cn } from '../lib/cn';
 import { easeOut, pageVariants } from '../lib/motion';
 import { useAuth, type UserRole } from '../auth/AuthContext';
-import { setPreferredView } from '../auth/roleAccess';
+import {
+  ALL_ROLES,
+  BROAD_ROLES,
+  DESKTOP_MIN_WIDTH,
+  normalizeRole,
+  roleI18nKey,
+  setPreferredView,
+  webHomePath,
+} from '../auth/roleAccess';
 import { api } from '../api/client';
 
 const SIDEBAR_KEY = 'zm_sidebar_collapsed';
 const APP_VERSION = '0.2.0';
 
 function roleLabel(role: UserRole | string, t: (k: string) => string) {
-  const map: Record<string, string> = {
-    chw: t('auth.roleChw'),
-    nurse: t('auth.roleNurse'),
-    supervisor: t('auth.roleSupervisor'),
-    rbc: t('auth.roleRbc'),
-  };
-  return map[role] || role;
+  return t(roleI18nKey(role));
 }
 
 function LogoMark({ compact }: { compact?: boolean }) {
+  const { t } = useTranslation();
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-9 w-9 items-center justify-center rounded-control bg-primary text-primary-foreground">
+    <div className="flex min-w-0 items-center gap-2">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-foreground">
         <Activity className="h-5 w-5" strokeWidth={1.75} />
       </div>
       {!compact ? (
-        <div>
-          <p className="text-sm font-bold leading-none text-ink">ZeroMalaria</p>
-          <p className="mt-1 text-[11px] text-ink-muted">Malaria triage</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold leading-none text-ink">{t('common.appName')}</p>
+          <p className="mt-1 truncate text-[11px] text-ink-muted">{t('common.tagline')}</p>
         </div>
       ) : null}
     </div>
@@ -78,10 +91,20 @@ function SyncPill() {
 
 export function ChwShell({ children, title }: { children: ReactNode; title?: string }) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const location = useLocation();
   const reduce = useReducedMotion();
   const [alertCount, setAlertCount] = useState(0);
   const [refCount, setRefCount] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= DESKTOP_MIN_WIDTH,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= DESKTOP_MIN_WIDTH);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -106,10 +129,27 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
 
   return (
     <div className="min-h-screen bg-app">
-      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card md:my-4 md:min-h-[calc(100vh-2rem)] md:rounded-[20px] md:border">
+      {isDesktop ? (
+        <div
+          className="flex flex-wrap items-center justify-between gap-2 border-b border-primary/20 bg-primary-soft px-4 py-2 text-sm"
+          data-testid="open-web-banner"
+        >
+          <p className="min-w-0 text-ink">{t('common.openWebVersionHint')}</p>
+          <Button
+            size="sm"
+            onClick={() => {
+              setPreferredView('web');
+              navigate('/app/home');
+            }}
+          >
+            {t('common.openWebVersion')}
+          </Button>
+        </div>
+      ) : null}
+      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card sm:min-h-[calc(100vh-0px)]">
         <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-surface/95 px-4 py-3 backdrop-blur">
           <LogoMark />
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <SyntheticBadge label={t('common.synthetic')} />
             <SyncPill />
             <IconButton
@@ -125,7 +165,9 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
 
         {title ? (
           <div className="border-b border-border px-4 py-3">
-            <h1 className="text-lg font-semibold text-ink">{title}</h1>
+            <h1 className="truncate text-lg font-semibold text-ink" title={title}>
+              {title}
+            </h1>
           </div>
         ) : null}
 
@@ -145,7 +187,10 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
         </motion.main>
 
         {!hideTabs ? (
-          <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 border-t border-border bg-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur md:left-auto md:right-auto md:translate-x-0">
+          <nav
+            className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 border-t border-border bg-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur"
+            data-testid="mobile-tab-bar"
+          >
             <div className="mx-auto grid max-w-chw grid-cols-4 gap-1">
               <Tab to="/m/home" icon={<Home className="h-5 w-5" strokeWidth={1.75} />} label={t('nav.home')} />
               <Tab
@@ -233,7 +278,13 @@ export function WebShell({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { dark, toggleDark, offlineSim } = useTheme();
+  const { dark, themeMode, cycleTheme, offlineSim } = useTheme();
+  const themeLabel =
+    themeMode === 'light'
+      ? t('common.themeLight')
+      : themeMode === 'dark'
+        ? t('common.themeDark')
+        : t('common.themeSystem');
   const { user, logout } = useAuth();
   const reduce = useReducedMotion();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(SIDEBAR_KEY) === '1');
@@ -242,6 +293,7 @@ export function WebShell({
   const [paletteQuery, setPaletteQuery] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [mainScrolled, setMainScrolled] = useState(false);
   const [overdueAlerts, setOverdueAlerts] = useState<{ id: string; summary: string }[]>([]);
   const notifRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
@@ -298,59 +350,111 @@ export function WebShell({
 
   const navItems: NavItem[] = useMemo(
     () => [
-      { to: '/app/chw', label: t('nav.home'), icon: Home, roles: ['chw'] },
-      { to: '/m/triage', label: t('nav.newTriage'), icon: Plus, roles: ['chw'] },
-      { to: '/app/my-patients', label: t('nav.myPatients'), icon: Users, roles: ['chw'] },
+      { to: '/app/home', label: t('nav.home'), icon: Home, roles: ['CHW'] },
+      { to: '/m/triage', label: t('nav.newTriage'), icon: Plus, roles: ['CHW'] },
+      { to: '/app/my-patients', label: t('nav.myPatients'), icon: Users, roles: ['CHW'] },
       {
         to: '/app/my-referrals',
         label: t('nav.myReferrals'),
         icon: Stethoscope,
-        roles: ['chw'],
+        roles: ['CHW'],
         badge: overdueAlerts.length || undefined,
       },
-      { to: '/app/alerts', label: t('nav.alerts'), icon: AlertTriangle, roles: ['chw'] },
-      { to: '/app/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, roles: ['supervisor', 'rbc'] },
-      { to: '/app/patients', label: t('nav.patients'), icon: Users, roles: ['nurse', 'supervisor', 'rbc'] },
+      { to: '/app/alerts', label: t('nav.alerts'), icon: AlertTriangle, roles: ['CHW'] },
+      { to: '/app/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, roles: [...BROAD_ROLES] },
+      {
+        to: '/app/patients',
+        label: t('nav.patients'),
+        icon: Users,
+        roles: ['HEALTH_CENTER', ...BROAD_ROLES],
+      },
       {
         to: '/app/referrals',
         label: t('nav.referralsInbox'),
         icon: Stethoscope,
-        roles: ['nurse', 'supervisor', 'rbc'],
+        roles: ['HEALTH_CENTER', ...BROAD_ROLES],
         badge: overdueAlerts.length || undefined,
       },
-      { to: '/app/analytics', label: t('nav.analytics'), icon: BarChart3, roles: ['supervisor', 'rbc'] },
-      { to: '/app/supplies', label: t('nav.supplies'), icon: Package, roles: ['supervisor', 'rbc'] },
-      { to: '/app/users', label: t('nav.users'), icon: User, roles: ['supervisor', 'rbc'], group: 'settings' },
+      { to: '/app/analytics', label: t('nav.analytics'), icon: BarChart3, roles: [...BROAD_ROLES] },
+      { to: '/app/supplies', label: t('nav.supplies'), icon: Package, roles: [...BROAD_ROLES] },
+      { to: '/app/users', label: t('nav.users'), icon: User, roles: [...BROAD_ROLES], group: 'settings' },
+      {
+        to: '/app/facilities',
+        label: t('common.facilities'),
+        icon: Stethoscope,
+        roles: [...BROAD_ROLES],
+        group: 'settings',
+      },
+      {
+        to: '/app/permissions',
+        label: t('common.permissions'),
+        icon: UserCog,
+        roles: ['SUPER_ADMIN'],
+        group: 'settings',
+      },
+      {
+        to: '/app/audit',
+        label: t('common.auditLog'),
+        icon: UserCog,
+        roles: [...BROAD_ROLES],
+        group: 'settings',
+      },
+      {
+        to: '/app/config',
+        label: t('nav.settings'),
+        icon: Settings,
+        roles: ['SUPER_ADMIN', 'RBC_ADMIN'],
+        group: 'settings',
+      },
+      {
+        to: '/app/change-password',
+        label: t('auth.changePassword'),
+        icon: Settings,
+        roles: [...ALL_ROLES],
+        group: 'settings',
+      },
       {
         to: '/app/settings/language',
         label: t('nav.language'),
         icon: Languages,
-        roles: ['chw', 'nurse', 'supervisor', 'rbc'],
+        roles: [...ALL_ROLES],
         group: 'settings',
       },
       {
         to: '/m/voice-settings',
         label: t('nav.voice'),
         icon: Settings,
-        roles: ['chw'],
+        roles: ['CHW'],
         group: 'settings',
       },
       {
         to: '/app/settings/about',
         label: t('nav.about'),
         icon: Settings,
-        roles: ['chw', 'nurse', 'supervisor', 'rbc'],
+        roles: [...ALL_ROLES],
         group: 'settings',
       },
     ],
     [t, overdueAlerts.length],
   );
 
+  const normalizedRole = role ? normalizeRole(role) : undefined;
   const visibleNav = user
-    ? navItems.filter((item) => role && item.roles.includes(role))
+    ? navItems.filter((item) => normalizedRole && item.roles.includes(normalizedRole))
     : [
-        { to: '/facility', label: t('nav.referralsInbox'), icon: Stethoscope, roles: ['nurse'] as UserRole[] },
-        { to: '/about', label: t('nav.about'), icon: Settings, roles: ['nurse'] as UserRole[], group: 'settings' as const },
+        {
+          to: '/facility',
+          label: t('nav.referralsInbox'),
+          icon: Stethoscope,
+          roles: ['HEALTH_CENTER'] as UserRole[],
+        },
+        {
+          to: '/about',
+          label: t('nav.about'),
+          icon: Settings,
+          roles: ['HEALTH_CENTER'] as UserRole[],
+          group: 'settings' as const,
+        },
       ];
 
   const paletteItems = visibleNav.filter((item) =>
@@ -359,34 +463,69 @@ export function WebShell({
 
   const connectionStatus = offlineSim ? 'offline' : 'online';
 
-  const Sidebar = (
+  // Close mobile nav on route change; lock body scroll while open
+  useEffect(() => {
+    setMobileNav(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mobileNav) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileNav(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [mobileNav]);
+
+  const onMainScroll = (e: UIEvent<HTMLElement>) => {
+    setMainScrolled(e.currentTarget.scrollTop > 4);
+  };
+
+  const renderSidebar = (testId: string, forceExpanded = false) => {
+    const slim = !forceExpanded && collapsed;
+    return (
     <aside
+      data-testid={testId}
       className={cn(
-        'flex h-full flex-col border-r border-border bg-surface transition-all',
-        collapsed ? 'w-[72px]' : 'w-64',
+        'flex h-full flex-col border-r border-border bg-surface transition-[width] duration-200',
+        reduce && 'transition-none',
+        slim ? 'w-[72px]' : 'w-60',
       )}
     >
-      <div className="flex items-center justify-between border-b border-border p-4">
-        <LogoMark compact={collapsed} />
+      <div className="flex shrink-0 items-center justify-between border-b border-border p-4">
+        <LogoMark compact={slim} />
         <button
           type="button"
           className="hidden rounded-control border border-border p-1 lg:inline-flex"
           onClick={() => setCollapsed((c) => !c)}
           aria-label={t('nav.toggleSidebar')}
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {slim ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
       {user ? (
-        <div className={cn('border-b border-border px-3 py-3', collapsed && 'px-2 text-center')}>
+        <div className={cn('shrink-0 border-b border-border px-3 py-3', slim && 'px-2 text-center')}>
           <Badge tone="primary">{roleLabel(user.role, t)}</Badge>
         </div>
       ) : (
-        <div className={cn('border-b border-border px-3 py-3', collapsed && 'px-2 text-center')}>
+        <div className={cn('shrink-0 border-b border-border px-3 py-3', slim && 'px-2 text-center')}>
           <Badge tone="neutral">{t('common.demoMode')}</Badge>
         </div>
       )}
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain p-3">
         {visibleNav
           .filter((item) => !item.group)
           .map((item) => {
@@ -407,18 +546,18 @@ export function WebShell({
                 className={cn(
                   'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
                   active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
-                  collapsed && 'justify-center px-2',
+                  slim && 'justify-center px-2',
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                {!collapsed ? <span className="flex-1 text-left">{item.label}</span> : null}
-                {!collapsed && item.badge ? (
+                {!slim ? <span className="flex-1 text-left">{item.label}</span> : null}
+                {!slim && item.badge ? (
                   <span className="rounded-full bg-danger px-1.5 text-[10px] text-white">{item.badge}</span>
                 ) : null}
               </button>
             );
           })}
-        {!collapsed ? (
+        {!slim ? (
           <p className="mb-1 mt-4 px-2 text-[10px] font-bold uppercase tracking-wide text-ink-muted">
             {t('nav.settingsGroup')}
           </p>
@@ -440,29 +579,30 @@ export function WebShell({
                 className={cn(
                   'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
                   active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
-                  collapsed && 'justify-center px-2',
+                  slim && 'justify-center px-2',
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                {!collapsed ? <span className="flex-1 text-left">{item.label}</span> : null}
+                {!slim ? <span className="flex-1 text-left">{item.label}</span> : null}
               </button>
             );
           })}
       </nav>
-      <div className="space-y-2 border-t border-border p-4 text-xs text-ink-muted">
+      <div className="shrink-0 space-y-2 border-t border-border p-4 text-xs text-ink-muted">
         <SyncPill />
         <p className="flex flex-wrap items-center gap-2">
           <span>v{APP_VERSION}</span>
           <SyntheticBadge label={t('common.synthetic')} />
         </p>
-        {user && !collapsed ? (
+        {user && !slim ? (
           <p className="truncate font-medium text-ink">
             {user.display_name} · {roleLabel(user.role, t)}
           </p>
         ) : null}
       </div>
     </aside>
-  );
+    );
+  };
 
   const initials =
     user?.display_name
@@ -473,63 +613,86 @@ export function WebShell({
       .toUpperCase() || 'ZM';
 
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <div className="flex min-h-screen">
-        <div className="hidden lg:block">{Sidebar}</div>
-        {mobileNav ? (
-          <div className="fixed inset-0 z-40 flex lg:hidden">
-            <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setMobileNav(false)} />
-            <div className="relative z-10 h-full">{Sidebar}</div>
-          </div>
-        ) : null}
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur">
-            <div className="flex min-w-0 items-center gap-2">
+    <div className="flex h-dvh overflow-hidden bg-app text-ink" data-testid="app-shell">
+      <div className="hidden h-full shrink-0 lg:block">{renderSidebar('web-sidebar')}</div>
+      {mobileNav ? (
+        <div className="fixed inset-0 z-40 flex lg:hidden" role="dialog" aria-modal="true" data-testid="mobile-nav">
+          <button
+            type="button"
+            className="absolute inset-0 bg-ink/40"
+            aria-label={t('common.close')}
+            onClick={() => setMobileNav(false)}
+          />
+          <div className="relative z-10 h-full shadow-lift">{renderSidebar('web-sidebar-drawer', true)}</div>
+        </div>
+      ) : null}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header
+          data-testid="app-header"
+          className={cn(
+            'z-20 flex h-16 shrink-0 flex-nowrap items-center gap-2 border-b border-border bg-surface px-3 lg:px-4',
+            mainScrolled && 'shadow-sm',
+          )}
+        >
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <button
                 type="button"
-                className="rounded-control border border-border p-2 lg:hidden"
+                className="shrink-0 rounded-control border border-border p-2 lg:hidden"
                 onClick={() => setMobileNav(true)}
-                aria-label="Menu"
+                aria-label={t('nav.toggleSidebar')}
+                title={t('nav.toggleSidebar')}
               >
                 <PanelLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                className="hidden rounded-control border border-border p-2 lg:inline-flex"
+                className="hidden shrink-0 rounded-control border border-border p-2 lg:inline-flex"
                 onClick={() => setCollapsed((c) => !c)}
                 aria-label={t('nav.toggleSidebar')}
+                title={t('nav.toggleSidebar')}
               >
                 <PanelLeft className="h-4 w-4" />
               </button>
               <div className="min-w-0">
-                <p className="truncate text-xs text-ink-muted">{(crumbs || [title]).join(' / ')}</p>
-                <h1 className="truncate text-lg font-semibold">{title}</h1>
+                <p className="hidden truncate text-[11px] text-ink-muted sm:block">
+                  {(crumbs || [title]).join(' / ')}
+                </p>
+                <h1 className="truncate text-base font-semibold lg:text-lg">{title}</h1>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <SyntheticBadge label={t('common.synthetic')} />
+            <div className="flex shrink-0 flex-nowrap items-center gap-1">
+              <span className="hidden xl:inline-flex">
+                <SyntheticBadge label={t('common.syntheticShort')} />
+              </span>
               <IconButton
                 label={t('nav.commandPalette')}
-                showLabel
-                className="hidden sm:inline-flex"
+                showLabel={false}
+                className="hidden md:inline-flex"
                 onClick={() => setPaletteOpen(true)}
               >
                 <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
               </IconButton>
               <IconButton
                 label={i18n.language.startsWith('rw') ? 'RW' : 'EN'}
-                showLabel
+                showLabel={false}
+                className="hidden sm:inline-flex"
                 onClick={() => setLanguage(i18n.language.startsWith('rw') ? 'en' : 'rw')}
               >
                 <Languages className="h-3.5 w-3.5" strokeWidth={1.75} />
               </IconButton>
-              <IconButton label={t('common.toggleTheme')} showLabel onClick={toggleDark}>
-                {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
+              <IconButton label={themeLabel} showLabel={false} className="hidden sm:inline-flex" onClick={cycleTheme}>
+                {themeMode === 'system' ? (
+                  <Monitor className="h-4 w-4" strokeWidth={1.75} />
+                ) : dark ? (
+                  <Sun className="h-4 w-4" strokeWidth={1.75} />
+                ) : (
+                  <Moon className="h-4 w-4" strokeWidth={1.75} />
+                )}
               </IconButton>
               <div className="relative" ref={notifRef}>
                 <IconButton
                   label={t('nav.notifications')}
-                  showLabel
+                  showLabel={false}
                   className="relative"
                   onClick={() => setNotifOpen((o) => !o)}
                 >
@@ -559,25 +722,50 @@ export function WebShell({
                   </div>
                 ) : null}
               </div>
-              <StatusPill status={connectionStatus} />
-              <PresenterMenu />
+              <span className="hidden md:inline-flex">
+                <StatusPill status={connectionStatus} />
+              </span>
+              <span className="hidden sm:inline-flex">
+                <PresenterMenu />
+              </span>
               <div className="relative" ref={avatarRef}>
                 <button
                   type="button"
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary"
                   onClick={() => setAvatarOpen((o) => !o)}
-                  aria-label={user?.display_name || 'Account'}
+                  aria-label={user?.display_name || t('common.account')}
                 >
                   {initials}
                 </button>
                 {avatarOpen ? (
-                  <div className="absolute right-0 z-40 mt-2 w-52 rounded-card border border-border bg-surface shadow-lift">
+                  <div className="absolute right-0 z-40 mt-2 w-56 rounded-card border border-border bg-surface shadow-lift">
                     <div className="border-b border-border px-3 py-2">
                       <p className="text-sm font-semibold">{user?.display_name}</p>
                       <p className="text-xs text-ink-muted">{user?.username}</p>
                     </div>
                     {user ? (
                       <>
+                        <button
+                          type="button"
+                          className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted sm:hidden"
+                          onClick={() => {
+                            setLanguage(i18n.language.startsWith('rw') ? 'en' : 'rw');
+                            setAvatarOpen(false);
+                          }}
+                        >
+                          {t('nav.language')} ({i18n.language.startsWith('rw') ? 'RW' : 'EN'})
+                        </button>
+                        <button
+                          type="button"
+                          className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted"
+                          onClick={() => {
+                            setPreferredView('web');
+                            setAvatarOpen(false);
+                            navigate(webHomePath(role || 'CHW'));
+                          }}
+                        >
+                          {t('common.webView')}
+                        </button>
                         <button
                           type="button"
                           className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted"
@@ -587,18 +775,7 @@ export function WebShell({
                             navigate('/m/home');
                           }}
                         >
-                          {t('nav.switchView')} → /m
-                        </button>
-                        <button
-                          type="button"
-                          className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted"
-                          onClick={() => {
-                            setPreferredView('web');
-                            setAvatarOpen(false);
-                            navigate(role === 'chw' ? '/app/chw' : '/app/dashboard');
-                          }}
-                        >
-                          {t('nav.switchView')} → /app
+                          {t('common.mobileView')}
                         </button>
                         <button
                           type="button"
@@ -626,16 +803,17 @@ export function WebShell({
           </header>
           <motion.main
             key={location.pathname}
-            className="mx-auto w-full max-w-[1440px] flex-1 p-6"
+            data-testid="app-main"
+            className="mx-auto w-full max-w-[1440px] min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-smooth p-4 [scrollbar-gutter:stable] sm:p-6"
             variants={reduce ? undefined : pageVariants}
             initial="initial"
             animate="animate"
             transition={easeOut}
+            onScroll={onMainScroll}
           >
             {children}
           </motion.main>
         </div>
-      </div>
 
       {paletteOpen ? (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/40 p-4 pt-[15vh]">
@@ -671,7 +849,7 @@ export function WebShell({
               ) : null}
             </ul>
           </div>
-          <button type="button" className="absolute inset-0 -z-10" aria-label="Close" onClick={() => setPaletteOpen(false)} />
+          <button type="button" className="absolute inset-0 -z-10" aria-label={t('common.close')} onClick={() => setPaletteOpen(false)} />
         </div>
       ) : null}
     </div>

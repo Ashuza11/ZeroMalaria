@@ -76,10 +76,20 @@ export default {
           '70%': { boxShadow: '0 0 0 12px rgba(220,38,38,0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(220,38,38,0)' },
         },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        modalIn: {
+          from: { transform: 'scale(0.98) translateY(8px)' },
+          to: { transform: 'scale(1) translateY(0)' },
+        },
       },
       animation: {
         shimmer: 'shimmer 1.4s infinite',
         'pulse-ring': 'pulseRing 1.6s ease-out infinite',
+        fadeIn: 'fadeIn 150ms ease-out forwards',
+        modalIn: 'modalIn 150ms ease-out forwards',
       },
     },
   },

@@ -12,7 +12,8 @@ export function AppLanguagePage() {
 
   return (
     <WebShell title={t('lang.title')} crumbs={[t('nav.settingsGroup'), t('nav.language')]}>
-      <div className="mx-auto max-w-lg space-y-3">
+      <div className="flex w-full justify-center py-4">
+      <div className="w-full max-w-lg space-y-3">
         {(
           [
             { id: 'rw' as const, label: t('lang.kinyarwanda'), Icon: Languages },
@@ -43,6 +44,7 @@ export function AppLanguagePage() {
         <Card>
           <p className="text-sm text-ink-muted">{t('lang.subtitle')}</p>
         </Card>
+      </div>
       </div>
     </WebShell>
   );

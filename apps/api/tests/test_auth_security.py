@@ -56,7 +56,7 @@ def client(tmp_path):
                 username="chw.demo",
                 password_hash=pw,
                 display_name="CHW",
-                role="chw",
+                role="CHW",
                 facility_id="HC-BUG-01",
                 district="Bugesera",
                 village="Nyamata",
@@ -65,10 +65,10 @@ def client(tmp_path):
             ),
             User(
                 id="u-rbc",
-                username="rbc.demo",
+                username="rbc.admin",
                 password_hash=pw,
                 display_name="RBC",
-                role="rbc",
+                role="RBC_ADMIN",
                 active=True,
             ),
         ]
@@ -82,7 +82,7 @@ def client(tmp_path):
 def test_wrong_password_returns_401(client):
     r = client.post("/auth/login", json={"username": "chw.demo", "password": "wrong-pass"})
     assert r.status_code == 401
-    assert "Invalid username or password" in r.json()["detail"]
+    assert r.json()["detail"] == "invalid_credentials"
 
 
 def test_chw_forbidden_on_analytics_kpis(client):
@@ -97,12 +97,12 @@ def test_chw_forbidden_on_analytics_kpis(client):
 
 def test_demo_login_requires_demo_mode(client, monkeypatch):
     monkeypatch.setattr(settings, "demo_mode", True)
-    r = client.post("/auth/demo-login", json={"role": "chw"})
+    r = client.post("/auth/demo-login", json={"role": "CHW"})
     assert r.status_code == 200
-    assert r.json()["user"]["role"] == "chw"
+    assert r.json()["user"]["role"] == "CHW"
 
     monkeypatch.setattr(settings, "demo_mode", False)
-    r2 = client.post("/auth/demo-login", json={"role": "chw"})
+    r2 = client.post("/auth/demo-login", json={"role": "CHW"})
     assert r2.status_code == 403
 
 
@@ -113,4 +113,4 @@ def test_login_rate_limit_eventually_429(client, monkeypatch):
         client.post("/auth/login", json={"username": "chw.demo", "password": "badpassword"})
     r = client.post("/auth/login", json={"username": "chw.demo", "password": "badpassword"})
     assert r.status_code == 429
-    assert "Too many login attempts" in r.json()["detail"]
+    assert r.json()["detail"] == "login_locked"

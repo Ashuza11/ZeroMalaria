@@ -109,3 +109,17 @@ class HealthOut(BaseModel):
     synthetic: bool = True
     disclaimer: str
     demo_today: str
+
+
+class ReferralMessageCreate(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+
+
+class ReferralMessageOut(BaseModel):
+    id: str
+    referral_id: str
+    sender_id: Optional[str] = None
+    sender_role: str
+    body: str
+    created_at: datetime
+    read_at: Optional[datetime] = None

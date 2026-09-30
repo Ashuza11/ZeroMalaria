@@ -1,10 +1,10 @@
 import { Activity, Languages, Eye, EyeOff, ShieldCheck, WifiOff, QrCode } from 'lucide-react';
 import { FormEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '../auth/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { RedirectIfAuthed } from '../auth/guards';
-import { homePath } from '../auth/roleAccess';
+import { canAccess, homePath } from '../auth/roleAccess';
 import { Badge, Button, Card, Disclaimer, Input } from '../components/ui';
 import { setLanguage } from '../i18n';
 import { loginSchema } from '../validation/schemas';
@@ -12,18 +12,19 @@ import { loginSchema } from '../validation/schemas';
 export function LoginPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { login, quickDemoLogin, demoModeEnabled } = useAuth();
+  const location = useLocation();
+  const { login, demoModeEnabled } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const canSubmit = useMemo(() => {
     const parsed = loginSchema.safeParse({ username: username.trim(), password });
-    return parsed.success && !loading;
-  }, [username, password, loading]);
+    return parsed.success && !pending;
+  }, [username, password, pending]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,28 +41,26 @@ export function LoginPage() {
       return;
     }
     setFieldErrors({});
-    setLoading(true);
+    setPending(true);
     try {
-      const user = await login(parsed.data.username, parsed.data.password);
-      navigate(homePath(user.role as UserRole), { replace: true });
-    } catch {
-      setError(t('auth.invalidCredentials'));
+      // Trim password too — browser autofill sometimes appends a trailing space → 401.
+      const user = await login(parsed.data.username.trim(), parsed.data.password.trim());
+      const from = (location.state as { from?: string } | null)?.from;
+      if (from && canAccess(from, user.role)) {
+        navigate(from, { replace: true });
+      } else {
+        navigate(homePath(user.role), { replace: true });
+      }
+    } catch (err) {
+      const status = err instanceof Error && 'status' in err ? Number((err as Error & { status?: number }).status) : 0;
+      const msg = err instanceof Error ? err.message : '';
+      if (status === 429 || msg.includes('login_locked')) {
+        setError(t('auth.loginLocked'));
+      } else {
+        setError(t('auth.invalidCredentials'));
+      }
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const demo = async (role: UserRole) => {
-    if (!quickDemoLogin) return;
-    setError('');
-    setLoading(true);
-    try {
-      const user = await quickDemoLogin(role);
-      navigate(homePath(user.role as UserRole), { replace: true });
-    } catch {
-      setError(t('common.error'));
-    } finally {
-      setLoading(false);
+      setPending(false);
     }
   };
 
@@ -81,7 +80,6 @@ export function LoginPage() {
         </div>
 
         <div className="mx-auto grid min-h-screen max-w-[1200px] lg:grid-cols-2">
-          {/* Brand panel */}
           <aside className="relative hidden flex-col justify-between bg-primary px-10 py-12 text-primary-foreground lg:flex">
             <div>
               <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-control bg-white/15">
@@ -107,7 +105,6 @@ export function LoginPage() {
             <Badge tone="warning">{t('common.synthetic')}</Badge>
           </aside>
 
-          {/* Form */}
           <main className="flex flex-col justify-center px-4 py-12 sm:px-8 lg:px-12">
             <div className="mx-auto w-full max-w-[420px]">
               <div className="mb-6 lg:hidden">
@@ -120,10 +117,11 @@ export function LoginPage() {
 
               {demoModeEnabled ? (
                 <div
-                  className="mb-4 rounded-control border border-warning/40 bg-warning-soft px-3 py-2 text-center text-xs font-medium text-ink"
+                  className="mb-4 space-y-1 rounded-control border border-warning/40 bg-warning-soft px-3 py-2 text-center text-xs font-medium text-ink"
                   role="status"
                 >
-                  {t('login.demoBanner')}
+                  <p>{t('login.demoBanner')}</p>
+                  <p className="font-mono text-[11px] text-ink-muted">{t('login.demoCredentials')}</p>
                 </div>
               ) : null}
 
@@ -139,6 +137,7 @@ export function LoginPage() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       autoComplete="username"
+                      disabled={pending}
                       aria-invalid={!!fieldErrors.username}
                     />
                     {fieldErrors.username ? (
@@ -157,12 +156,14 @@ export function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         autoComplete="current-password"
                         className="pr-12"
+                        disabled={pending}
                         aria-invalid={!!fieldErrors.password}
                       />
                       <button
                         type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-control p-2 text-ink-muted"
                         onClick={() => setShowPw((v) => !v)}
+                        disabled={pending}
                         aria-label={showPw ? t('login.hidePassword') : t('login.showPassword')}
                       >
                         {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -173,32 +174,16 @@ export function LoginPage() {
                     ) : null}
                   </div>
                   {error ? <p className="text-sm text-danger">{error}</p> : null}
-                  <Button className="w-full" size="lg" loading={loading} type="submit" disabled={!canSubmit && !loading}>
+                  <Button
+                    className="h-11 w-full min-w-[12rem] shrink-0"
+                    size="lg"
+                    loading={pending}
+                    type="submit"
+                    disabled={!canSubmit}
+                  >
                     {t('login.signIn')}
                   </Button>
                 </form>
-
-                {demoModeEnabled ? (
-                  <>
-                    <div className="my-5 flex items-center gap-3 text-xs text-ink-muted">
-                      <div className="h-px flex-1 bg-border" />
-                      <span>{t('login.demoAccess')}</span>
-                      <div className="h-px flex-1 bg-border" />
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('chw')}>
-                        {t('auth.roleChw')}
-                      </Button>
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('nurse')}>
-                        {t('auth.roleNurse')}
-                      </Button>
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('rbc')}>
-                        {t('auth.roleRbc')}
-                      </Button>
-                    </div>
-                    <p className="mt-3 text-xs text-ink-muted">{t('login.demoNote')}</p>
-                  </>
-                ) : null}
               </Card>
 
               <div className="mt-6">

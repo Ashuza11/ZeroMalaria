@@ -12,7 +12,7 @@ import {
   Skeleton,
   StatusPill,
 } from '../components/ui';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 
 type ReferralRow = {

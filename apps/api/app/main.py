@@ -9,17 +9,23 @@ from datetime import datetime, timedelta
 from typing import Annotated, Any, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.auth import assert_chw_own, get_current_user, require_roles, write_audit
 from app.config import settings
-from app.db import CaseRecord, Facility, Referral, SessionLocal, StockRecord, SyncEvent, User, get_db, init_db
+from app.db import CaseRecord, Facility, FollowUp, Referral, SessionLocal, StockRecord, SyncEvent, User, get_db, init_db
 from app.nlp import extract_symptoms_mock
 from app.routers_ai import router as ai_router
 from app.routers_auth import router as auth_router
 from app.routers_auth import users_router
+from app.routers_live import router as live_router
+from app.routers_rbac import router as rbac_router
+from app.routers_crud import router as crud_router
+from app.roles import RBC_ADMIN, SUPER_ADMIN
+from app.services.live_events import append_referral_event
 from app.schemas import (
     ExtractRequest,
     HealthOut,
@@ -44,7 +50,75 @@ app.add_middleware(
 )
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(rbac_router)
+app.include_router(crud_router)
 app.include_router(ai_router)
+app.include_router(live_router)
+
+_ANALYTICS_ROLES = (RBC_ADMIN, SUPER_ADMIN)
+
+bearer_optional = HTTPBearer(auto_error=False)
+
+
+def _optional_user(
+    creds: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_optional)],
+    db: Session = Depends(get_db),
+) -> User | None:
+    if creds is None or not creds.credentials:
+        return None
+    from app.auth import decode_token
+
+    data = decode_token(creds.credentials)
+    return db.query(User).filter(User.id == data.get("sub")).first()
+
+
+_PASSWORD_ENFORCE_ALLOW = {
+    "/health",
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+    "/auth/login",
+    "/auth/demo-login",
+    "/auth/refresh",
+    "/auth/logout",
+    "/auth/me",
+    "/auth/change-password",
+    "/auth/password-prompt/dismiss",
+    "/auth/permissions",
+}
+
+
+@app.middleware("http")
+async def password_enforce_middleware(request, call_next):
+    """When ZM_PASSWORD_CHANGE_POLICY=enforce, limit API until password is changed."""
+    from app.routers_auth import password_change_policy
+
+    if password_change_policy() != "enforce":
+        return await call_next(request)
+    path = request.url.path
+    if path in _PASSWORD_ENFORCE_ALLOW or path.startswith("/events"):
+        return await call_next(request)
+    auth = request.headers.get("authorization") or ""
+    if not auth.lower().startswith("bearer "):
+        return await call_next(request)
+    token = auth.split(" ", 1)[1].strip()
+    try:
+        from app.auth import decode_token
+
+        data = decode_token(token)
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.id == data.get("sub")).first()
+            status = (getattr(user, "password_prompt_status", None) or "").lower() if user else ""
+            if user and status == "pending":
+                from fastapi.responses import JSONResponse
+
+                return JSONResponse(status_code=403, content={"detail": "password_change_required"})
+        finally:
+            db.close()
+    except Exception:
+        pass
+    return await call_next(request)
 
 
 @app.on_event("startup")
@@ -124,7 +198,7 @@ def health() -> HealthOut:
 
 @app.get("/analytics/hotspots")
 def analytics_hotspots(
-    _user: Annotated[User, Depends(require_roles("supervisor", "rbc"))],
+    _user: Annotated[User, Depends(require_roles(*_ANALYTICS_ROLES))],
     district: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:
@@ -234,6 +308,7 @@ def _create_referral(db: Session, body: ReferralCreate) -> tuple[Referral, bool]
     )
     db.add(row)
     db.add(SyncEvent(client_uuid=body.client_uuid, payload_type="referral"))
+    append_referral_event(db, "referral.created", row)
     db.commit()
     db.refresh(row)
     return row, False
@@ -274,11 +349,14 @@ def list_referrals_scoped(
     db: Session = Depends(get_db),
 ) -> list[ReferralOut]:
     q = db.query(Referral)
-    if user.role == "chw":
+    from app.roles import CHW, HEALTH_CENTER, normalize_role
+
+    role = normalize_role(user.role)
+    if role == CHW:
         q = q.filter(Referral.chw_id == user.chw_code)
-    elif user.role in {"nurse", "supervisor"}:
+    elif role == HEALTH_CENTER:
         q = q.filter(Referral.facility_id == user.facility_id)
-    # rbc: all
+    # national roles: all
     rows = q.all()
 
     def sort_key(r: Referral):
@@ -289,7 +367,12 @@ def list_referrals_scoped(
 
 
 @app.patch("/referrals/{referral_id}/status", response_model=ReferralOut)
-def patch_status(referral_id: str, body: StatusUpdate, db: Session = Depends(get_db)) -> ReferralOut:
+def patch_status(
+    referral_id: str,
+    body: StatusUpdate,
+    db: Session = Depends(get_db),
+    actor: User | None = Depends(_optional_user),
+) -> ReferralOut:
     row = db.query(Referral).filter(Referral.id == referral_id).first()
     if not row:
         raise HTTPException(404, "Referral not found")
@@ -297,6 +380,7 @@ def patch_status(referral_id: str, body: StatusUpdate, db: Session = Depends(get
     order = ["sent", "received", "arrived", "treated"]
     if order.index(body.status) < order.index(row.status if row.status in order else "sent"):
         raise HTTPException(400, "Cannot move status backwards")
+    prev_status = row.status
     row.status = body.status
     if body.status == "received":
         row.received_at = row.received_at or now
@@ -307,6 +391,37 @@ def patch_status(referral_id: str, body: StatusUpdate, db: Session = Depends(get
         row.received_at = row.received_at or now
         row.arrived_at = row.arrived_at or now
         row.treated_at = row.treated_at or now
+        existing_fu = db.query(FollowUp).filter(FollowUp.referral_id == row.id).first()
+        if not existing_fu:
+            due = (now + timedelta(days=3)).date().isoformat()
+            db.add(
+                FollowUp(
+                    id=str(uuid.uuid4()),
+                    referral_id=row.id,
+                    chw_id=row.chw_id,
+                    facility_id=row.facility_id,
+                    due_date=due,
+                    status="due",
+                    note="Post-treatment CHW follow-up (decision support reminder only).",
+                    created_at=now,
+                )
+            )
+    append_referral_event(
+        db,
+        "referral.status_changed",
+        row,
+        extra={"previous_status": prev_status, "new_status": body.status},
+    )
+    if actor:
+        write_audit(
+            db,
+            action="referral_status",
+            actor_id=actor.id,
+            actor_username=actor.username,
+            resource_type="referral",
+            resource_id=row.id,
+            detail=f"{prev_status}->{body.status}",
+        )
     db.commit()
     db.refresh(row)
     return _referral_out(row)
@@ -407,7 +522,7 @@ def _compute_analytics_surge(
 
 @app.get("/analytics/surge")
 def analytics_surge(
-    _user: Annotated[User, Depends(require_roles("supervisor", "rbc"))],
+    _user: Annotated[User, Depends(require_roles(*_ANALYTICS_ROLES))],
     district: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
@@ -425,7 +540,7 @@ def analytics_surge(
 
 @app.get("/analytics/stock")
 def analytics_stock(
-    _user: Annotated[User, Depends(require_roles("supervisor", "rbc"))],
+    _user: Annotated[User, Depends(require_roles(*_ANALYTICS_ROLES))],
     district: Optional[str] = None,
     week_start: Optional[str] = None,
     db: Session = Depends(get_db),
@@ -505,7 +620,7 @@ def _compute_analytics_funnel(db: Session, *, district: Optional[str] = None) ->
 
 @app.get("/analytics/funnel")
 def analytics_funnel(
-    _user: Annotated[User, Depends(require_roles("supervisor", "rbc"))],
+    _user: Annotated[User, Depends(require_roles(*_ANALYTICS_ROLES))],
     district: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:
@@ -514,7 +629,7 @@ def analytics_funnel(
 
 @app.get("/analytics/kpis")
 def analytics_kpis(
-    _user: Annotated[User, Depends(require_roles("supervisor", "rbc"))],
+    _user: Annotated[User, Depends(require_roles(*_ANALYTICS_ROLES))],
     district: Optional[str] = None,
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:

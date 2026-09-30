@@ -1,0 +1,10 @@
+{
+  "threadTitle": "Coordination messages",
+  "threadHint": "Operational notes only — not a substitute for clinical handover or emergency dispatch.",
+  "empty": "No messages yet.",
+  "chipTransport": "Prepare transport",
+  "chipMoreInfo": "Need more info",
+  "customPlaceholder": "Type a short message…",
+  "send": "Send",
+  "sent": "Message sent"
+}

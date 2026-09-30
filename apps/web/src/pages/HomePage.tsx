@@ -7,7 +7,7 @@ import { ChwShell } from '../components/shells';
 import { Button, Card, EmptyState, StatusPill } from '../components/ui';
 import { db } from '../db';
 import type { LocalReferral } from '../types';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 import { listContainer, listItem } from '../lib/motion';
 

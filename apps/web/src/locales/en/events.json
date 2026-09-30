@@ -1,0 +1,5 @@
+{
+  "newReferral": "New referral received",
+  "statusChanged": "Referral status: {{status}}",
+  "newMessage": "New coordination message"
+}

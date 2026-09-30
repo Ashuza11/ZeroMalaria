@@ -1,0 +1,1337 @@
+{
+  "about.appTitle": {
+    "status": "draft"
+  },
+  "about.body": {
+    "status": "draft"
+  },
+  "about.guidelineVersion": {
+    "status": "draft"
+  },
+  "about.title": {
+    "status": "draft"
+  },
+  "alerts.empty": {
+    "status": "reviewed"
+  },
+  "alerts.emptyHint": {
+    "status": "reviewed"
+  },
+  "alerts.high": {
+    "status": "reviewed"
+  },
+  "alerts.medium": {
+    "status": "reviewed"
+  },
+  "alerts.notArrived": {
+    "status": "reviewed"
+  },
+  "alerts.title": {
+    "status": "reviewed"
+  },
+  "auth.homeLink": {
+    "status": "reviewed"
+  },
+  "auth.invalidCredentials": {
+    "status": "draft"
+  },
+  "auth.notAuthorizedBody": {
+    "status": "draft"
+  },
+  "auth.notAuthorizedTitle": {
+    "status": "draft"
+  },
+  "auth.roleChw": {
+    "status": "reviewed"
+  },
+  "auth.roleChwShort": {
+    "status": "reviewed"
+  },
+  "auth.roleNurse": {
+    "status": "draft"
+  },
+  "auth.roleHealthCenter": {
+    "status": "draft"
+  },
+  "auth.roleRbc": {
+    "status": "reviewed"
+  },
+  "auth.roleRbcOfficer": {
+    "status": "draft"
+  },
+  "auth.roleRbcAdmin": {
+    "status": "draft"
+  },
+  "auth.roleSuperAdmin": {
+    "status": "draft"
+  },
+  "auth.roleRbcShort": {
+    "status": "reviewed"
+  },
+  "auth.roleSupervisor": {
+    "status": "draft"
+  },
+  "auth.password": {
+    "status": "draft"
+  },
+  "auth.changePassword": {
+    "status": "draft"
+  },
+  "auth.username": {
+    "status": "draft"
+  },
+  "auth.login": {
+    "status": "draft"
+  },
+  "auth.logout": {
+    "status": "draft"
+  },
+  "auth.accessDenied": {
+    "status": "draft"
+  },
+  "auth.signOut": {
+    "status": "draft"
+  },
+  "auth.switchRole": {
+    "status": "draft"
+  },
+  "common.all": {
+    "status": "draft"
+  },
+  "common.appName": {
+    "status": "reviewed"
+  },
+  "common.back": {
+    "status": "reviewed"
+  },
+  "common.cancel": {
+    "status": "draft"
+  },
+  "common.change": {
+    "status": "reviewed"
+  },
+  "common.clearFilters": {
+    "status": "reviewed"
+  },
+  "common.close": {
+    "status": "draft"
+  },
+  "common.confirm": {
+    "status": "draft"
+  },
+  "common.continue": {
+    "status": "reviewed"
+  },
+  "common.demoConversation": {
+    "status": "draft"
+  },
+  "common.demoMode": {
+    "status": "reviewed"
+  },
+  "common.disclaimer": {
+    "status": "reviewed"
+  },
+  "common.empty": {
+    "status": "reviewed"
+  },
+  "common.error": {
+    "status": "reviewed"
+  },
+  "common.export": {
+    "status": "reviewed"
+  },
+  "common.followUp": {
+    "status": "reviewed"
+  },
+  "common.forecastNote": {
+    "status": "reviewed"
+  },
+  "common.loading": {
+    "status": "reviewed"
+  },
+  "common.no": {
+    "status": "draft"
+  },
+  "common.offline": {
+    "status": "draft"
+  },
+  "common.offlineMock": {
+    "status": "draft"
+  },
+  "common.offlineSimOn": {
+    "status": "draft"
+  },
+  "common.online": {
+    "status": "reviewed"
+  },
+  "common.pending": {
+    "status": "reviewed"
+  },
+  "common.presenter": {
+    "status": "reviewed"
+  },
+  "common.repeat": {
+    "status": "draft"
+  },
+  "common.resetDemo": {
+    "status": "reviewed"
+  },
+  "common.shareSms": {
+    "status": "reviewed"
+  },
+  "common.startDemo": {
+    "status": "reviewed"
+  },
+  "common.stock": {
+    "status": "draft"
+  },
+  "common.syncing": {
+    "status": "reviewed"
+  },
+  "common.synthetic": {
+    "status": "reviewed"
+  },
+  "common.syntheticShort": {
+    "status": "reviewed"
+  },
+  "common.tagline": {
+    "status": "reviewed"
+  },
+  "common.toggleOffline": {
+    "status": "reviewed"
+  },
+  "common.toggleTheme": {
+    "status": "reviewed"
+  },
+  "common.unknown": {
+    "status": "draft"
+  },
+  "common.yes": {
+    "status": "draft"
+  },
+  "events.newMessage": {
+    "status": "reviewed"
+  },
+  "events.newReferral": {
+    "status": "reviewed"
+  },
+  "events.statusChanged": {
+    "status": "reviewed"
+  },
+  "facility.empty": {
+    "status": "reviewed"
+  },
+  "facility.markArrived": {
+    "status": "reviewed"
+  },
+  "facility.markReceived": {
+    "status": "reviewed"
+  },
+  "facility.markTreated": {
+    "status": "reviewed"
+  },
+  "facility.newCount": {
+    "status": "reviewed"
+  },
+  "facility.notArrived": {
+    "status": "reviewed"
+  },
+  "facility.selectPrompt": {
+    "status": "reviewed"
+  },
+  "facility.title": {
+    "status": "reviewed"
+  },
+  "facility.updateStatus": {
+    "status": "reviewed"
+  },
+  "facility.updated": {
+    "status": "reviewed"
+  },
+  "facility.urgentCount": {
+    "status": "reviewed"
+  },
+  "format.ageMonths": {
+    "status": "reviewed"
+  },
+  "format.sexFemale": {
+    "status": "reviewed"
+  },
+  "format.sexMale": {
+    "status": "reviewed"
+  },
+  "handover.copied": {
+    "status": "reviewed"
+  },
+  "handover.qr": {
+    "status": "reviewed"
+  },
+  "handover.sent": {
+    "status": "reviewed"
+  },
+  "handover.sms": {
+    "status": "reviewed"
+  },
+  "handover.summary": {
+    "status": "reviewed"
+  },
+  "handover.title": {
+    "status": "reviewed"
+  },
+  "home.alerts": {
+    "status": "reviewed"
+  },
+  "home.chwLabel": {
+    "status": "reviewed"
+  },
+  "home.facility": {
+    "status": "reviewed"
+  },
+  "home.greeting": {
+    "status": "reviewed"
+  },
+  "home.myReferrals": {
+    "status": "reviewed"
+  },
+  "home.newPatient": {
+    "status": "reviewed"
+  },
+  "home.openAlerts": {
+    "status": "reviewed"
+  },
+  "home.pendingReferrals": {
+    "status": "reviewed"
+  },
+  "home.rbc": {
+    "status": "reviewed"
+  },
+  "home.recent": {
+    "status": "reviewed"
+  },
+  "home.subtitle": {
+    "status": "reviewed"
+  },
+  "home.todayPatients": {
+    "status": "reviewed"
+  },
+  "home.village": {
+    "status": "reviewed"
+  },
+  "lang.english": {
+    "status": "reviewed"
+  },
+  "lang.kinyarwanda": {
+    "status": "reviewed"
+  },
+  "lang.subtitle": {
+    "status": "reviewed"
+  },
+  "lang.title": {
+    "status": "reviewed"
+  },
+  "liveDemo.chwColumn": {
+    "status": "reviewed"
+  },
+  "liveDemo.chwHint": {
+    "status": "reviewed"
+  },
+  "liveDemo.disclaimer": {
+    "status": "reviewed"
+  },
+  "liveDemo.nurseColumn": {
+    "status": "reviewed"
+  },
+  "liveDemo.nurseHint": {
+    "status": "reviewed"
+  },
+  "liveDemo.openBoard": {
+    "status": "reviewed"
+  },
+  "liveDemo.rbcColumn": {
+    "status": "reviewed"
+  },
+  "liveDemo.rbcHint": {
+    "status": "reviewed"
+  },
+  "liveDemo.runLoop": {
+    "status": "reviewed"
+  },
+  "liveDemo.running": {
+    "status": "reviewed"
+  },
+  "liveDemo.scriptSummary": {
+    "status": "reviewed"
+  },
+  "liveDemo.stepArrived": {
+    "status": "reviewed"
+  },
+  "liveDemo.stepCreated": {
+    "status": "reviewed"
+  },
+  "liveDemo.stepReceived": {
+    "status": "reviewed"
+  },
+  "liveDemo.subtitle": {
+    "status": "reviewed"
+  },
+  "liveDemo.title": {
+    "status": "reviewed"
+  },
+  "login.benefit1": {
+    "status": "reviewed"
+  },
+  "login.benefit2": {
+    "status": "reviewed"
+  },
+  "login.benefit3": {
+    "status": "reviewed"
+  },
+  "login.continueChw": {
+    "status": "draft"
+  },
+  "login.continueNurse": {
+    "status": "draft"
+  },
+  "login.continueRbc": {
+    "status": "draft"
+  },
+  "login.demoAccess": {
+    "status": "reviewed"
+  },
+  "login.demoBanner": {
+    "status": "reviewed"
+  },
+  "login.demoNote": {
+    "status": "draft"
+  },
+  "login.hidePassword": {
+    "status": "reviewed"
+  },
+  "login.mobileLandingHint": {
+    "status": "draft"
+  },
+  "login.password": {
+    "status": "draft"
+  },
+  "login.scanQr": {
+    "status": "draft"
+  },
+  "login.showPassword": {
+    "status": "reviewed"
+  },
+  "login.signIn": {
+    "status": "draft"
+  },
+  "login.subtitle": {
+    "status": "draft"
+  },
+  "login.username": {
+    "status": "draft"
+  },
+  "login.valueProp": {
+    "status": "reviewed"
+  },
+  "messages.chipMoreInfo": {
+    "status": "reviewed"
+  },
+  "messages.chipTransport": {
+    "status": "reviewed"
+  },
+  "messages.customPlaceholder": {
+    "status": "reviewed"
+  },
+  "messages.empty": {
+    "status": "reviewed"
+  },
+  "messages.send": {
+    "status": "reviewed"
+  },
+  "messages.sent": {
+    "status": "reviewed"
+  },
+  "messages.threadHint": {
+    "status": "reviewed"
+  },
+  "messages.threadTitle": {
+    "status": "reviewed"
+  },
+  "nav.about": {
+    "status": "draft"
+  },
+  "nav.alerts": {
+    "status": "reviewed"
+  },
+  "nav.analytics": {
+    "status": "draft"
+  },
+  "nav.chw": {
+    "status": "reviewed"
+  },
+  "nav.commandPalette": {
+    "status": "draft"
+  },
+  "nav.commandPalettePlaceholder": {
+    "status": "draft"
+  },
+  "nav.dashboard": {
+    "status": "draft"
+  },
+  "nav.facility": {
+    "status": "reviewed"
+  },
+  "nav.home": {
+    "status": "reviewed"
+  },
+  "nav.language": {
+    "status": "draft"
+  },
+  "nav.myPatients": {
+    "status": "reviewed"
+  },
+  "nav.myReferrals": {
+    "status": "reviewed"
+  },
+  "nav.new": {
+    "status": "reviewed"
+  },
+  "nav.newTriage": {
+    "status": "reviewed"
+  },
+  "nav.notifications": {
+    "status": "draft"
+  },
+  "nav.patients": {
+    "status": "draft"
+  },
+  "nav.profile": {
+    "status": "reviewed"
+  },
+  "nav.rbc": {
+    "status": "reviewed"
+  },
+  "nav.referrals": {
+    "status": "reviewed"
+  },
+  "nav.referralsInbox": {
+    "status": "draft"
+  },
+  "nav.settings": {
+    "status": "draft"
+  },
+  "nav.settingsGroup": {
+    "status": "draft"
+  },
+  "nav.supplies": {
+    "status": "draft"
+  },
+  "nav.switchView": {
+    "status": "reviewed"
+  },
+  "nav.toggleSidebar": {
+    "status": "draft"
+  },
+  "nav.users": {
+    "status": "draft"
+  },
+  "nav.voice": {
+    "status": "reviewed"
+  },
+  "patients.clientUuid": {
+    "status": "draft"
+  },
+  "patients.colChw": {
+    "status": "draft"
+  },
+  "patients.colDecision": {
+    "status": "draft"
+  },
+  "patients.colDistrict": {
+    "status": "draft"
+  },
+  "patients.colPatient": {
+    "status": "draft"
+  },
+  "patients.colStatus": {
+    "status": "draft"
+  },
+  "patients.colWhen": {
+    "status": "draft"
+  },
+  "patients.decisionHome": {
+    "status": "draft"
+  },
+  "patients.decisionRefer": {
+    "status": "draft"
+  },
+  "patients.decisionUrgent": {
+    "status": "draft"
+  },
+  "patients.emptyBody": {
+    "status": "draft"
+  },
+  "patients.emptyTitle": {
+    "status": "draft"
+  },
+  "patients.filterDecision": {
+    "status": "draft"
+  },
+  "patients.filterStatus": {
+    "status": "draft"
+  },
+  "patients.noMatchBody": {
+    "status": "draft"
+  },
+  "patients.noMatchTitle": {
+    "status": "draft"
+  },
+  "patients.placeholderBody": {
+    "status": "draft"
+  },
+  "patients.placeholderTitle": {
+    "status": "draft"
+  },
+  "patients.refId": {
+    "status": "draft"
+  },
+  "patients.search": {
+    "status": "draft"
+  },
+  "patients.searchPlaceholder": {
+    "status": "draft"
+  },
+  "presenter.colEn": {
+    "status": "draft"
+  },
+  "presenter.colKey": {
+    "status": "draft"
+  },
+  "presenter.colRw": {
+    "status": "draft"
+  },
+  "presenter.colStatus": {
+    "status": "draft"
+  },
+  "presenter.devOnlyHint": {
+    "status": "draft"
+  },
+  "presenter.draftOnly": {
+    "status": "draft"
+  },
+  "presenter.statusDraft": {
+    "status": "draft"
+  },
+  "presenter.statusReviewed": {
+    "status": "draft"
+  },
+  "presenter.steps": {
+    "status": "draft"
+  },
+  "presenter.translationReview": {
+    "status": "draft"
+  },
+  "prevention.body": {
+    "status": "draft"
+  },
+  "prevention.catalogBadge": {
+    "status": "draft"
+  },
+  "prevention.communityTitle": {
+    "status": "draft"
+  },
+  "prevention.footer": {
+    "status": "draft"
+  },
+  "prevention.heading": {
+    "status": "draft"
+  },
+  "prevention.intro": {
+    "status": "draft"
+  },
+  "prevention.listenAll": {
+    "status": "draft"
+  },
+  "prevention.listenOne": {
+    "status": "draft"
+  },
+  "prevention.title": {
+    "status": "draft"
+  },
+  "rbc.activeAlerts": {
+    "status": "reviewed"
+  },
+  "rbc.age15plus": {
+    "status": "draft"
+  },
+  "rbc.age5to14": {
+    "status": "draft"
+  },
+  "rbc.ageGroup": {
+    "status": "draft"
+  },
+  "rbc.allAges": {
+    "status": "reviewed"
+  },
+  "rbc.allDistricts": {
+    "status": "reviewed"
+  },
+  "rbc.baselineSeries": {
+    "status": "draft"
+  },
+  "rbc.casesToday": {
+    "status": "reviewed"
+  },
+  "rbc.clearFilter": {
+    "status": "draft"
+  },
+  "rbc.compareTools": {
+    "status": "draft"
+  },
+  "rbc.compareToolsBody": {
+    "status": "draft"
+  },
+  "rbc.completion": {
+    "status": "reviewed"
+  },
+  "rbc.dateRange": {
+    "status": "reviewed"
+  },
+  "rbc.delay": {
+    "status": "reviewed"
+  },
+  "rbc.district": {
+    "status": "reviewed"
+  },
+  "rbc.evidence": {
+    "status": "draft"
+  },
+  "rbc.feed": {
+    "status": "reviewed"
+  },
+  "rbc.filters": {
+    "status": "reviewed"
+  },
+  "rbc.forecast": {
+    "status": "reviewed"
+  },
+  "rbc.funnel": {
+    "status": "draft"
+  },
+  "rbc.funnelArrived": {
+    "status": "draft"
+  },
+  "rbc.funnelReceived": {
+    "status": "draft"
+  },
+  "rbc.funnelReferred": {
+    "status": "draft"
+  },
+  "rbc.funnelTreated": {
+    "status": "draft"
+  },
+  "rbc.hotspotBanner": {
+    "status": "draft"
+  },
+  "rbc.hotspotNote": {
+    "status": "draft"
+  },
+  "rbc.map": {
+    "status": "reviewed"
+  },
+  "rbc.recommendedAction": {
+    "status": "draft"
+  },
+  "rbc.sourceCanvas": {
+    "status": "draft"
+  },
+  "rbc.stock": {
+    "status": "reviewed"
+  },
+  "rbc.timeseries": {
+    "status": "reviewed"
+  },
+  "rbc.title": {
+    "status": "reviewed"
+  },
+  "rbc.topDistricts": {
+    "status": "reviewed"
+  },
+  "rbc.under5": {
+    "status": "draft"
+  },
+  "rbc.urgent": {
+    "status": "reviewed"
+  },
+  "rbc.vsPrev": {
+    "status": "reviewed"
+  },
+  "referrals.arrived": {
+    "status": "reviewed"
+  },
+  "referrals.empty": {
+    "status": "reviewed"
+  },
+  "referrals.overdueBanner": {
+    "status": "reviewed"
+  },
+  "referrals.received": {
+    "status": "reviewed"
+  },
+  "referrals.sent": {
+    "status": "reviewed"
+  },
+  "referrals.title": {
+    "status": "reviewed"
+  },
+  "referrals.treated": {
+    "status": "reviewed"
+  },
+  "result.confidence": {
+    "status": "reviewed"
+  },
+  "result.confirm": {
+    "status": "reviewed"
+  },
+  "result.createHandover": {
+    "status": "reviewed"
+  },
+  "result.done": {
+    "status": "reviewed"
+  },
+  "result.factors": {
+    "status": "reviewed"
+  },
+  "result.listen": {
+    "status": "draft"
+  },
+  "result.offlineGuide": {
+    "status": "draft"
+  },
+  "result.onlineAssistant": {
+    "status": "draft"
+  },
+  "result.provenanceAi": {
+    "status": "draft"
+  },
+  "result.provenanceMl": {
+    "status": "draft"
+  },
+  "result.provenanceRule": {
+    "status": "draft"
+  },
+  "result.readAloud": {
+    "status": "draft"
+  },
+  "result.refer": {
+    "status": "reviewed"
+  },
+  "result.repeat": {
+    "status": "draft"
+  },
+  "result.slower": {
+    "status": "draft"
+  },
+  "result.title": {
+    "status": "reviewed"
+  },
+  "result.treat": {
+    "status": "reviewed"
+  },
+  "result.triggeredRules": {
+    "status": "draft"
+  },
+  "result.urgent": {
+    "status": "reviewed"
+  },
+  "result.whatNow": {
+    "status": "draft"
+  },
+  "result.why": {
+    "status": "reviewed"
+  },
+  "result.whyButton": {
+    "status": "draft"
+  },
+  "status.offline": {
+    "status": "reviewed"
+  },
+  "status.online": {
+    "status": "reviewed"
+  },
+  "status.refer": {
+    "status": "reviewed"
+  },
+  "status.syncing": {
+    "status": "reviewed"
+  },
+  "status.treat": {
+    "status": "reviewed"
+  },
+  "status.urgent": {
+    "status": "reviewed"
+  },
+  "supplies.placeholderBody": {
+    "status": "draft"
+  },
+  "supplies.placeholderTitle": {
+    "status": "draft"
+  },
+  "time.daysAgo": {
+    "status": "reviewed"
+  },
+  "time.hoursAgo": {
+    "status": "reviewed"
+  },
+  "time.justNow": {
+    "status": "reviewed"
+  },
+  "time.minutesAgo": {
+    "status": "reviewed"
+  },
+  "triage.age": {
+    "status": "reviewed"
+  },
+  "triage.ageYearsMonths": {
+    "status": "reviewed"
+  },
+  "triage.aiApply": {
+    "status": "draft"
+  },
+  "triage.aiVerifyBadge": {
+    "status": "draft"
+  },
+  "triage.breathing": {
+    "status": "reviewed"
+  },
+  "triage.convulsions": {
+    "status": "reviewed"
+  },
+  "triage.decrease": {
+    "status": "reviewed"
+  },
+  "triage.extract": {
+    "status": "reviewed"
+  },
+  "triage.female": {
+    "status": "reviewed"
+  },
+  "triage.feverDays": {
+    "status": "reviewed"
+  },
+  "triage.freeText": {
+    "status": "reviewed"
+  },
+  "triage.freeTextHint": {
+    "status": "reviewed"
+  },
+  "triage.increase": {
+    "status": "reviewed"
+  },
+  "triage.invalid": {
+    "status": "reviewed"
+  },
+  "triage.lethargy": {
+    "status": "reviewed"
+  },
+  "triage.liveSummary": {
+    "status": "reviewed"
+  },
+  "triage.male": {
+    "status": "reviewed"
+  },
+  "triage.monthsShort": {
+    "status": "reviewed"
+  },
+  "triage.monthsToggle": {
+    "status": "reviewed"
+  },
+  "triage.negative": {
+    "status": "reviewed"
+  },
+  "triage.no": {
+    "status": "reviewed"
+  },
+  "triage.positive": {
+    "status": "reviewed"
+  },
+  "triage.progress": {
+    "status": "reviewed"
+  },
+  "triage.sex": {
+    "status": "reviewed"
+  },
+  "triage.tdr": {
+    "status": "reviewed"
+  },
+  "triage.tempInvalid": {
+    "status": "reviewed"
+  },
+  "triage.temperature": {
+    "status": "reviewed"
+  },
+  "triage.title": {
+    "status": "reviewed"
+  },
+  "triage.unableToDrink": {
+    "status": "reviewed"
+  },
+  "triage.voice": {
+    "status": "reviewed"
+  },
+  "triage.voiceUnavailable": {
+    "status": "reviewed"
+  },
+  "triage.vomitingEverything": {
+    "status": "reviewed"
+  },
+  "triage.whyMatters": {
+    "status": "reviewed"
+  },
+  "triage.yearsToggle": {
+    "status": "reviewed"
+  },
+  "triage.yes": {
+    "status": "reviewed"
+  },
+  "users.activate": {
+    "status": "draft"
+  },
+  "users.activated": {
+    "status": "draft"
+  },
+  "users.active": {
+    "status": "draft"
+  },
+  "users.addChw": {
+    "status": "draft"
+  },
+  "users.colDistrict": {
+    "status": "draft"
+  },
+  "users.colFacility": {
+    "status": "draft"
+  },
+  "users.colName": {
+    "status": "draft"
+  },
+  "users.colRole": {
+    "status": "draft"
+  },
+  "users.colStatus": {
+    "status": "draft"
+  },
+  "users.colVillage": {
+    "status": "draft"
+  },
+  "users.created": {
+    "status": "draft"
+  },
+  "users.deactivate": {
+    "status": "draft"
+  },
+  "users.deactivated": {
+    "status": "draft"
+  },
+  "users.inactive": {
+    "status": "draft"
+  },
+  "users.subtitle": {
+    "status": "draft"
+  },
+  "users.title": {
+    "status": "draft"
+  },
+  "validation.password": {
+    "status": "reviewed"
+  },
+  "validation.required": {
+    "status": "reviewed"
+  },
+  "validation.username": {
+    "status": "reviewed"
+  },
+  "voice.confirmHeard": {
+    "status": "reviewed"
+  },
+  "voice.convAsking": {
+    "status": "reviewed"
+  },
+  "voice.convConfirming": {
+    "status": "reviewed"
+  },
+  "voice.convGreeting": {
+    "status": "reviewed"
+  },
+  "voice.convIdle": {
+    "status": "reviewed"
+  },
+  "voice.convListening": {
+    "status": "reviewed"
+  },
+  "voice.convResponding": {
+    "status": "reviewed"
+  },
+  "voice.guidedTriage": {
+    "status": "reviewed"
+  },
+  "voice.guidedTriageHint": {
+    "status": "reviewed"
+  },
+  "voice.heard": {
+    "status": "reviewed"
+  },
+  "voice.help": {
+    "status": "reviewed"
+  },
+  "voice.listen": {
+    "status": "reviewed"
+  },
+  "voice.mic": {
+    "status": "reviewed"
+  },
+  "voice.mute": {
+    "status": "reviewed"
+  },
+  "voice.replay": {
+    "status": "reviewed"
+  },
+  "voice.slower": {
+    "status": "reviewed"
+  },
+  "voice.sourceAudioPack": {
+    "status": "reviewed"
+  },
+  "voice.sourceBrowser": {
+    "status": "reviewed"
+  },
+  "voice.sourceCloud": {
+    "status": "reviewed"
+  },
+  "voice.sourceText": {
+    "status": "reviewed"
+  },
+  "voice.startGuidedTriage": {
+    "status": "reviewed"
+  },
+  "voice.stop": {
+    "status": "reviewed"
+  },
+  "voice.unlockTap": {
+    "status": "reviewed"
+  },
+  "voice.unmute": {
+    "status": "reviewed"
+  },
+  "voiceReview.markReviewed": {
+    "status": "reviewed"
+  },
+  "voiceReview.open": {
+    "status": "reviewed"
+  },
+  "voiceReview.pending": {
+    "status": "reviewed"
+  },
+  "voiceReview.play": {
+    "status": "reviewed"
+  },
+  "voiceReview.reviewed": {
+    "status": "reviewed"
+  },
+  "voiceReview.subtitle": {
+    "status": "reviewed"
+  },
+  "voiceReview.title": {
+    "status": "reviewed"
+  },
+  "voiceSettings.audioFiles": {
+    "status": "draft"
+  },
+  "voiceSettings.available": {
+    "status": "draft"
+  },
+  "voiceSettings.body": {
+    "status": "draft"
+  },
+  "voiceSettings.capabilities": {
+    "status": "draft"
+  },
+  "voiceSettings.cloudTts": {
+    "status": "reviewed"
+  },
+  "voiceSettings.mute": {
+    "status": "draft"
+  },
+  "voiceSettings.notInstalled": {
+    "status": "draft"
+  },
+  "voiceSettings.playback": {
+    "status": "draft"
+  },
+  "voiceSettings.playbackHint": {
+    "status": "draft"
+  },
+  "voiceSettings.rwHonestHint": {
+    "status": "reviewed"
+  },
+  "voiceSettings.speechRecognition": {
+    "status": "draft"
+  },
+  "voiceSettings.speechSynthesis": {
+    "status": "draft"
+  },
+  "voiceSettings.speed": {
+    "status": "draft"
+  },
+  "voiceSettings.testVoice": {
+    "status": "reviewed"
+  },
+  "voiceSettings.title": {
+    "status": "draft"
+  },
+  "voiceSettings.ttsBrowserDetail": {
+    "status": "reviewed"
+  },
+  "voiceSettings.ttsLangEn": {
+    "status": "draft"
+  },
+  "voiceSettings.ttsLangRw": {
+    "status": "draft"
+  },
+  "voiceSettings.unavailable": {
+    "status": "draft"
+  },
+  "voiceSettings.unmute": {
+    "status": "draft"
+  },
+  "common.themeLight": {
+    "status": "draft"
+  },
+  "common.themeDark": {
+    "status": "draft"
+  },
+  "common.themeSystem": {
+    "status": "draft"
+  },
+  "common.qrAlt": {
+    "status": "draft"
+  },
+  "common.account": {
+    "status": "draft"
+  },
+  "common.users": {
+    "status": "draft"
+  },
+  "common.roles": {
+    "status": "draft"
+  },
+  "common.permissions": {
+    "status": "draft"
+  },
+  "common.add": {
+    "status": "draft"
+  },
+  "common.edit": {
+    "status": "draft"
+  },
+  "common.delete": {
+    "status": "draft"
+  },
+  "common.restore": {
+    "status": "draft"
+  },
+  "common.deactivate": {
+    "status": "draft"
+  },
+  "common.activate": {
+    "status": "draft"
+  },
+  "common.filters": {
+    "status": "draft"
+  },
+  "common.clearAll": {
+    "status": "draft"
+  },
+  "common.search": {
+    "status": "draft"
+  },
+  "common.save": {
+    "status": "draft"
+  },
+  "common.password": {
+    "status": "draft"
+  },
+  "common.changePassword": {
+    "status": "draft"
+  },
+  "common.username": {
+    "status": "draft"
+  },
+  "common.login": {
+    "status": "draft"
+  },
+  "common.logout": {
+    "status": "draft"
+  },
+  "common.accessDenied": {
+    "status": "draft"
+  },
+  "common.auditLog": {
+    "status": "draft"
+  },
+  "common.facilities": {
+    "status": "draft"
+  },
+  "common.status": {
+    "status": "draft"
+  },
+  "common.active": {
+    "status": "draft"
+  },
+  "common.inactive": {
+    "status": "draft"
+  },
+  "users.addUser": {
+    "status": "draft"
+  },
+  "common.view": {
+    "status": "draft"
+  },
+  "users.resetPassword": {
+    "status": "draft"
+  },
+  "common.discardChanges": {
+    "status": "draft"
+  },
+  "common.selected": {
+    "status": "draft"
+  },
+  "common.noResults": {
+    "status": "draft"
+  },
+  "auth.passwordPromptTitle": {
+    "status": "draft"
+  },
+  "auth.passwordPromptBody": {
+    "status": "draft"
+  },
+  "auth.passwordPromptChangeNow": {
+    "status": "draft"
+  },
+  "auth.passwordPromptIgnore": {
+    "status": "draft"
+  },
+  "auth.passwordChanged": {
+    "status": "draft"
+  },
+  "auth.invalidCurrentPassword": {
+    "status": "draft"
+  },
+  "auth.currentPassword": {
+    "status": "draft"
+  },
+  "auth.newPassword": {
+    "status": "draft"
+  },
+  "auth.changePasswordHint": {
+    "status": "draft"
+  }
+}

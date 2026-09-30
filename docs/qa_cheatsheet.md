@@ -8,10 +8,13 @@
 | **What if the AI is wrong?** | AI cannot change the rules outcome: urgent referral is locked. Wrong extractions are corrected on the form before confirm. External calls use `sanitize_for_ai` (allowlisted clinical fields only). Explanations are advisory copy, not orders. |
 | **Who creates accounts?** | Demo: seeded users (`seed.py`) and supervisors via **Users** (`POST /users`, JWT). Production: RBC SSO / facility admin — not built in this hackathon beyond role-scoped JWT. |
 | **Offline?** | CHW PWA runs the same YAML rules locally (TypeScript), stores in IndexedDB, queues sync. Nurse/RBC views need network for live inbox/dashboard; triage + urgent referral work in airplane mode. |
-| **Data from?** | **Synthetic CSVs** in `/data` (cases, facilities, stock). Generator documented in `data/README.md`. UI shows **Synthetic demo data** badge. Hotspot banner says *statistical signal*, never outbreak confirmation. Real pilot would use cEMR/HMIS/eLMIS under RBC governance. |
+| **Data from?** | **Synthetic CSVs** in `/data` plus richer seed referrals. Pilot framing: Gisagara / Nyamagabe (*source: RBC problem canvas, to be verified*). UI shows **Synthetic demo data** badge. Hotspot banner says *statistical signal*, never outbreak confirmation. |
+| **How do roles talk to each other?** | Live event poll (`/events/poll`) + referral messages. Presenter **Live Demo Board** (`/demo/board`) shows CHW / nurse / RBC side by side. |
+| **Is voice a chatbot?** | Guided dialogue graph + fixed catalog for clinical speech. Free chat (online) is explain-only with drug/dose filters; danger signs always need CHW confirm. |
 
 ## Extra talking points
 
-- **Roles:** `chw`, `nurse`, `supervisor`, `rbc` — JWT scopes referrals (`/referrals/scoped`).
-- **Hotspots:** `/analytics/hotspots` compares recent case counts to a baseline window; for verification workflows, not automated alerts to the public.
-- **Tests:** `pytest apps/api/tests`, `npm test` in `apps/web`, decision-layer tests prevent downgrading urgent referral.
+- **Roles:** `chw`, `nurse`, `supervisor`, `rbc` — JWT scopes referrals and events.
+- **vs RapidSMS / ePOCT+ / drones:** closes village→clinic loop and decision support gaps (canvas).
+- **Hotspots:** statistical signal only — verify with registers before any public claim.
+- **Tests:** `pytest` (35+), `npm test` (25+), i18n:check, no urgent downgrade.

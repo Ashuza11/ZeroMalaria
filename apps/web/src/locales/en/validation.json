@@ -1,0 +1,5 @@
+{
+  "required": "This field is required",
+  "username": "Username must be 3–50 characters",
+  "password": "Password must be at least 8 characters"
+}

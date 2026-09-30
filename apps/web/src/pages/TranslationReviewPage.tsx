@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebShell } from '../components/shells';
 import { Card } from '../components/ui';
-import reviewKeys from '../i18n/needs_review.rw.json';
-import en from '../i18n/en.json';
-import rw from '../i18n/rw.json';
+import reviewMeta from '../locales/rw/_review.json';
+import { enResources, rwResources } from '../i18n/loadLocales';
 
 function getByPath(obj: Record<string, unknown>, path: string): string {
   const parts = path.split('.');
@@ -18,15 +17,16 @@ function getByPath(obj: Record<string, unknown>, path: string): string {
 
 export function TranslationReviewPage() {
   const { t } = useTranslation();
-  const rows = useMemo(
-    () =>
-      (reviewKeys as string[]).map((key) => ({
+  const rows = useMemo(() => {
+    const meta = reviewMeta as Record<string, { status: string }>;
+    return Object.entries(meta)
+      .filter(([, v]) => v.status === 'draft')
+      .map(([key]) => ({
         key,
-        en: getByPath(en as Record<string, unknown>, key),
-        rw: getByPath(rw as Record<string, unknown>, key),
-      })),
-    [],
-  );
+        en: getByPath(enResources as Record<string, unknown>, key),
+        rw: getByPath(rwResources as Record<string, unknown>, key),
+      }));
+  }, []);
 
   return (
     <WebShell title={t('presenter.translationReview')} crumbs={[t('nav.settings'), t('presenter.translationReview')]}>
@@ -36,9 +36,9 @@ export function TranslationReviewPage() {
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-border bg-surface-muted">
               <tr>
-                <th className="px-4 py-3 font-semibold">Key</th>
-                <th className="px-4 py-3 font-semibold">English</th>
-                <th className="px-4 py-3 font-semibold">Kinyarwanda</th>
+                <th className="px-4 py-3 font-semibold">{t('presenter.colKey')}</th>
+                <th className="px-4 py-3 font-semibold">{t('presenter.colEn')}</th>
+                <th className="px-4 py-3 font-semibold">{t('presenter.colRw')}</th>
               </tr>
             </thead>
             <tbody>

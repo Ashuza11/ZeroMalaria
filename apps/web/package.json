@@ -8,10 +8,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run --exclude e2e/**",
+    "test:e2e": "playwright test",
     "lint": "eslint .",
     "i18n:check": "node scripts/i18n-check.mjs",
+    "i18n:merge": "node scripts/merge-locales.mjs",
+    "i18n:glossary": "node scripts/apply-phase1-glossary.mjs",
     "i18n:clean": "node scripts/i18n-clean.mjs",
+    "gen:types": "node scripts/gen-types.mjs",
     "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {

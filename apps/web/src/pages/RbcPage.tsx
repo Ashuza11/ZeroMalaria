@@ -188,10 +188,10 @@ export function RbcPage() {
   }, [surge]);
 
   const funnelStages = [
-    { stage: 'Referred', value: funnel.live_referrals?.referred || 0 },
-    { stage: 'Received', value: funnel.live_referrals?.received || 0 },
-    { stage: 'Arrived', value: funnel.live_referrals?.arrived || 0 },
-    { stage: 'Treated', value: funnel.live_referrals?.treated || 0 },
+    { stage: t('rbc.funnelReferred'), value: funnel.live_referrals?.referred || 0 },
+    { stage: t('rbc.funnelReceived'), value: funnel.live_referrals?.received || 0 },
+    { stage: t('rbc.funnelArrived'), value: funnel.live_referrals?.arrived || 0 },
+    { stage: t('rbc.funnelTreated'), value: funnel.live_referrals?.treated || 0 },
   ];
   const dropoffs = funnelStages.map((s, i) => {
     if (i === 0) return 0;
@@ -209,9 +209,9 @@ export function RbcPage() {
 
   const topHotspot = hotspotSignals[0] ?? null;
   const hotspotWording =
-    topHotspot?.wording === 'outbreak confirmed'
-      ? 'Potential increase detected (statistical signal)'
-      : topHotspot?.wording || 'Potential increase detected (statistical signal)';
+    !topHotspot?.wording || topHotspot.wording === 'outbreak confirmed'
+      ? t('rbc.hotspotBanner')
+      : topHotspot.wording;
 
   return (
     <DesktopShell title={t('rbc.title')} crumbs={['ZeroMalaria', t('nav.rbc')]}>
@@ -237,24 +237,24 @@ export function RbcPage() {
             {t('rbc.ageGroup')}
             <Select className="mt-1 w-40" value={ageGroup} onChange={(e) => setAgeGroup(e.target.value)}>
               <option value="">{t('rbc.allAges')}</option>
-              <option value="under5">Under 5</option>
-              <option value="5to14">5–14</option>
-              <option value="15plus">15+</option>
+              <option value="under5">{t('rbc.under5')}</option>
+              <option value="5to14">{t('rbc.age5to14')}</option>
+              <option value="15plus">{t('rbc.age15plus')}</option>
             </Select>
           </label>
           <div className="flex flex-wrap gap-2">
             {district ? (
               <Badge tone="primary">
                 {district}
-                <button type="button" aria-label="clear" onClick={() => setDistrict('')}>
+                <button type="button" aria-label={t('rbc.clearFilter')} onClick={() => setDistrict('')}>
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             ) : null}
             {ageGroup ? (
               <Badge tone="info">
-                {ageGroup}
-                <button type="button" aria-label="clear" onClick={() => setAgeGroup('')}>
+                {ageGroup === 'under5' ? t('rbc.under5') : ageGroup === '5to14' ? t('rbc.age5to14') : t('rbc.age15plus')}
+                <button type="button" aria-label={t('rbc.clearFilter')} onClick={() => setAgeGroup('')}>
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
@@ -267,7 +267,7 @@ export function RbcPage() {
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Badge tone="warning">{t('common.synthetic')}</Badge>
-            {demoOnly ? <Badge tone="info">Offline mock</Badge> : null}
+            {demoOnly ? <Badge tone="info">{t('common.offlineMock')}</Badge> : null}
           </div>
         </div>
       </div>
@@ -384,7 +384,7 @@ export function RbcPage() {
                     <Popup>
                       <strong>{d.name}</strong>
                       <br />
-                      {cases} cases (synthetic)
+                      {cases} {t('common.syntheticShort')}
                     </Popup>
                   </CircleMarker>
                 );
@@ -434,7 +434,7 @@ export function RbcPage() {
                 <Tooltip />
                 <Area type="monotone" dataKey="high" stroke="none" fill="var(--color-primary-soft)" name="forecast high" />
                 <Area type="monotone" dataKey="low" stroke="none" fill="var(--color-app)" name="forecast low" />
-                <Area type="monotone" dataKey="baseline" stroke="var(--color-ink-muted)" fill="none" name="Baseline forecast" strokeDasharray="4 4" />
+                <Area type="monotone" dataKey="baseline" stroke="var(--color-ink-muted)" fill="none" name={t('rbc.baselineSeries')} strokeDasharray="4 4" />
                 <Area type="monotone" dataKey="cases" stroke="var(--color-accent)" fill="var(--color-accent-soft)" name="cases" />
               </AreaChart>
             </ResponsiveContainer>
@@ -517,6 +517,12 @@ export function RbcPage() {
           </div>
         </Card>
       </div>
+
+      <Card className="mt-4">
+        <h3 className="mb-2 font-semibold">{t('rbc.compareTools')}</h3>
+        <p className="text-sm text-ink-muted">{t('rbc.compareToolsBody')}</p>
+        <p className="mt-2 text-xs text-ink-muted">{t('rbc.sourceCanvas')}</p>
+      </Card>
 
       <p className="mt-6 text-xs text-ink-muted">{t('common.disclaimer')} · {t('common.forecastNote')}</p>
     </DesktopShell>

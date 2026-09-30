@@ -47,14 +47,14 @@ npm run dev
 **One-command demo (Windows):** `.\scripts\demo.ps1`  
 **Makefile targets:** `install`, `train`, `seed`, `api`, `web`, `test`
 
-**Demo accounts** (password **`demo1234`** for all):
+**Demo accounts** (password **`demo1234`** for all; printed by `make seed` — not shown on login UI):
 
 | Username | Role |
 | --- | --- |
-| `chw.demo` | Community Health Worker — mobile triage |
-| `nurse.demo` | Health center — referrals inbox |
-| `supervisor.demo` | Facility supervisor — users + patients |
-| `rbc.demo` | RBC / district — dashboard + analytics |
+| `chw.demo` | CHW — mobile / web triage |
+| `health.center` | HEALTH_CENTER — referrals inbox |
+| `rbc.admin` | RBC_ADMIN — dashboard + admin |
+| `super.admin` | SUPER_ADMIN — full access + permissions matrix |
 
 **Related docs:** [architecture.md](architecture.md) · [voice_setup.md](voice_setup.md) · [demo_script.md](demo_script.md) · [demo_polish.md](demo_polish.md) · [pitch_outline.md](pitch_outline.md) · [ethics_and_safety.md](ethics_and_safety.md) · [qa_cheatsheet.md](qa_cheatsheet.md)
 

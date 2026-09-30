@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { Badge, Button, Card, EmptyState, Skeleton } from './index';
@@ -92,11 +93,12 @@ export function StepperLayout({
   help: ReactNode;
   summary: ReactNode;
 }) {
+  const { t } = useTranslation();
   const idx = Math.max(0, steps.findIndex((s) => s.id === currentId));
   return (
     <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)_280px]">
       <aside className="hidden xl:block">
-        <SectionCard title="Steps" className="sticky top-20">
+        <SectionCard title={t('presenter.steps')} className="sticky top-20">
           <ol className="space-y-2">
             {steps.map((s, i) => {
               const done = i < idx;

@@ -19,9 +19,12 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { api } from '../api/client';
 import { ChwShell, WebShell } from '../components/shells';
+import { ConversationBar } from '../components/voice/ConversationBar';
 import { VoiceControls } from '../components/voice/VoiceControls';
 import { Badge, Button, Card, Input, ProgressBar, SegmentedControl, StepperLayout } from '../components/ui';
 import { type PhraseId, type VoiceLang, getPhrase } from '../voice/phrases';
+import { dialogueStepIndex } from '../voice/dialogue';
+import { useConversation } from '../voice/ConversationContext';
 import { useVoice, type VoiceIntents } from '../voice/VoiceContext';
 import { DEMO_CASE_A, DEMO_CASE_B } from '../demo/scenario';
 import { localDecide } from '../rules/engine';
@@ -137,6 +140,9 @@ export function TriagePage() {
   const reduce = useReducedMotion();
   const desktop = useDesktopTriageLayout();
   const voice = useVoice();
+  const conversation = useConversation();
+  const voiceGuide = params.get('voiceGuide') === '1';
+  const voiceGuideStarted = useRef(false);
 
   const initial = useMemo(() => {
     if (demo === 'A') return { ...DEMO_CASE_A };
@@ -161,10 +167,37 @@ export function TriagePage() {
   const helpId = STEP_HELP[step];
 
   useEffect(() => {
-    if (!voice.unlocked || !phraseId || step === 'freetext' || spokeStep.current === stepIndex) return;
+    if (conversation.active || !voice.unlocked || !phraseId || step === 'freetext' || spokeStep.current === stepIndex)
+      return;
     spokeStep.current = stepIndex;
     void voice.play([phraseId]);
-  }, [step, stepIndex, phraseId, voice, voice.unlocked]);
+  }, [step, stepIndex, phraseId, voice, voice.unlocked, conversation.active]);
+
+  const runGuidedTriage = useCallback(() => {
+    voice.unlock();
+    void conversation.startGuidedTriage(form, {
+      onNode: (nodeId) => {
+        const idx = dialogueStepIndex(nodeId);
+        if (idx >= 0) setStepIndex(idx);
+      },
+      onPatch: (patch) => setForm((f) => ({ ...f, ...patch })),
+      onComplete: (completed) => {
+        setForm(completed);
+        const result = localDecide(completed, lang);
+        sessionStorage.setItem(
+          'zm_last_triage',
+          JSON.stringify({ input: completed, result, demo, ai_extract_used: aiExtractUsed }),
+        );
+        navigate(resultPath);
+      },
+    });
+  }, [aiExtractUsed, conversation, demo, form, lang, navigate, resultPath, voice]);
+
+  useEffect(() => {
+    if (!voiceGuide || voiceGuideStarted.current) return;
+    voiceGuideStarted.current = true;
+    runGuidedTriage();
+  }, [voiceGuide, runGuidedTriage]);
 
   const applyVoiceIntents = useCallback(
     (intents: VoiceIntents) => {
@@ -589,7 +622,7 @@ export function TriagePage() {
           className="flex-1"
           onClick={() =>
             stepIndex === 0
-              ? navigate(location.pathname.startsWith('/app') ? '/app/chw' : '/m/home')
+              ? navigate(location.pathname.startsWith('/app') ? '/app/home' : '/m/home')
               : setStepIndex((i) => i - 1)
           }
         >
@@ -639,6 +672,7 @@ export function TriagePage() {
             help={helpPanel}
             summary={summaryPanel}
           />
+          <ConversationBar onStart={runGuidedTriage} />
         </div>
       </WebShell>
     );
@@ -648,6 +682,7 @@ export function TriagePage() {
     <ChwShell title={t('triage.title')}>
       {progressBar}
       {questionBody}
+      <ConversationBar onStart={runGuidedTriage} />
     </ChwShell>
   );
 }

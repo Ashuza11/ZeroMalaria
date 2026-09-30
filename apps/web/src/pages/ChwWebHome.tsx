@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { WebShell } from '../components/shells';
+import { ConversationBar } from '../components/voice/ConversationBar';
 import { Badge, Button, Card } from '../components/ui';
 
 /** Desktop CHW workspace — web shell with reduced menu (not a phone frame). */
@@ -30,9 +31,18 @@ export function ChwWebHome() {
         <Card className="mb-6 border-primary/20 bg-primary-soft/40 p-6">
           <p className="text-sm font-semibold text-primary">{t('home.newPatient')}</p>
           <p className="mt-1 max-w-xl text-sm text-ink-muted">{t('home.subtitle')}</p>
-          <Button className="mt-4" size="lg" leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/app/triage')}>
-            {t('nav.newTriage')}
-          </Button>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button size="lg" leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/app/triage')}>
+              {t('nav.newTriage')}
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => navigate('/app/triage?voiceGuide=1')}
+            >
+              {t('voice.startGuidedTriage')}
+            </Button>
+          </div>
         </Card>
 
         <div className="grid gap-4 sm:grid-cols-3">
@@ -59,12 +69,7 @@ export function ChwWebHome() {
           </Card>
         </div>
 
-        <p className="mt-8 text-xs text-ink-muted">
-          {t('login.mobileLandingHint')}{' '}
-          <button type="button" className="font-semibold text-primary underline" onClick={() => navigate('/m')}>
-            /m
-          </button>
-        </p>
+        <ConversationBar onStart={() => navigate('/app/triage?voiceGuide=1')} />
       </div>
     </WebShell>
   );
