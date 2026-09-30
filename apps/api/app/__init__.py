@@ -1,0 +1,1 @@
+"""ZeroMalaria FastAPI application package."""

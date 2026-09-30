@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-primary: #0b3c5d;
+  --color-primary-foreground: #ffffff;
+  --color-primary-soft: #e8eef3;
+  --color-accent: #14807a;
+  --color-accent-soft: #e6f5f4;
+  --color-success: #16a34a;
+  --color-success-soft: #e8f8ee;
+  --color-warning: #d97706;
+  --color-warning-soft: #fff4e5;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fdecec;
+  --color-info: #2563eb;
+  --color-info-soft: #e8effc;
+  --color-app: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-border: #e5e9f0;
+  --color-ink: #0f172a;
+  --color-ink-muted: #64748b;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-primary: #1e4d6b;
+  --color-primary-foreground: #ffffff;
+  --color-primary-soft: #172554;
+  --color-accent: #2dd4bf;
+  --color-accent-soft: #134e4a;
+  --color-success: #22c55e;
+  --color-success-soft: #14532d;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #78350f;
+  --color-danger: #f87171;
+  --color-danger-soft: #7f1d1d;
+  --color-info: #60a5fa;
+  --color-info-soft: #1e3a8a;
+  --color-app: #0b1220;
+  --color-surface: #111a2b;
+  --color-surface-muted: #0f172a;
+  --color-border: #1f2a44;
+  --color-ink: #e2e8f0;
+  --color-ink-muted: #94a3b8;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  background: var(--color-app);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  z-index: 0;
+  background: var(--color-surface-muted);
+}
+
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}

@@ -1,0 +1,25 @@
+facility_id,name,district,sector,pilot,remote,latitude,longitude
+HC-BUG-01,Nyamata Health Center,Bugesera,Nyamata,1,0,-2.16,30.15
+HC-BUG-02,Rilima Health Center,Bugesera,Rilima,1,0,-2.22,30.2
+HC-BUG-03,Mayange Health Center,Bugesera,Mayange,1,0,-2.12,30.11
+HC-BUG-04,Mareba Health Center,Bugesera,Mareba,1,1,-2.26,30.12
+HC-BUG-05,Ntarama Health Center,Bugesera,Ntarama,1,0,-2.17,30.22
+HC-BUG-06,Gashora Health Center,Bugesera,Gashora,1,1,-2.28,30.19
+HC-NYG-01,Nyagatare Health Center,Nyagatare,Nyagatare,1,0,-1.37,30.34
+HC-NYG-02,Karangazi Health Center,Nyagatare,Karangazi,1,1,-1.28,30.4
+HC-NYG-03,Rwimiyaga Health Center,Nyagatare,Rwimiyaga,1,1,-1.31,30.25
+HC-NYG-04,Matimba Health Center,Nyagatare,Matimba,1,0,-1.43,30.37
+HC-NYG-05,Mimuri Health Center,Nyagatare,Mimuri,1,0,-1.4,30.26
+HC-NYG-06,Katabagemu Health Center,Nyagatare,Katabagemu,1,1,-1.34,30.43
+HC-KIR-01,Kirehe Health Center,Kirehe,Kirehe,0,0,-2.25,30.68
+HC-KIR-02,Gahara Health Center,Kirehe,Gahara,0,0,-2.32,30.62
+HC-KIR-03,Mahama Health Center,Kirehe,Mahama,0,1,-2.21,30.73
+HC-GIS-01,Gisagara Health Center,Gisagara,Gisagara,0,0,-2.58,29.86
+HC-GIS-02,Save Health Center,Gisagara,Save,0,0,-2.64,29.9
+HC-GIS-03,Kibirizi Health Center,Gisagara,Kibirizi,0,0,-2.55,29.81
+HC-RUS-01,Kamembe Health Center,Rusizi,Kamembe,0,0,-2.47,29.03
+HC-RUS-02,Bugarama Health Center,Rusizi,Bugarama,0,1,-2.57,28.98
+HC-RUS-03,Gihundwe Health Center,Rusizi,Gihundwe,0,0,-2.45,28.95
+HC-GAS-01,Kimironko Health Center,Gasabo,Kimironko,0,0,-1.88,30.11
+HC-GAS-02,Remera Health Center,Gasabo,Remera,0,0,-1.93,30.12
+HC-GAS-03,Kacyiru Health Center,Gasabo,Kacyiru,0,0,-1.9,30.07

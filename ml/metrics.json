@@ -1,0 +1,343 @@
+{
+  "disclaimer": "Metrics from SYNTHETIC demo data. Architecture demonstration only. NOT clinical performance.",
+  "synthetic": true,
+  "clinical_use": false,
+  "label_definitions": {
+    "severe_case": "1 if any of ['convulsions', 'unable_to_drink', 'vomiting_everything', 'lethargy', 'severe_breathing_difficulty'] is 1 OR age_months < 2; NOT derived from noisy decision column",
+    "referral_not_completed": "1 if decision in {refer, urgent_refer} AND referral_completed == 0; trained on referred rows only"
+  },
+  "n_rows": 7512,
+  "severe_case_prevalence": 0.12513312034078808,
+  "split": "70/15/15 stratified",
+  "tasks": {
+    "severe_case": {
+      "chosen_model": "gradient_boosting",
+      "threshold": 0.05,
+      "models": {
+        "logistic_regression": {
+          "validation_tuned": {
+            "threshold": 0.15,
+            "recall": 1.0,
+            "precision": 0.20114122681883023,
+            "f1": 0.334916864608076,
+            "roc_auc": 0.9813847769481967,
+            "confusion_matrix": [
+              [
+                426,
+                560
+              ],
+              [
+                0,
+                141
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.0,
+                0.0,
+                0.0,
+                0.0070921985815602835,
+                0.014285714285714285,
+                0.0070921985815602835,
+                0.1276595744680851,
+                0.8439716312056738
+              ],
+              "mean_predicted_value": [
+                0.006626400412147617,
+                0.07262453798186164,
+                0.12623347491958498,
+                0.1631068997663194,
+                0.1852650180621243,
+                0.20785483036504834,
+                0.23554972785793205,
+                0.805003192539426
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          },
+          "test": {
+            "threshold": 0.15,
+            "recall": 1.0,
+            "precision": 0.19183673469387755,
+            "f1": 0.3219178082191781,
+            "roc_auc": 0.976838864672795,
+            "confusion_matrix": [
+              [
+                392,
+                594
+              ],
+              [
+                0,
+                141
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.02857142857142857,
+                0.014184397163120567,
+                0.12056737588652482,
+                0.8368794326241135
+              ],
+              "mean_predicted_value": [
+                0.008767229439021652,
+                0.07567959289790682,
+                0.13325158162098824,
+                0.16880953728965398,
+                0.19009811965413864,
+                0.21321437436651913,
+                0.2388493341596591,
+                0.8090605201122788
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          }
+        },
+        "gradient_boosting": {
+          "validation_tuned": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 1.0,
+            "f1": 1.0,
+            "roc_auc": 1.0,
+            "confusion_matrix": [
+              [
+                986,
+                0
+              ],
+              [
+                0,
+                141
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "mean_predicted_value": [
+                0.011925217309802042,
+                0.01563740950556917,
+                0.9872774746850382
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          },
+          "test": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 1.0,
+            "f1": 1.0,
+            "roc_auc": 1.0,
+            "confusion_matrix": [
+              [
+                986,
+                0
+              ],
+              [
+                0,
+                141
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "mean_predicted_value": [
+                0.011925217309802042,
+                0.015637409505569175,
+                0.9866410503430502
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          }
+        }
+      },
+      "n_train": 5258,
+      "n_val": 1127,
+      "n_test": 1127
+    },
+    "referral_not_completed": {
+      "chosen_model": "gradient_boosting",
+      "threshold": 0.05,
+      "models": {
+        "logistic_regression": {
+          "validation_tuned": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 0.25914634146341464,
+            "f1": 0.4116222760290557,
+            "roc_auc": 0.48753328491890585,
+            "confusion_matrix": [
+              [
+                0,
+                243
+              ],
+              [
+                0,
+                85
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.24390243902439024,
+                0.2682926829268293,
+                0.3170731707317073,
+                0.2926829268292683,
+                0.14634146341463414,
+                0.2682926829268293,
+                0.2682926829268293,
+                0.2682926829268293
+              ],
+              "mean_predicted_value": [
+                0.4118561813556454,
+                0.4616998274501165,
+                0.48491936619449016,
+                0.5000036128234536,
+                0.5106770172043799,
+                0.5210566572092904,
+                0.5350271768598319,
+                0.560422878522775
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          },
+          "test": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 0.25914634146341464,
+            "f1": 0.4116222760290557,
+            "roc_auc": 0.5479544904381506,
+            "confusion_matrix": [
+              [
+                0,
+                243
+              ],
+              [
+                0,
+                85
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.21951219512195122,
+                0.24390243902439024,
+                0.12195121951219512,
+                0.3170731707317073,
+                0.2926829268292683,
+                0.24390243902439024,
+                0.36585365853658536,
+                0.2682926829268293
+              ],
+              "mean_predicted_value": [
+                0.40424545866152006,
+                0.46254704418884685,
+                0.48414694912269607,
+                0.5000297523590544,
+                0.510516919897488,
+                0.5230165582748716,
+                0.539219092842023,
+                0.564776990395171
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          }
+        },
+        "gradient_boosting": {
+          "validation_tuned": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 0.25914634146341464,
+            "f1": 0.4116222760290557,
+            "roc_auc": 0.4987412248850157,
+            "confusion_matrix": [
+              [
+                0,
+                243
+              ],
+              [
+                0,
+                85
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.3902439024390244,
+                0.14634146341463414,
+                0.2682926829268293,
+                0.23809523809523808,
+                0.25,
+                0.21951219512195122,
+                0.24390243902439024,
+                0.3170731707317073
+              ],
+              "mean_predicted_value": [
+                0.2426113150876426,
+                0.3608707922131519,
+                0.42914983425004377,
+                0.47384064877207566,
+                0.4959854151907397,
+                0.5221768674189446,
+                0.5599412545247706,
+                0.6335307096201599
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          },
+          "test": {
+            "threshold": 0.05,
+            "recall": 1.0,
+            "precision": 0.25914634146341464,
+            "f1": 0.4116222760290557,
+            "roc_auc": 0.5312757201646091,
+            "confusion_matrix": [
+              [
+                0,
+                243
+              ],
+              [
+                0,
+                85
+              ]
+            ],
+            "calibration": {
+              "fraction_of_positives": [
+                0.17073170731707318,
+                0.21951219512195122,
+                0.3170731707317073,
+                0.24390243902439024,
+                0.3170731707317073,
+                0.24390243902439024,
+                0.3170731707317073,
+                0.24390243902439024
+              ],
+              "mean_predicted_value": [
+                0.24940978681010623,
+                0.38118028124878184,
+                0.44373409088137716,
+                0.47902603279694644,
+                0.5079625260035303,
+                0.5408378665767827,
+                0.5711863284347107,
+                0.647708064062713
+              ],
+              "note": "Rough calibration on synthetic holdout \u2014 architecture only"
+            }
+          }
+        }
+      },
+      "n_train": 1529,
+      "n_val": 328,
+      "n_test": 328,
+      "n_referred_rows": 2185,
+      "prevalence": 0.2594965675057208
+    }
+  },
+  "shap_available": true
+}

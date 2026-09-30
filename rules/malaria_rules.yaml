@@ -1,0 +1,120 @@
+# PLACEHOLDER - TO BE VALIDATED against the Rwanda national malaria treatment
+# guidelines and WHO iCCM guidance by a clinician.
+#
+# ZeroMalaria / MalariaLink clinical rules — SINGLE SOURCE OF TRUTH.
+# Ported to Python (apps/api/engine/rules.py) and TypeScript (apps/web) from this file.
+# Do NOT invent temperature, respiratory-rate, hemoglobin, or dose thresholds here.
+
+meta:
+  version: "1.0.0-placeholder"
+  synthetic_demo: true
+  disclaimer: "Decision support tool. Not a replacement for clinical judgment."
+  validation_banner: >-
+    PLACEHOLDER - TO BE VALIDATED against the Rwanda national malaria treatment
+    guidelines and WHO iCCM guidance by a clinician.
+
+# Decision ranking (higher = more urgent). ML may escalate, never downgrade.
+decision_rank:
+  treat_at_home: 0
+  refer: 1
+  urgent_refer: 2
+
+# PLACEHOLDER age convention (common iCCM programmatic practice for sick young infants).
+infant_refer_months: 2
+
+# PLACEHOLDER follow-up interval only — not a severity cutoff.
+persistent_fever_days: 3
+
+danger_signs:
+  - id: convulsions
+    field: convulsions
+    when_true: urgent_refer
+    reason_en: "Convulsions (fits) reported"
+    reason_rw: "Gusetsa (fits) byavuzwe" # TODO_REVIEW_RW
+  - id: unable_to_drink
+    field: unable_to_drink
+    when_true: urgent_refer
+    reason_en: "Unable to drink or feed"
+    reason_rw: "Ntashobora kunywa cyangwa kurya" # TODO_REVIEW_RW
+  - id: vomiting_everything
+    field: vomiting_everything
+    when_true: urgent_refer
+    reason_en: "Vomiting everything"
+    reason_rw: "Araruka byose" # TODO_REVIEW_RW
+  - id: lethargy
+    field: lethargy
+    when_true: urgent_refer
+    reason_en: "Lethargy or unconsciousness"
+    reason_rw: "Yacitse intege cyangwa ntabona" # TODO_REVIEW_RW
+  - id: severe_breathing_difficulty
+    field: severe_breathing_difficulty
+    when_true: urgent_refer
+    reason_en: "Severe breathing difficulty"
+    reason_rw: "Agorwa cyane n'uruhuha" # TODO_REVIEW_RW
+
+rules:
+  - id: infant_age_referral
+    description: >-
+      PLACEHOLDER: sick infants below infant_refer_months are referred urgently
+      from community care (common iCCM convention). Not a Rwanda-validated cutoff.
+    when:
+      age_months_lt: infant_refer_months
+    decision: urgent_refer
+    reason_en: "Age under {infant_refer_months} months (placeholder young-infant rule)"
+    reason_rw: "Imyaka iri munsi ya {infant_refer_months} amezi (amategeko ya placeholder)" # TODO_REVIEW_RW
+
+  - id: invalid_tdr_refer
+    description: PLACEHOLDER operational referral for invalid TDR — not a severity grade.
+    when:
+      tdr_result: invalid
+      no_urgent_already: true
+    decision: refer
+    reason_en: "Invalid TDR — refer for repeat testing / assessment"
+    reason_rw: "TDR ntabwo yemewe — ohereze gukorera ikizamini cyangwa gusuzumwa" # TODO_REVIEW_RW
+
+  - id: persistent_fever_negative_tdr
+    description: >-
+      PLACEHOLDER: common iCCM counseling interval (~day 3) if illness is not
+      improving and TDR is negative. Not a severe-malaria threshold.
+    when:
+      tdr_result: negative
+      fever_days_gte: persistent_fever_days
+      no_urgent_already: true
+    decision: refer
+    reason_en: "Fever for {persistent_fever_days}+ days with negative TDR (placeholder follow-up)"
+    reason_rw: "Ubushyuhe bw'iminsi {persistent_fever_days}+ hamwe na TDR mbi (placeholder)" # TODO_REVIEW_RW
+
+  - id: default_treat_at_home
+    description: >-
+      Default when no referral rule fires. Includes uncomplicated TDR-positive
+      fever in this demo. Does NOT prescribe drugs or doses.
+    when:
+      no_referral_already: true
+    decision: treat_at_home
+    reason_en: "No placeholder danger sign or referral rule triggered"
+    reason_rw: "Nta ikimenyetso cy'akaga cyangwa itegeko ryo kohereza ryabonetse" # TODO_REVIEW_RW
+
+# ML escalation (Layer 2) — may only raise decision_rank, never lower it.
+ml_escalation:
+  severe_case:
+    # If rules say treat_at_home and severe model score >= this, escalate to refer.
+    escalate_treat_to_refer_threshold: 0.35
+    # If rules say refer and severe model score >= this, escalate to urgent_refer.
+    escalate_refer_to_urgent_threshold: 0.55
+  referral_not_completed:
+    # High non-completion risk adds a reason / alert flag only; does not change triage grade alone.
+    high_risk_threshold: 0.45
+
+feature_labels_en:
+  age_months: "Age (months)"
+  temperature_c: "Temperature"
+  fever_days: "Days of fever"
+  convulsions: "Convulsions"
+  unable_to_drink: "Unable to drink or feed"
+  vomiting_everything: "Vomiting everything"
+  lethargy: "Lethargy"
+  severe_breathing_difficulty: "Severe breathing difficulty"
+  tdr_positive: "TDR positive"
+  tdr_negative: "TDR negative"
+  tdr_invalid: "TDR invalid"
+  sex_female: "Sex female"

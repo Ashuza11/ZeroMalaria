@@ -1,0 +1,113 @@
+{
+  "label": "Synthetic demo data",
+  "synthetic": true,
+  "clinical_use": false,
+  "generator_version": "1.0.0",
+  "seed": 42,
+  "start_date": "2024-10-01",
+  "end_date": "2026-09-30",
+  "pilot_districts": [
+    "Bugesera",
+    "Nyagatare"
+  ],
+  "disclaimer": "Decision support tool. Not a replacement for clinical judgment.",
+  "validation_banner": "TO BE VALIDATED against the Rwanda national malaria treatment guidelines and WHO iCCM guidance by a clinician.",
+  "placeholders": {
+    "infant_refer_months": 2,
+    "persistent_fever_days": 3,
+    "danger_signs": [
+      "convulsions",
+      "unable_to_drink",
+      "vomiting_everything",
+      "lethargy",
+      "severe_breathing_difficulty"
+    ],
+    "no_temperature_cutoff": true,
+    "no_dose_calculation": true
+  },
+  "scripted_story": {
+    "surge_district": "Nyagatare",
+    "surge_start": "2026-08-15",
+    "surge_multiplier": 3.0,
+    "bugesera_act_stockout_weeks": [
+      "2026-09-07",
+      "2026-09-14",
+      "2026-09-21",
+      "2026-09-28"
+    ],
+    "nyagatare_artesunate_pressure_weeks": [
+      "2026-08-17",
+      "2026-08-24",
+      "2026-08-31",
+      "2026-09-07",
+      "2026-09-14",
+      "2026-09-21",
+      "2026-09-28"
+    ]
+  },
+  "phase2_label_definitions": {
+    "severe_case": "any danger sign == 1 OR age_months < infant_refer_months; do not use decision",
+    "referral_not_completed": "decision in {refer, urgent_refer} AND referral_completed == 0"
+  },
+  "summary": {
+    "n_cases": 7512,
+    "decision_counts": {
+      "treat_at_home": 5327,
+      "refer": 1340,
+      "urgent_refer": 845
+    },
+    "decision_share": {
+      "treat_at_home": 0.7091,
+      "refer": 0.1784,
+      "urgent_refer": 0.1125
+    },
+    "tdr_counts": {
+      "positive": 4424,
+      "negative": 2738,
+      "invalid": 350
+    },
+    "referral_non_completion_share": 0.2595,
+    "invalid_tdr": 350,
+    "protocol_miss_convulsions_treated_at_home": 8,
+    "infants_under_placeholder_threshold": 210,
+    "april_daily_mean": 14.133,
+    "july_daily_mean": 6.952,
+    "nyagatare_sep_2025_daily_mean": 3.0,
+    "nyagatare_sep_2026_daily_mean": 7.233,
+    "outcome_counts": {
+      "recovered": 7101,
+      "complication": 245,
+      "died": 31,
+      "unknown": 135
+    },
+    "stock_rows": 7560,
+    "stockout_share": 0.0848,
+    "facilities": 24,
+    "monthly_case_counts": {
+      "2024-10": 313,
+      "2024-11": 388,
+      "2024-12": 307,
+      "2025-01": 260,
+      "2025-02": 259,
+      "2025-03": 313,
+      "2025-04": 433,
+      "2025-05": 405,
+      "2025-06": 202,
+      "2025-07": 227,
+      "2025-08": 197,
+      "2025-09": 273,
+      "2025-10": 341,
+      "2025-11": 421,
+      "2025-12": 332,
+      "2026-01": 257,
+      "2026-02": 265,
+      "2026-03": 362,
+      "2026-04": 415,
+      "2026-05": 408,
+      "2026-06": 231,
+      "2026-07": 204,
+      "2026-08": 306,
+      "2026-09": 393
+    }
+  }
+}
