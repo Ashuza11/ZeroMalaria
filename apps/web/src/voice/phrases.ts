@@ -26,28 +26,28 @@ export const PHRASES = {
   ),
   convulsions: p(
     'convulsions',
-    'Convulsions or fits — yes or no?',
-    'Gusetsa cyangwa fits — yego cyangwa oya?',
+    'Convulsions or fits, yes or no?',
+    'Gusetsa cyangwa fits, yego cyangwa oya?',
   ),
   unable_to_drink: p(
     'unable_to_drink',
-    'Unable to drink or feed — yes or no?',
-    'Ntashobora kunywa cyangwa kurya — yego cyangwa oya?',
+    'Unable to drink or feed, yes or no?',
+    'Ntashobora kunywa cyangwa kurya, yego cyangwa oya?',
   ),
   vomiting_everything: p(
     'vomiting_everything',
-    'Vomiting everything — yes or no?',
-    'Araruka byose — yego cyangwa oya?',
+    'Vomiting everything, yes or no?',
+    'Araruka byose, yego cyangwa oya?',
   ),
   lethargy: p(
     'lethargy',
-    'Lethargy or unconsciousness — yes or no?',
-    'Yacitse intege cyangwa ntabona — yego cyangwa oya?',
+    'Lethargy or unconsciousness, yes or no?',
+    'Yacitse intege cyangwa ntabona, yego cyangwa oya?',
   ),
   severe_breathing_difficulty: p(
     'severe_breathing_difficulty',
-    'Severe breathing difficulty — yes or no?',
-    'Agorwa cyane n\'uruhuha — yego cyangwa oya?',
+    'Severe breathing difficulty, yes or no?',
+    'Agorwa cyane n\'uruhuha, yego cyangwa oya?',
   ),
   tdr: p(
     'tdr',
@@ -157,8 +157,8 @@ export const PHRASES = {
   ),
   prevention_early_test: p(
     'prevention_early_test',
-    'Test early when fever starts — do not wait many days.',
-    'Kora ikizamini vuba ubushyuhe buhera — ntugere ute iminsi myinshi.',
+    'Test early when fever starts, do not wait many days.',
+    'Kora ikizamini vuba ubushyuhe buhera, ntugere ute iminsi myinshi.',
   ),
   prevention_early_care: p(
     'prevention_early_care',
@@ -209,8 +209,8 @@ export const PHRASES = {
   ),
   help_convulsions: p(
     'help_convulsions',
-    'Convulsions are a danger sign — answer yes if the patient had fits or seizures.',
-    'Gusetsa ni ikimenyetso cy\'akaga — subiza yego niba umurwayi yagize fits cyangwa seizures.',
+    'Convulsions are a danger sign, answer yes if the patient had fits or seizures.',
+    'Gusetsa ni ikimenyetso cy\'akaga, subiza yego niba umurwayi yagize fits cyangwa seizures.',
   ),
   help_unable_to_drink: p(
     'help_unable_to_drink',
@@ -234,13 +234,13 @@ export const PHRASES = {
   ),
   help_tdr: p(
     'help_tdr',
-    'Record the rapid diagnostic test result from the cassette. Invalid means the test failed — do not treat on that result alone.',
-    'Andika igisubizo cy\'ikizamini cy\'umusaraba. Nticyemewe bisobanuye ko ikizamini cyanze — ntuvure ukurikije gusa icyo.',
+    'Record the rapid diagnostic test result from the cassette. Invalid means the test failed, do not treat on that result alone.',
+    'Andika igisubizo cy\'ikizamini cy\'umusaraba. Nticyemewe bisobanuye ko ikizamini cyanze, ntuvure ukurikije gusa icyo.',
   ),
   help_freetext: p(
     'help_freetext',
-    'Optional notes in Kinyarwanda or English. AI may suggest fields — you must verify before applying.',
-    'Inyandiko z\'ubushobozi mu Kinyarwanda cyangwa Icyongereza. AI ishobora gusaba ibice — ugomba kubigenzura mbere yo kubikoresha.',
+    'Optional notes in Kinyarwanda or English. AI may suggest fields, you must verify before applying.',
+    'Inyandiko z\'ubushobozi mu Kinyarwanda cyangwa Icyongereza. AI ishobora gusaba ibice, ugomba kubigenzura mbere yo kubikoresha.',
   ),
 } as const satisfies Record<string, PhraseEntry>;
 

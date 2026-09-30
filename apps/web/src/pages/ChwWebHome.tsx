@@ -1,4 +1,5 @@
-import { AlertTriangle, Plus, Stethoscope, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { Orb } from '../components/liquid/alive';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
@@ -27,8 +28,8 @@ export function ChwWebHome() {
           <Badge tone="warning">{t('common.synthetic')}</Badge>
         </div>
 
-        <Card className="mb-6 border-primary/20 bg-primary-soft/40 p-6">
-          <p className="text-sm font-semibold text-primary">{t('home.newPatient')}</p>
+        <Card className="mb-6 overflow-hidden bg-[linear-gradient(135deg,rgba(11,60,93,0.08),rgba(20,128,122,0.10))] p-7">
+          <p className="text-[22px] font-bold tracking-[-0.02em] text-ink">{t('home.newPatient')}</p>
           <p className="mt-1 max-w-xl text-sm text-ink-muted">{t('home.subtitle')}</p>
           <Button className="mt-4" size="lg" leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/app/triage')}>
             {t('nav.newTriage')}
@@ -36,23 +37,23 @@ export function ChwWebHome() {
         </Card>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Card className="p-4">
-            <Users className="h-5 w-5 text-accent" strokeWidth={1.75} />
-            <h3 className="mt-3 font-semibold">{t('nav.myPatients')}</h3>
+          <Card className="p-5" hover>
+            <Orb size={40} tone="teal" />
+            <h3 className="mt-4 text-[17px] font-semibold tracking-[-0.01em]">{t('nav.myPatients')}</h3>
             <Button variant="outline" className="mt-3" size="sm" onClick={() => navigate('/app/my-patients')}>
               {t('common.continue')}
             </Button>
           </Card>
-          <Card className="p-4">
-            <Stethoscope className="h-5 w-5 text-accent" strokeWidth={1.75} />
-            <h3 className="mt-3 font-semibold">{t('nav.myReferrals')}</h3>
+          <Card className="p-5" hover>
+            <Orb size={40} tone="sky" delay={1} />
+            <h3 className="mt-4 text-[17px] font-semibold tracking-[-0.01em]">{t('nav.myReferrals')}</h3>
             <Button variant="outline" className="mt-3" size="sm" onClick={() => navigate('/app/my-referrals')}>
               {t('common.continue')}
             </Button>
           </Card>
-          <Card className="p-4">
-            <AlertTriangle className="h-5 w-5 text-warning" strokeWidth={1.75} />
-            <h3 className="mt-3 font-semibold">{t('nav.alerts')}</h3>
+          <Card className="p-5" hover>
+            <Orb size={40} tone="amber" delay={2} />
+            <h3 className="mt-4 text-[17px] font-semibold tracking-[-0.01em]">{t('nav.alerts')}</h3>
             <Button variant="outline" className="mt-3" size="sm" onClick={() => navigate('/app/alerts')}>
               {t('common.continue')}
             </Button>

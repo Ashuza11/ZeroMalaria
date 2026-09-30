@@ -45,8 +45,8 @@ export function TranslationReviewPage() {
               {rows.map((row) => (
                 <tr key={row.key} className="border-b border-border/60 align-top last:border-0">
                   <td className="px-4 py-3 font-mono text-xs text-ink-muted">{row.key}</td>
-                  <td className="px-4 py-3">{row.en || '—'}</td>
-                  <td className="px-4 py-3">{row.rw || '—'}</td>
+                  <td className="px-4 py-3">{row.en || '·'}</td>
+                  <td className="px-4 py-3">{row.rw || '·'}</td>
                 </tr>
               ))}
             </tbody>

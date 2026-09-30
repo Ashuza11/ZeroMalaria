@@ -1,214 +1,150 @@
-import { Activity, Languages, Eye, EyeOff, ShieldCheck, WifiOff, QrCode } from 'lucide-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth, type UserRole } from '../auth/AuthContext';
-import { RedirectIfAuthed } from '../auth/guards';
 import { homePath } from '../auth/roleAccess';
-import { Badge, Button, Card, Disclaimer, Input } from '../components/ui';
-import { setLanguage } from '../i18n';
+import { PillButton } from '../components/liquid';
+import { GlideArrow, Orb, type OrbTone } from '../components/liquid/alive';
+import { bouncy } from '../lib/motion';
 import { loginSchema } from '../validation/schemas';
+import { AuthHeading, Banner, Field, FieldGroup, FieldHint, PasswordField, authErrorKey, useAutoFocus, type ShakeHandle } from './auth/fields';
 
+/** Sign in (route: /login). Rendered inside AuthLayout. */
 export function LoginPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, quickDemoLogin, demoModeEnabled } = useAuth();
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [showPw, setShowPw] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
+  const [fieldError, setFieldError] = useState<string>('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const group = useRef<ShakeHandle | null>(null);
+  const first = useRef<HTMLInputElement | null>(null);
+  useAutoFocus(first);
 
-  const canSubmit = useMemo(() => {
-    const parsed = loginSchema.safeParse({ username: username.trim(), password });
-    return parsed.success && !loading;
-  }, [username, password, loading]);
+  const from = (location.state as { from?: string } | null)?.from;
+
+  const go = (role: UserRole) => navigate(from && from.startsWith('/app') ? from : homePath(role), { replace: true });
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    const parsed = loginSchema.safeParse({ username: username.trim(), password });
+    const parsed = loginSchema.safeParse({ username: identifier.trim(), password });
     if (!parsed.success) {
-      const fe: { username?: string; password?: string } = {};
-      for (const issue of parsed.error.issues) {
-        const k = issue.path[0] as 'username' | 'password';
-        if (k === 'username') fe.username = t('validation.username');
-        if (k === 'password') fe.password = t('validation.password');
-      }
-      setFieldErrors(fe);
+      const bad = parsed.error.issues[0]?.path[0];
+      setFieldError(bad === 'password' ? t('authx.vPassword') : t('authx.vIdentifier'));
+      group.current?.shake();
       return;
     }
-    setFieldErrors({});
-    setLoading(true);
+    setFieldError('');
+    setLoading('form');
     try {
       const user = await login(parsed.data.username, parsed.data.password);
-      navigate(homePath(user.role as UserRole), { replace: true });
-    } catch {
-      setError(t('auth.invalidCredentials'));
+      go(user.role as UserRole);
+    } catch (err) {
+      setError(t(authErrorKey(err)));
+      group.current?.shake();
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
   const demo = async (role: UserRole) => {
     if (!quickDemoLogin) return;
     setError('');
-    setLoading(true);
+    setLoading(role);
     try {
       const user = await quickDemoLogin(role);
-      navigate(homePath(user.role as UserRole), { replace: true });
-    } catch {
-      setError(t('common.error'));
+      go(user.role as UserRole);
+    } catch (err) {
+      setError(t(authErrorKey(err)));
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
+  const demoRoles: Array<{ role: UserRole; label: string; tone: OrbTone; mono: string }> = [
+    { role: 'chw', label: t('auth.roleChwShort'), tone: 'teal', mono: 'C' },
+    { role: 'nurse', label: t('auth.roleNurse'), tone: 'sky', mono: 'N' },
+    { role: 'supervisor', label: t('auth.roleSupervisor'), tone: 'amber', mono: 'S' },
+    { role: 'rbc', label: t('auth.roleRbcShort'), tone: 'ocean', mono: 'R' },
+  ];
+
   return (
-    <RedirectIfAuthed>
-      <div className="relative min-h-screen bg-app">
-        <div className="absolute right-4 top-4 z-10">
-          <button
-            type="button"
-            className="inline-flex h-10 items-center gap-1 rounded-control border border-border bg-surface px-3 text-xs font-semibold"
-            onClick={() => setLanguage(i18n.language.startsWith('rw') ? 'en' : 'rw')}
-            aria-label={t('nav.language')}
-          >
-            <Languages className="h-3.5 w-3.5" strokeWidth={1.75} />
-            {i18n.language.startsWith('rw') ? 'RW' : 'EN'}
-          </button>
+    <div>
+      <AuthHeading title={t('authx.welcomeBack')} sub={t('authx.signInSub')} />
+      <Banner>{error}</Banner>
+
+      <form onSubmit={(e) => void submit(e)} noValidate>
+        <FieldGroup ref={group}>
+          <Field
+            ref={first}
+            label={t('authx.identifier')}
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            invalid={!!fieldError && !identifier}
+          />
+          <PasswordField label={t('authx.password')} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" invalid={!!fieldError && password.length < 8} />
+        </FieldGroup>
+        <FieldHint>{fieldError}</FieldHint>
+
+        <div className="mt-3 flex justify-end">
+          <Link to="/forgot-password" className="rounded-full px-2 py-1 text-[14.5px] font-medium text-[var(--zm-teal)] hover:underline">
+            {t('authx.forgot')}
+          </Link>
         </div>
 
-        <div className="mx-auto grid min-h-screen max-w-[1200px] lg:grid-cols-2">
-          {/* Brand panel */}
-          <aside className="relative hidden flex-col justify-between bg-primary px-10 py-12 text-primary-foreground lg:flex">
-            <div>
-              <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-control bg-white/15">
-                <Activity className="h-7 w-7" strokeWidth={1.75} />
-              </div>
-              <h1 className="text-3xl font-semibold tracking-tight">{t('common.appName')}</h1>
-              <p className="mt-3 max-w-md text-base leading-relaxed text-white/90">{t('login.valueProp')}</p>
-              <ul className="mt-10 space-y-4 text-sm text-white/95">
-                <li className="flex gap-3">
-                  <WifiOff className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.75} />
-                  <span>{t('login.benefit1')}</span>
-                </li>
-                <li className="flex gap-3">
-                  <QrCode className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.75} />
-                  <span>{t('login.benefit2')}</span>
-                </li>
-                <li className="flex gap-3">
-                  <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.75} />
-                  <span>{t('login.benefit3')}</span>
-                </li>
-              </ul>
-            </div>
-            <Badge tone="warning">{t('common.synthetic')}</Badge>
-          </aside>
+        <PillButton type="submit" size="lg" className="mt-5 w-full" loading={loading === 'form'} disabled={!!loading && loading !== 'form'}>
+          {t('authx.signIn')}
+          <GlideArrow />
+        </PillButton>
+      </form>
 
-          {/* Form */}
-          <main className="flex flex-col justify-center px-4 py-12 sm:px-8 lg:px-12">
-            <div className="mx-auto w-full max-w-[420px]">
-              <div className="mb-6 lg:hidden">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-control bg-primary text-primary-foreground">
-                  <Activity className="h-6 w-6" strokeWidth={1.75} />
-                </div>
-                <h1 className="text-2xl font-semibold text-ink">{t('common.appName')}</h1>
-                <p className="mt-2 text-sm text-ink-muted">{t('login.subtitle')}</p>
-              </div>
-
-              {demoModeEnabled ? (
-                <div
-                  className="mb-4 rounded-control border border-warning/40 bg-warning-soft px-3 py-2 text-center text-xs font-medium text-ink"
-                  role="status"
-                >
-                  {t('login.demoBanner')}
-                </div>
-              ) : null}
-
-              <Card className="p-6 shadow-card">
-                <h2 className="text-lg font-semibold text-ink">{t('login.signIn')}</h2>
-                <form onSubmit={(e) => void submit(e)} className="mt-4 space-y-3" noValidate>
-                  <div>
-                    <label className="mb-1 block text-sm font-semibold text-ink" htmlFor="login-user">
-                      {t('login.username')}
-                    </label>
-                    <Input
-                      id="login-user"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      autoComplete="username"
-                      aria-invalid={!!fieldErrors.username}
-                    />
-                    {fieldErrors.username ? (
-                      <p className="mt-1 text-xs text-danger">{fieldErrors.username}</p>
-                    ) : null}
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-semibold text-ink" htmlFor="login-pass">
-                      {t('login.password')}
-                    </label>
-                    <div className="relative">
-                      <Input
-                        id="login-pass"
-                        type={showPw ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        className="pr-12"
-                        aria-invalid={!!fieldErrors.password}
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-control p-2 text-ink-muted"
-                        onClick={() => setShowPw((v) => !v)}
-                        aria-label={showPw ? t('login.hidePassword') : t('login.showPassword')}
-                      >
-                        {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                    {fieldErrors.password ? (
-                      <p className="mt-1 text-xs text-danger">{fieldErrors.password}</p>
-                    ) : null}
-                  </div>
-                  {error ? <p className="text-sm text-danger">{error}</p> : null}
-                  <Button className="w-full" size="lg" loading={loading} type="submit" disabled={!canSubmit && !loading}>
-                    {t('login.signIn')}
-                  </Button>
-                </form>
-
-                {demoModeEnabled ? (
-                  <>
-                    <div className="my-5 flex items-center gap-3 text-xs text-ink-muted">
-                      <div className="h-px flex-1 bg-border" />
-                      <span>{t('login.demoAccess')}</span>
-                      <div className="h-px flex-1 bg-border" />
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('chw')}>
-                        {t('auth.roleChw')}
-                      </Button>
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('nurse')}>
-                        {t('auth.roleNurse')}
-                      </Button>
-                      <Button variant="outline" size="sm" loading={loading} onClick={() => void demo('rbc')}>
-                        {t('auth.roleRbc')}
-                      </Button>
-                    </div>
-                    <p className="mt-3 text-xs text-ink-muted">{t('login.demoNote')}</p>
-                  </>
-                ) : null}
-              </Card>
-
-              <div className="mt-6">
-                <Disclaimer text={t('common.disclaimer')} />
-                <p className="mt-2 text-xs text-ink-muted">{t('common.synthetic')}</p>
-              </div>
-            </div>
-          </main>
+      {demoModeEnabled ? (
+        <div className="mt-7">
+          <div className="flex items-center gap-3 text-[12.5px] font-medium uppercase tracking-[0.1em] text-[var(--zm-label-3)]">
+            <span className="h-px flex-1 bg-[var(--zm-separator)]" />
+            {t('authx.demoAccess')}
+            <span className="h-px flex-1 bg-[var(--zm-separator)]" />
+          </div>
+          <div className="mt-4 grid grid-cols-4 gap-2">
+            {demoRoles.map((d, i) => (
+              <motion.button
+                key={d.role}
+                type="button"
+                onClick={() => void demo(d.role)}
+                disabled={!!loading}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...bouncy, delay: 0.1 + i * 0.04 }}
+                whileTap={{ scale: 0.94 }}
+                className="group flex flex-col items-center gap-1.5 rounded-[18px] bg-[rgba(118,118,128,0.1)] px-1 py-3 text-[11.5px] font-semibold text-[var(--zm-label-2)] transition hover:bg-[rgba(20,128,122,0.1)] hover:text-[var(--zm-teal)] disabled:opacity-50"
+              >
+                <span className="transition-transform duration-500 group-hover:scale-110">
+                  <Orb size={38} tone={d.tone} delay={i}>
+                    {loading === d.role ? <span className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <span className="text-[14px]">{d.mono}</span>}
+                  </Orb>
+                </span>
+                <span className="w-full truncate text-center">{d.label}</span>
+              </motion.button>
+            ))}
+          </div>
+          <p className="mt-3 text-center text-[12px] text-[var(--zm-label-3)]">{t('login.demoBanner')}</p>
         </div>
-      </div>
-    </RedirectIfAuthed>
+      ) : null}
+
+      <p className="mt-8 text-center text-[15px] text-[var(--zm-label-2)]">
+        {t('authx.noAccount')}{' '}
+        <Link to="/signup" className="font-semibold text-[var(--zm-teal)] hover:underline">
+          {t('authx.createAccount')}
+        </Link>
+      </p>
+    </div>
   );
 }

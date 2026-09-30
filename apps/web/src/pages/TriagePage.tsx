@@ -1,18 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import {
-  Activity,
-  Baby,
-  CircleHelp,
-  Droplets,
-  Frown,
-  Mic,
-  Minus,
-  Plus,
-  Thermometer,
-  Utensils,
-  Wind,
-  Zap,
-} from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
+import { Orb } from '../components/liquid/alive';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -322,31 +310,10 @@ export function TriagePage() {
   ) : null;
 
   const iconFor = (s: Step) => {
-    const cls = 'h-10 w-10 text-primary';
-    switch (s) {
-      case 'age':
-        return <Baby className={cls} strokeWidth={1.75} />;
-      case 'sex':
-        return <UsersIcon />;
-      case 'temperature':
-        return <Thermometer className={cls} strokeWidth={1.75} />;
-      case 'feverDays':
-        return <Activity className={cls} strokeWidth={1.75} />;
-      case 'convulsions':
-        return <Zap className={cls} strokeWidth={1.75} />;
-      case 'unable_to_drink':
-        return <Utensils className={cls} strokeWidth={1.75} />;
-      case 'vomiting_everything':
-        return <Frown className={cls} strokeWidth={1.75} />;
-      case 'lethargy':
-        return <CircleHelp className={cls} strokeWidth={1.75} />;
-      case 'breathing':
-        return <Wind className={cls} strokeWidth={1.75} />;
-      case 'tdr':
-        return <Droplets className={cls} strokeWidth={1.75} />;
-      default:
-        return <Mic className={cls} strokeWidth={1.75} />;
-    }
+    // Living orb marker per question: danger signs glow red, fever amber, others ocean/teal.
+    const danger: Step[] = ['convulsions', 'unable_to_drink', 'vomiting_everything', 'lethargy', 'breathing'];
+    const tone = danger.includes(s) ? 'danger' : s === 'temperature' || s === 'feverDays' ? 'amber' : s === 'tdr' ? 'teal' : 'ocean';
+    return <Orb size={52} tone={tone} delay={STEPS.indexOf(s)} />;
   };
 
   const questionBody = (
@@ -683,16 +650,5 @@ function YesNoCards({
         </button>
       ))}
     </div>
-  );
-}
-
-function UsersIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-10 w-10 text-primary" fill="none" stroke="currentColor" strokeWidth="1.75">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
   );
 }

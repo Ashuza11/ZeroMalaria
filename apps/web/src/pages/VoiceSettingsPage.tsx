@@ -66,7 +66,7 @@ export function VoiceSettingsPage() {
           </li>
           <li className="flex items-center justify-between gap-2 text-xs text-ink-muted">
             <span>{t('voiceSettings.ttsBrowserDetail')}</span>
-            <span>{ttsOk ? '✓' : '—'}</span>
+            <span>{ttsOk ? '✓' : '·'}</span>
           </li>
           <li className="flex items-center justify-between gap-2">
             <span>{t('voiceSettings.speechRecognition')}</span>

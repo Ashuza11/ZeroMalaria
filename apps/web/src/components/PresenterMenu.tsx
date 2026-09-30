@@ -51,7 +51,7 @@ export function PresenterMenu() {
       sex: 'female',
       decision: 'urgent_refer',
       reasons: ['Unable to drink or feed'],
-      summary: 'DEMO: overdue urgent referral — patient has not arrived',
+      summary: 'DEMO: overdue urgent referral, patient has not arrived',
       status: 'sent',
       created_at: new Date(Date.now() - 36 * 3600 * 1000).toISOString(),
       synced: false,
@@ -78,13 +78,13 @@ export function PresenterMenu() {
         <Clapperboard className="h-4 w-4" strokeWidth={1.75} />
       </IconButton>
       {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-card border border-border bg-surface shadow-lift">
-          <p className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        <div className="zm-popover absolute right-0 z-40 mt-3 w-72 overflow-hidden rounded-card border border-border bg-surface shadow-lift">
+          <p className="border-b border-border px-4 py-3 text-[13px] font-semibold text-ink">
             {t('common.presenter')}
           </p>
           <button
             type="button"
-            className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
             onClick={() => void replayDemo()}
           >
             <Clapperboard className="h-4 w-4 text-primary" strokeWidth={1.75} />
@@ -92,7 +92,7 @@ export function PresenterMenu() {
           </button>
           <button
             type="button"
-            className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
             onClick={() => {
               unlockAudio();
               setOpen(false);
@@ -105,7 +105,7 @@ export function PresenterMenu() {
           </button>
           <button
             type="button"
-            className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
             onClick={() => void resetDemo()}
           >
             <RefreshCcw className="h-4 w-4 text-ink-muted" strokeWidth={1.75} />
@@ -113,7 +113,7 @@ export function PresenterMenu() {
           </button>
           <button
             type="button"
-            className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
             onClick={() => {
               setOfflineSim(!offlineSim);
               push(offlineSim ? t('common.online') : t('common.offlineSimOn'), 'warning');
@@ -129,7 +129,7 @@ export function PresenterMenu() {
           {demoPresenter ? (
             <button
               type="button"
-              className="flex w-full items-center gap-2 border-t border-border px-3 py-3 text-left text-sm hover:bg-surface-muted"
+              className="flex w-full items-center gap-3 border-t border-border px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
               onClick={() => {
                 setOpen(false);
                 navigate('/app/settings/translations');
@@ -140,14 +140,14 @@ export function PresenterMenu() {
             </button>
           ) : null}
           {demoPresenter ? (
-            <div className="border-t border-border px-3 py-2">
-              <p className="text-[10px] font-bold uppercase text-ink-muted">{t('auth.switchRole')}</p>
-              <div className="mt-1 grid grid-cols-2 gap-1">
+            <div className="border-t border-border px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-muted">{t('auth.switchRole')}</p>
+              <div className="mt-2 grid grid-cols-2 gap-1.5">
                 {(['chw', 'nurse', 'supervisor', 'rbc'] as UserRole[]).map((role) => (
                   <button
                     key={role}
                     type="button"
-                    className="rounded-control px-2 py-1.5 text-left text-xs font-semibold capitalize hover:bg-surface-muted"
+                    className="rounded-full bg-[rgba(118,118,128,0.1)] px-3 py-2 text-center text-xs font-semibold capitalize transition-colors hover:bg-primary-soft hover:text-primary"
                     onClick={() =>
                       void switchRole(role)
                         .then((u) => {
@@ -167,7 +167,7 @@ export function PresenterMenu() {
           ) : null}
           <button
             type="button"
-            className="flex w-full items-center gap-2 border-t border-border px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            className="flex w-full items-center gap-3 border-t border-border px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
             onClick={toggleDark}
           >
             {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}

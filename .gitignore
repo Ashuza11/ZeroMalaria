@@ -16,3 +16,7 @@ ml/artifacts/
 .venv/
 __pycache__/
 node_modules/
+
+# local backups and preview dumps
+*.db.bak*
+Claude outputs/

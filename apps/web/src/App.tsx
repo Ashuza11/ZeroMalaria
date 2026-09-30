@@ -9,6 +9,10 @@ import { VoiceProvider } from './voice/VoiceContext';
 import { ToastProvider } from './components/ToastProvider';
 import { Skeleton } from './components/ui';
 import { LoginPage } from './pages/LoginPage';
+import { LandingPage } from './pages/landing/LandingPage';
+import { AuthLayout } from './pages/auth/AuthLayout';
+import { SignUpPage } from './pages/auth/SignUpPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { HomePage } from './pages/HomePage';
 import { TriagePage } from './pages/TriagePage';
 import { ResultPage } from './pages/ResultPage';
@@ -77,8 +81,13 @@ export default function App() {
             <ToastProvider>
               <BrowserRouter>
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/" element={<RootRedirect />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignUpPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                </Route>
+                <Route path="/start" element={<RootRedirect />} />
 
                 <Route path="/m" element={<MobileLandingPage />} />
                 <Route path="/m/home" element={<HomePage />} />

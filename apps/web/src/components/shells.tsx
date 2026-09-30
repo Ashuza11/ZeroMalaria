@@ -1,7 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Activity,
   AlertTriangle,
   BarChart3,
   Bell,
@@ -11,19 +10,20 @@ import {
   Languages,
   LayoutDashboard,
   LogOut,
-  Moon,
   Package,
   PanelLeft,
   Plus,
   Search,
   Settings,
   Stethoscope,
-  Sun,
   User,
   Users,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { LogoMark as BrandMark } from './liquid';
+import { SunMoon } from './liquid/alive';
+import { spring } from '../lib/motion';
 import { useSync } from '../sync/SyncContext';
 import { useTheme } from '../theme/ThemeContext';
 import { setLanguage } from '../i18n';
@@ -51,14 +51,14 @@ function roleLabel(role: UserRole | string, t: (k: string) => string) {
 
 function LogoMark({ compact }: { compact?: boolean }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-9 w-9 items-center justify-center rounded-control bg-primary text-primary-foreground">
-        <Activity className="h-5 w-5" strokeWidth={1.75} />
-      </div>
+    <div className="flex items-center gap-2.5">
+      <BrandMark size={36} animated={false} />
       {!compact ? (
         <div>
-          <p className="text-sm font-bold leading-none text-ink">ZeroMalaria</p>
-          <p className="mt-1 text-[11px] text-ink-muted">Malaria triage</p>
+          <p className="text-[16px] font-semibold leading-none tracking-[-0.02em] text-ink">
+            Zero<span className="text-accent">Malaria</span>
+          </p>
+          <p className="mt-1 text-[11.5px] font-medium text-ink-muted">Malaria triage</p>
         </div>
       ) : null}
     </div>
@@ -105,9 +105,9 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
     location.pathname.endsWith('/handover');
 
   return (
-    <div className="min-h-screen bg-app">
-      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card md:my-4 md:min-h-[calc(100vh-2rem)] md:rounded-[20px] md:border">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-surface/95 px-4 py-3 backdrop-blur">
+    <div className="zm-app-canvas zm-ios-scroll min-h-screen">
+      <div className="mx-auto flex min-h-screen max-w-chw flex-col md:my-4 md:min-h-[calc(100vh-2rem)] md:overflow-hidden md:rounded-[36px] md:border md:border-white/70 md:bg-app/60 md:shadow-lift dark:md:border-white/10">
+        <header className="zm-glass zm-glass-strong sticky top-0 z-30 flex items-center justify-between gap-2 !border-x-0 !border-t-0 px-4 py-3 !shadow-none">
           <LogoMark />
           <div className="flex flex-wrap items-center gap-2">
             <SyntheticBadge label={t('common.synthetic')} />
@@ -124,8 +124,8 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
         </header>
 
         {title ? (
-          <div className="border-b border-border px-4 py-3">
-            <h1 className="text-lg font-semibold text-ink">{title}</h1>
+          <div className="px-4 pb-1 pt-5">
+            <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-ink">{title}</h1>
           </div>
         ) : null}
 
@@ -145,8 +145,8 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
         </motion.main>
 
         {!hideTabs ? (
-          <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 border-t border-border bg-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur md:left-auto md:right-auto md:translate-x-0">
-            <div className="mx-auto grid max-w-chw grid-cols-4 gap-1">
+          <nav className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 md:bottom-6">
+            <div className="zm-glass zm-glass-strong mx-auto grid max-w-chw grid-cols-4 gap-1 rounded-[30px] p-1.5">
               <Tab to="/m/home" icon={<Home className="h-5 w-5" strokeWidth={1.75} />} label={t('nav.home')} />
               <Tab
                 to="/m/triage"
@@ -194,9 +194,9 @@ function Tab({
       to={to}
       className={({ isActive }) =>
         cn(
-          'relative flex touch-target flex-col items-center justify-center gap-0.5 rounded-control px-1 py-1 text-[11px] font-semibold',
-          emphasize && 'mx-1 -mt-3 rounded-full bg-primary px-0 py-3 text-primary-foreground shadow-card',
-          !emphasize && (isActive ? 'text-primary' : 'text-ink-muted'),
+          'relative flex touch-target flex-col items-center justify-center gap-0.5 rounded-[24px] px-1 py-1.5 text-[11px] font-semibold transition-colors duration-300',
+          emphasize && 'mx-1 rounded-full bg-[linear-gradient(180deg,#135a85,#0b3c5d)] px-0 py-3 text-white shadow-[0_10px_24px_-10px_rgba(11,60,93,0.8)]',
+          !emphasize && (isActive ? 'bg-primary-soft text-primary dark:text-sky-300' : 'text-ink-muted hover:text-ink'),
         )
       }
     >
@@ -362,15 +362,15 @@ export function WebShell({
   const Sidebar = (
     <aside
       className={cn(
-        'flex h-full flex-col border-r border-border bg-surface transition-all',
-        collapsed ? 'w-[72px]' : 'w-64',
+        'zm-glass zm-glass-strong flex h-full flex-col overflow-hidden rounded-[28px] transition-[width] duration-500 [transition-timing-function:cubic-bezier(.32,.72,0,1)]',
+        collapsed ? 'w-[76px]' : 'w-[264px]',
       )}
     >
-      <div className="flex items-center justify-between border-b border-border p-4">
+      <div className={cn('flex items-center justify-between px-4 pb-3 pt-5', collapsed && 'flex-col gap-3 px-2')}>
         <LogoMark compact={collapsed} />
         <button
           type="button"
-          className="hidden rounded-control border border-border p-1 lg:inline-flex"
+          className="hidden h-8 w-8 items-center justify-center rounded-full bg-[rgba(118,118,128,0.12)] text-ink-muted transition hover:bg-[rgba(118,118,128,0.2)] hover:text-ink lg:inline-flex"
           onClick={() => setCollapsed((c) => !c)}
           aria-label={t('nav.toggleSidebar')}
         >
@@ -378,15 +378,15 @@ export function WebShell({
         </button>
       </div>
       {user ? (
-        <div className={cn('border-b border-border px-3 py-3', collapsed && 'px-2 text-center')}>
-          <Badge tone="primary">{roleLabel(user.role, t)}</Badge>
+        <div className={cn('px-4 pb-2', collapsed && 'px-2 text-center')}>
+          {!collapsed ? <Badge tone="primary">{roleLabel(user.role, t)}</Badge> : <span className="mx-auto block h-1.5 w-6 rounded-full bg-primary/30" />}
         </div>
       ) : (
-        <div className={cn('border-b border-border px-3 py-3', collapsed && 'px-2 text-center')}>
+        <div className={cn('px-4 pb-2', collapsed && 'px-2 text-center')}>
           <Badge tone="neutral">{t('common.demoMode')}</Badge>
         </div>
       )}
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="zm-scroll-hide flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
         {visibleNav
           .filter((item) => !item.group)
           .map((item) => {
@@ -405,21 +405,28 @@ export function WebShell({
                   setMobileNav(false);
                 }}
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
-                  active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
+                  'relative flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-[14.5px] font-medium transition-colors duration-300',
+                  active ? 'font-semibold text-primary dark:text-sky-300' : 'text-ink-muted hover:bg-[rgba(118,118,128,0.1)] hover:text-ink',
                   collapsed && 'justify-center px-2',
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                {!collapsed ? <span className="flex-1 text-left">{item.label}</span> : null}
+                {active ? (
+                  <motion.span
+                    layoutId="sidebar-active"
+                    transition={spring}
+                    className="absolute inset-0 rounded-[14px] bg-primary-soft shadow-[inset_0_0_0_1px_rgba(11,60,93,0.06)]"
+                  />
+                ) : null}
+                <Icon className="relative z-10 h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+                {!collapsed ? <span className="relative z-10 flex-1 text-left">{item.label}</span> : null}
                 {!collapsed && item.badge ? (
-                  <span className="rounded-full bg-danger px-1.5 text-[10px] text-white">{item.badge}</span>
+                  <span className="relative z-10 min-w-[20px] rounded-full bg-danger px-1.5 py-px text-center text-[11px] font-semibold text-white">{item.badge}</span>
                 ) : null}
               </button>
             );
           })}
         {!collapsed ? (
-          <p className="mb-1 mt-4 px-2 text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+          <p className="mb-1.5 mt-5 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-muted/80">
             {t('nav.settingsGroup')}
           </p>
         ) : null}
@@ -438,25 +445,32 @@ export function WebShell({
                   setMobileNav(false);
                 }}
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
-                  active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
+                  'relative flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-[14.5px] font-medium transition-colors duration-300',
+                  active ? 'font-semibold text-primary dark:text-sky-300' : 'text-ink-muted hover:bg-[rgba(118,118,128,0.1)] hover:text-ink',
                   collapsed && 'justify-center px-2',
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                {!collapsed ? <span className="flex-1 text-left">{item.label}</span> : null}
+                {active ? (
+                  <motion.span
+                    layoutId="sidebar-active"
+                    transition={spring}
+                    className="absolute inset-0 rounded-[14px] bg-primary-soft shadow-[inset_0_0_0_1px_rgba(11,60,93,0.06)]"
+                  />
+                ) : null}
+                <Icon className="relative z-10 h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+                {!collapsed ? <span className="relative z-10 flex-1 text-left">{item.label}</span> : null}
               </button>
             );
           })}
       </nav>
-      <div className="space-y-2 border-t border-border p-4 text-xs text-ink-muted">
+      <div className={cn('m-3 space-y-2 rounded-[20px] bg-[rgba(118,118,128,0.08)] p-3.5 text-xs text-ink-muted', collapsed && 'hidden')}>
         <SyncPill />
         <p className="flex flex-wrap items-center gap-2">
           <span>v{APP_VERSION}</span>
           <SyntheticBadge label={t('common.synthetic')} />
         </p>
         {user && !collapsed ? (
-          <p className="truncate font-medium text-ink">
+          <p className="truncate text-[13px] font-semibold text-ink">
             {user.display_name} · {roleLabel(user.role, t)}
           </p>
         ) : null}
@@ -473,21 +487,21 @@ export function WebShell({
       .toUpperCase() || 'ZM';
 
   return (
-    <div className="min-h-screen bg-app text-ink">
+    <div className="zm-app-canvas zm-ios-scroll min-h-screen text-ink">
       <div className="flex min-h-screen">
-        <div className="hidden lg:block">{Sidebar}</div>
+        <div className="sticky top-0 hidden h-screen shrink-0 p-3 pr-0 lg:block">{Sidebar}</div>
         {mobileNav ? (
           <div className="fixed inset-0 z-40 flex lg:hidden">
-            <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setMobileNav(false)} />
-            <div className="relative z-10 h-full">{Sidebar}</div>
+            <button type="button" className="zm-backdrop absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setMobileNav(false)} />
+            <div className="relative z-10 h-full p-3 [animation:zm-pop_.45s_cubic-bezier(.32,.72,0,1)_both] [transform-origin:left_center]">{Sidebar}</div>
           </div>
         ) : null}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur">
+          <header className="sticky top-3 z-20 mx-3 mt-3 flex h-[64px] items-center justify-between gap-3 rounded-[24px] border border-white/70 bg-surface/75 px-3 shadow-[0_10px_30px_-18px_rgba(6,36,58,0.35)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/[0.07] dark:bg-[rgba(14,27,40,0.72)] sm:px-4">
             <div className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
-                className="rounded-control border border-border p-2 lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(118,118,128,0.12)] lg:hidden"
                 onClick={() => setMobileNav(true)}
                 aria-label="Menu"
               >
@@ -495,63 +509,65 @@ export function WebShell({
               </button>
               <button
                 type="button"
-                className="hidden rounded-control border border-border p-2 lg:inline-flex"
+                className="hidden h-10 w-10 items-center justify-center rounded-full bg-[rgba(118,118,128,0.12)] text-ink-muted transition hover:bg-[rgba(118,118,128,0.2)] hover:text-ink lg:inline-flex"
                 onClick={() => setCollapsed((c) => !c)}
                 aria-label={t('nav.toggleSidebar')}
               >
                 <PanelLeft className="h-4 w-4" />
               </button>
               <div className="min-w-0">
-                <p className="truncate text-xs text-ink-muted">{(crumbs || [title]).join(' / ')}</p>
-                <h1 className="truncate text-lg font-semibold">{title}</h1>
+                <p className="truncate text-[12px] font-medium text-ink-muted">{(crumbs || [title]).join('  ›  ')}</p>
+                <h1 className="truncate text-[17px] font-semibold tracking-[-0.02em]">{title}</h1>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <SyntheticBadge label={t('common.synthetic')} />
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="hidden md:inline-flex">
+                <SyntheticBadge label={t('common.synthetic')} />
+              </span>
+              <div className="flex items-center gap-1 rounded-full bg-[rgba(118,118,128,0.1)] p-1">
               <IconButton
                 label={t('nav.commandPalette')}
-                showLabel
-                className="hidden sm:inline-flex"
+                className="hidden !bg-transparent hover:!bg-surface sm:inline-flex"
                 onClick={() => setPaletteOpen(true)}
               >
-                <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <Search className="h-4 w-4" strokeWidth={1.9} />
               </IconButton>
               <IconButton
-                label={i18n.language.startsWith('rw') ? 'RW' : 'EN'}
-                showLabel
+                label={t('nav.language')}
+                className="!bg-transparent px-3 text-[13px] font-bold hover:!bg-surface"
                 onClick={() => setLanguage(i18n.language.startsWith('rw') ? 'en' : 'rw')}
               >
-                <Languages className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {i18n.language.startsWith('rw') ? 'RW' : 'EN'}
               </IconButton>
-              <IconButton label={t('common.toggleTheme')} showLabel onClick={toggleDark}>
-                {dark ? <Sun className="h-4 w-4" strokeWidth={1.75} /> : <Moon className="h-4 w-4" strokeWidth={1.75} />}
+              <IconButton label={t('common.toggleTheme')} className="!bg-transparent hover:!bg-surface" onClick={toggleDark}>
+                <SunMoon dark={dark} />
               </IconButton>
               <div className="relative" ref={notifRef}>
                 <IconButton
                   label={t('nav.notifications')}
-                  showLabel
-                  className="relative"
+                  className="relative !bg-transparent hover:!bg-surface"
                   onClick={() => setNotifOpen((o) => !o)}
                 >
-                  <Bell className="h-4 w-4" strokeWidth={1.75} />
+                  <Bell className="h-4 w-4" strokeWidth={1.9} />
                   {overdueAlerts.length ? (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] text-white">
+                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white ring-2 ring-surface">
                       {overdueAlerts.length}
                     </span>
                   ) : null}
                 </IconButton>
                 {notifOpen ? (
-                  <div className="absolute right-0 z-40 mt-2 w-72 rounded-card border border-border bg-surface shadow-lift">
-                    <p className="border-b border-border px-3 py-2 text-xs font-semibold uppercase text-ink-muted">
+                  <div className="zm-popover absolute right-0 z-40 mt-3 w-80 rounded-card border border-border bg-surface shadow-lift">
+                    <p className="border-b border-border px-4 py-3 text-[13px] font-semibold text-ink">
                       {t('nav.notifications')}
                     </p>
                     {overdueAlerts.length === 0 ? (
-                      <p className="px-3 py-4 text-sm text-ink-muted">{t('alerts.empty')}</p>
+                      <p className="px-4 py-6 text-center text-sm text-ink-muted">{t('alerts.empty')}</p>
                     ) : (
                       <ul className="max-h-64 overflow-y-auto">
                         {overdueAlerts.map((a) => (
-                          <li key={a.id} className="border-b border-border/60 px-3 py-2 text-sm last:border-0">
-                            {a.summary}
+                          <li key={a.id} className="flex gap-3 border-b border-border/60 px-4 py-3 text-sm last:border-0">
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-warning" aria-hidden />
+                            <span>{a.summary}</span>
                           </li>
                         ))}
                       </ul>
@@ -559,28 +575,34 @@ export function WebShell({
                   </div>
                 ) : null}
               </div>
-              <StatusPill status={connectionStatus} />
+              </div>
+              <span className="hidden sm:inline-flex">
+                <StatusPill status={connectionStatus} />
+              </span>
               <PresenterMenu />
               <div className="relative" ref={avatarRef}>
                 <button
                   type="button"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(145deg,#14807a,#0b3c5d)] text-[13px] font-bold text-white shadow-[0_6px_16px_-6px_rgba(11,60,93,0.7)] ring-2 ring-white/70 transition active:scale-95 dark:ring-white/10"
                   onClick={() => setAvatarOpen((o) => !o)}
                   aria-label={user?.display_name || 'Account'}
                 >
                   {initials}
                 </button>
                 {avatarOpen ? (
-                  <div className="absolute right-0 z-40 mt-2 w-52 rounded-card border border-border bg-surface shadow-lift">
-                    <div className="border-b border-border px-3 py-2">
-                      <p className="text-sm font-semibold">{user?.display_name}</p>
-                      <p className="text-xs text-ink-muted">{user?.username}</p>
+                  <div className="zm-popover absolute right-0 z-40 mt-3 w-64 rounded-card border border-border bg-surface shadow-lift">
+                    <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(145deg,#14807a,#0b3c5d)] text-[13px] font-bold text-white">{initials}</span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[15px] font-semibold">{user?.display_name}</p>
+                        <p className="truncate text-xs text-ink-muted">{user?.username}</p>
+                      </div>
                     </div>
                     {user ? (
                       <>
                         <button
                           type="button"
-                          className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted"
+                          className="flex w-full px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
                           onClick={() => {
                             setPreferredView('mobile');
                             setAvatarOpen(false);
@@ -591,7 +613,7 @@ export function WebShell({
                         </button>
                         <button
                           type="button"
-                          className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-surface-muted"
+                          className="flex w-full px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
                           onClick={() => {
                             setPreferredView('web');
                             setAvatarOpen(false);
@@ -602,7 +624,7 @@ export function WebShell({
                         </button>
                         <button
                           type="button"
-                          className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+                          className="flex w-full items-center gap-2 border-t border-border px-4 py-3 text-left text-[14.5px] font-semibold text-danger transition-colors hover:bg-surface-muted"
                           onClick={() => void logout().then(() => navigate('/login'))}
                         >
                           <LogOut className="h-4 w-4" strokeWidth={1.75} />
@@ -612,7 +634,7 @@ export function WebShell({
                     ) : (
                       <button
                         type="button"
-                        className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+                        className="flex w-full items-center gap-2 px-4 py-3 text-left text-[14.5px] transition-colors hover:bg-surface-muted"
                         onClick={() => navigate('/login')}
                       >
                         <LogOut className="h-4 w-4" strokeWidth={1.75} />
@@ -626,7 +648,7 @@ export function WebShell({
           </header>
           <motion.main
             key={location.pathname}
-            className="mx-auto w-full max-w-[1440px] flex-1 p-6"
+            className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-8"
             variants={reduce ? undefined : pageVariants}
             initial="initial"
             animate="animate"
@@ -638,30 +660,31 @@ export function WebShell({
       </div>
 
       {paletteOpen ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/40 p-4 pt-[15vh]">
-          <div className="w-full max-w-lg rounded-card border border-border bg-surface shadow-lift">
-            <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-              <Search className="h-4 w-4 text-ink-muted" />
+        <div className="zm-backdrop fixed inset-0 z-50 flex items-start justify-center bg-ink/40 p-4 pt-[15vh]">
+          <div className="zm-dialog w-full max-w-xl rounded-card border border-border bg-surface shadow-lift">
+            <div className="flex items-center gap-3 border-b border-border px-5 py-3">
+              <Search className="h-5 w-5 text-ink-muted" />
               <input
                 autoFocus
-                className="h-10 flex-1 bg-transparent text-sm outline-none"
+                className="h-12 flex-1 bg-transparent text-[17px] outline-none placeholder:text-ink-muted"
                 placeholder={t('nav.commandPalettePlaceholder')}
                 value={paletteQuery}
                 onChange={(e) => setPaletteQuery(e.target.value)}
               />
             </div>
-            <ul className="max-h-72 overflow-y-auto py-1">
+            <ul className="max-h-80 overflow-y-auto p-2">
               {paletteItems.map((item) => (
                 <li key={item.to}>
                   <button
                     type="button"
-                    className="flex w-full px-4 py-2.5 text-left text-sm hover:bg-surface-muted"
+                    className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-[15px] font-medium transition-colors hover:bg-primary-soft hover:text-primary"
                     onClick={() => {
                       navigate(item.to);
                       setPaletteOpen(false);
                       setPaletteQuery('');
                     }}
                   >
+                    <item.icon className="h-[18px] w-[18px] text-ink-muted" strokeWidth={1.8} />
                     {item.label}
                   </button>
                 </li>

@@ -99,9 +99,9 @@ export function UsersPage() {
                 <tr key={row.id} className="border-b border-border/60">
                   <td className="px-4 py-3 font-semibold">{row.display_name}</td>
                   <td className="px-4 py-3 capitalize">{row.role}</td>
-                  <td className="px-4 py-3">{row.district || '—'}</td>
-                  <td className="px-4 py-3">{row.facility_id || '—'}</td>
-                  <td className="px-4 py-3">{row.village || '—'}</td>
+                  <td className="px-4 py-3">{row.district || '·'}</td>
+                  <td className="px-4 py-3">{row.facility_id || '·'}</td>
+                  <td className="px-4 py-3">{row.village || '·'}</td>
                   <td className="px-4 py-3">
                     <Badge tone={row.active ? 'success' : 'neutral'}>
                       {row.active ? t('users.active') : t('users.inactive')}
@@ -139,17 +139,17 @@ export function UsersPage() {
         <div className="fixed inset-0 z-50 flex justify-end">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/40"
+            className="zm-backdrop absolute inset-0 bg-ink/40"
             aria-label={t('common.cancel')}
             onClick={() => setDrawer(false)}
           />
-          <aside className="relative z-10 flex h-full w-full max-w-md flex-col border-l border-border bg-surface shadow-lift">
-            <div className="border-b border-border p-4">
-              <h2 className="text-lg font-semibold">{t('users.addChw')}</h2>
+          <aside className="zm-sheet relative z-10 flex h-full w-full max-w-md flex-col border-l border-border bg-surface shadow-lift">
+            <div className="border-b border-border px-6 pb-4 pt-6">
+              <h2 className="text-[22px] font-bold tracking-[-0.02em]">{t('users.addChw')}</h2>
             </div>
-            <form onSubmit={(e) => void createChw(e)} className="flex flex-1 flex-col gap-3 p-4">
+            <form onSubmit={(e) => void createChw(e)} className="flex flex-1 flex-col gap-4 p-6">
               <div>
-                <label className="mb-1 block text-sm font-semibold">{t('users.colName')}</label>
+                <label className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-muted">{t('users.colName')}</label>
                 <Input
                   value={form.display_name}
                   onChange={(e) => setForm((f) => ({ ...f, display_name: e.target.value }))}
@@ -157,7 +157,7 @@ export function UsersPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold">{t('login.username')}</label>
+                <label className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-muted">{t('login.username')}</label>
                 <Input
                   value={form.username}
                   onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
@@ -165,7 +165,7 @@ export function UsersPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold">{t('login.password')}</label>
+                <label className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-muted">{t('login.password')}</label>
                 <Input
                   type="password"
                   value={form.password}
@@ -174,7 +174,7 @@ export function UsersPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold">{t('users.colVillage')}</label>
+                <label className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-muted">{t('users.colVillage')}</label>
                 <Input
                   value={form.village}
                   onChange={(e) => setForm((f) => ({ ...f, village: e.target.value }))}
