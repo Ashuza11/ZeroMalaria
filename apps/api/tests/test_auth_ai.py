@@ -50,7 +50,7 @@ def client(tmp_path):
                 username="chw.demo",
                 password_hash=pw,
                 display_name="CHW",
-                role="chw",
+                role="CHW",
                 facility_id="HC-BUG-01",
                 district="Bugesera",
                 village="Nyamata",
@@ -58,31 +58,29 @@ def client(tmp_path):
                 active=True,
             ),
             User(
-                id="u-nurse",
-                username="nurse.demo",
+                id="u-hc",
+                username="health.center",
                 password_hash=pw,
-                display_name="Nurse",
-                role="nurse",
-                facility_id="HC-BUG-01",
-                district="Bugesera",
-                active=True,
-            ),
-            User(
-                id="u-sup",
-                username="supervisor.demo",
-                password_hash=pw,
-                display_name="Sup",
-                role="supervisor",
+                display_name="Health Center",
+                role="HEALTH_CENTER",
                 facility_id="HC-BUG-01",
                 district="Bugesera",
                 active=True,
             ),
             User(
                 id="u-rbc",
-                username="rbc.demo",
+                username="rbc.admin",
                 password_hash=pw,
-                display_name="RBC",
-                role="rbc",
+                display_name="RBC Admin",
+                role="RBC_ADMIN",
+                active=True,
+            ),
+            User(
+                id="u-super",
+                username="super.admin",
+                password_hash=pw,
+                display_name="Super",
+                role="SUPER_ADMIN",
                 active=True,
             ),
         ]
@@ -103,7 +101,16 @@ def test_login_and_me(client):
     token = _token(client, "chw.demo")
     me = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert me.status_code == 200
-    assert me.json()["role"] == "chw"
+    assert me.json()["role"] == "CHW"
+    assert "triages:create" in me.json()["permissions"]
+
+
+def test_forged_role_in_token_ignored(client):
+    """JWT role claim is not trusted for authorization — DB role wins via get_current_user."""
+    token = _token(client, "chw.demo")
+    # CHW cannot hit analytics even if somehow claiming otherwise
+    r = client.get("/analytics/kpis", headers={"Authorization": f"Bearer {token}"})
+    assert r.status_code == 403
 
 
 def test_chw_cannot_list_users(client):
@@ -112,28 +119,42 @@ def test_chw_cannot_list_users(client):
     assert r.status_code == 403
 
 
-def test_supervisor_can_create_chw_only(client):
-    token = _token(client, "supervisor.demo")
+def test_rbc_admin_can_create_chw(client):
+    token = _token(client, "rbc.admin")
     r = client.post(
         "/users",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "username": "chw.new",
-            "password": "demo1234",
+            "password": "TempPass99x",
             "display_name": "New CHW",
-            "role": "nurse",
+            "role": "CHW",
             "village": "Test",
+            "facility_id": "HC-BUG-01",
         },
     )
     assert r.status_code == 200
-    assert r.json()["role"] == "chw"  # forced
+    assert r.json()["role"] == "CHW"
+
+
+def test_rbc_admin_cannot_create_super_admin(client):
+    token = _token(client, "rbc.admin")
+    r = client.post(
+        "/users",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "username": "evil.super",
+            "password": "TempPass99x",
+            "display_name": "Evil",
+            "role": "SUPER_ADMIN",
+        },
+    )
+    assert r.status_code == 403
 
 
 def test_scoped_referrals_chw_isolation(client):
-    nurse = _token(client, "nurse.demo")
     client.post(
         "/referrals",
-        headers={"Authorization": f"Bearer {nurse}"},
         json={
             "client_uuid": "iso-1",
             "facility_id": "HC-BUG-01",
@@ -208,7 +229,6 @@ def test_ai_chat_rejects_doses_and_opens_triage_on_danger():
 def test_ml_and_ai_cannot_downgrade_urgent():
     combined = assert_never_downgrade("urgent_refer", "treat_at_home")
     assert decision_rank(combined) >= decision_rank("urgent_refer")
-    # Decision engine still locks urgent even if we pretend AI wanted treat
     result = combine_decision(
         {
             "age_months": 28,

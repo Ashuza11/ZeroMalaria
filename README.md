@@ -5,12 +5,14 @@
 
 Offline-first, AI-assisted malaria **triage and referral** platform for Rwanda:
 
-| Experience | Who | Routes |
+| Experience | Who (role) | Routes |
 | --- | --- | --- |
-| CHW mobile PWA | Community Health Worker | `/m/*` (phone); desktop workspace `/app/chw`, `/app/triage` |
-| Health center | Nurse | `/app/referrals` inbox |
-| Supervisor | Facility / district lead | `/app/dashboard` (scoped) + Users |
-| National / district | RBC officer | `/app/dashboard` (full analytics) |
+| CHW mobile PWA | `CHW` | `/m/*` (phone); desktop `/app/*` when preferred |
+| Health center | `HEALTH_CENTER` | `/app/referrals` inbox, facility tools |
+| District / national ops | `RBC_ADMIN` | `/app/dashboard`, Users (scoped), facilities |
+| Platform admin | `SUPER_ADMIN` | Full `/app/*` admin (users, RBAC, audit) |
+
+App shell (`/app/*`): fixed sidebar, sticky header, only main content scrolls; create/edit/confirm use centered modals (bottom sheet on phones).
 
 > **Decision support tool. Not a replacement for clinical judgment.**  
 > **Synthetic demo data only** — not a patient registry, not clinical validation.
@@ -248,18 +250,22 @@ Details: [docs/voice_setup.md](docs/voice_setup.md).
 
 ## 7. Demo accounts and roles
 
-After `seed.py`, password is **`ZM_DEMO_PASSWORD`** (default **`demo1234`**):
+### Demo only
 
-| Username | Role | Lands on (desktop) |
+After `make seed` / `seed.py`, the terminal prints this table. Password is **`ZM_DEMO_PASSWORD`** (default **`demo1234`**). **Never shown in the login UI** — role is detected from the account after username/password login.
+
+| Username | Role (code) | Lands on (desktop) |
 | --- | --- | --- |
-| `chw.demo` | Community Health Worker | `/app/chw` (phone: `/m/home`) |
-| `nurse.demo` | Nurse | `/app/referrals` |
-| `supervisor.demo` | Supervisor | `/app/dashboard` |
-| `rbc.demo` | RBC officer | `/app/dashboard` |
+| `chw.demo` | CHW | `/app/home` (phone: `/m/home`) |
+| `health.center` | HEALTH_CENTER | `/app/referrals` |
+| `rbc.admin` | RBC_ADMIN | `/app/dashboard` |
+| `super.admin` | SUPER_ADMIN | `/app/dashboard` |
 
-- There is **no public sign-up**.  
-- Demo shortcut buttons appear only when `VITE_DEMO_MODE=true`; they call **`POST /auth/demo-login`** on the server (not a client-side bypass).  
-- Role isolation: CHW cannot use RBC analytics (UI + `403` on `/analytics/*`). Nurse is scoped to facility referrals.
+- There is **no public sign-up** and **no role picker** on login.  
+- `VITE_DEMO_MODE` only controls the synthetic-data banner (and presenter tools), not login buttons.  
+- When `ZM_DEMO_MODE=false`, the API refuses to start with the default JWT secret or default demo password.  
+- Admin-created users may see a **dismissible password modal** once (`password_prompt_status=pending`); Ignore is remembered server-side. Demo accounts never show it. Policy: `ZM_PASSWORD_CHANGE_POLICY=prompt|enforce` (see [docs/rbac.md](docs/rbac.md)).  
+- Roles / permissions: [docs/rbac.md](docs/rbac.md).
 
 Default UI language on first load: **Kinyarwanda** (`rw`), switchable to English.
 
@@ -346,6 +352,9 @@ npm run screenshots
 | Cloud TTS / STT | Mock unless configured |
 | Audio pack MP3s | Manifests / placeholders; native recordings recommended |
 | Hotspot wording | Statistical signal only — not outbreak confirmation |
+| App shell scroll / Users CRUD UI | Real UI; Playwright scroll assertions in `e2e/shell-scroll.spec.ts` (needs API + web) |
+| Geography / Stock admin tables | List APIs exist; dedicated CRUD UIs still thin vs Users template |
+| Screenshot pack light+dark | Partial under `docs/screenshots/` — full visual QA not fully verified |
 
 ---
 

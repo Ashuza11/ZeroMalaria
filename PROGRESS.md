@@ -1,52 +1,34 @@
-# ZeroMalaria — Progress
+# ZeroMalaria - Progress
 
 **Decision support tool. Not a replacement for clinical judgment.**  
 **Synthetic demo data** only.
 
-## Design + voice polish (Steps 1–7)
+## Current sprint: AI visibility + consult (2026-09-30)
 
-| Step | Status | Notes |
-| --- | --- | --- |
-| 1 Design system + templates | **Done** | `PageHeader`, `SectionCard`, `TwoPanelLayout`, `StepperLayout`, `ErrorState`, `SyntheticBadge`; labeled header IconButtons; full role names |
-| 2 Layouts by device | **Done** | Desktop `/app/*` WebShell; CHW `/app/chw` + `/app/triage` StepperLayout; `/m/*` mobile shell |
-| 3 Triage redesign | **Done** | Age +/- + chips + years toggle; temp 0.1; danger cards; Listen/Mic/Help; live summary |
-| 4 Voice engine | **Done** | `VoiceProvider` state machine; audio_pack→cloud→browser(lang-match)→text; settings honest per language; Voice review; Mock audio pack scripts |
-| 5 Dashboard coherence | **Done** | RBC `PageHeader` + SyntheticBadge; Facility inbox `PageHeader`; shared tokens |
-| 6 Security hygiene | **Done** | Startup refuse demo JWT/password when `ZM_DEMO_MODE=false`; `.env` gitignored |
-| 7 Verification | **Done** | pytest 29; vitest 19; build/lint/i18n:check pass |
+**Branch:** `test-merge-ardent` (do not touch `main`).
 
-### Observed problems fixed
+### Done
 
-1. **Voice unwired / mute / false Available** — VoiceControls on triage; unmute default; RW never uses EN TTS; capability check per language.
-2. **Bare triage column** — Desktop StepperLayout (stepper | question | help+summary).
-3. **Header icons / RBC·CHW badge** — Labeled IconButtons; “Malaria triage” under logo; readable Synthetic badge; full role names.
-4. **Incoherent screens** — Shared layout templates on login shells, CHW, nurse, RBC.
+1. **AI insights on Result** — risk gauge, top-3 SHAP factors, provenance chips, provider/latency/fallback; Rules only / Rules+AI toggle; ML escalation banner; offline message; visit summary via `/ai/visit-summary` (attached to handover).
+2. **Ask about this case** — chips + free text + mic; `POST /ai/ask` on sanitized snapshot; protocol-only answers; out-of-scope → nurse.
+3. **AI consult** — three agents (Triage/Guideline/Referral), max 2 rounds / 6 turns / timeouts; final answer first; expandable transcript; follow-up round; escalate-only + dose/injection rejection; activity logging without free text.
+4. **AI activity page** (`/app/ai-activity`) for RBC/supervisor roles — aggregate counts only.
+5. **Seeded demo** — `/m/triage?demo=ml` → rules `treat_at_home`, synthetic ML score 0.42 escalates to `refer` (threshold unchanged at 0.35).
+6. **UI** — full ZeroMalaria logo text; voice aria-labels (Read aloud / Record / Repeat / Slow / Pause / Volume) in rw/en/fr; French locale pack + language picker.
 
-## How to test
+### Gates (this sprint)
 
-```powershell
-.\scripts\demo.ps1
-# Voice pack (optional Mock manifests):
-cd apps\web; node scripts/export_phrases_json.mjs; python scripts/generate_audio_pack.py
-```
-
-| Check | Expect |
+| Check | Result |
 | --- | --- |
-| `pytest apps/api/tests -q` | 29 passed |
-| `npm run i18n:check` | OK |
-| `npm test` | 19 passed |
-| `npm run build && npm run lint` | Pass |
-| CHW desktop triage | `/app/triage` — Listen autoplays after tap-to-enable |
-| CHW → `/app/dashboard` | Not authorized / 403 analytics |
-| Voice settings (rw) | Not “Available” for browser TTS without rw voice |
+| pytest | **101 passed** |
+| npm run build | **OK** |
+| npm run lint | **OK** (2 warnings) |
+| npm run i18n:check | **OK** (725 keys) |
 
-## Mocked / notes
+### Known limits
 
-- Audio pack generator writes **manifests** (Mock); real MP3s need native recording or licensed TTS (see [docs/voice_setup.md](docs/voice_setup.md)).
-- Cloud TTS/STT Mock without keys.
-- Playwright screenshot sweep: run `npm run screenshots` with API+web up for final visual QA.
-- 117 RW keys still listed in `needs_review.rw.json` for native speaker pass.
-
-## Medical safety (unchanged)
-
-Rules decide urgency; ML escalate-only; LLM/voice language-only; CHW confirms; disclaimer + synthetic badge; no drugs/doses from AI.
+- Live Gemini/Groq still fall back to local without keys (empty in `.env.example`).
+- RW AI strings marked needs native review / draft in `_review.json`.
+- ML escalate demo uses `demo_scenario=ml_escalate` synthetic score (architecture demo); real model scores are often below threshold on uncomplicated cases.
+- French UI falls back to English for namespaces not fully translated beyond the en→fr clone + AI overlays.
+- Pre-recorded RW MP3 pack still missing (text fallback).

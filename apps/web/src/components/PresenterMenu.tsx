@@ -11,13 +11,16 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { enqueueReferral, db } from '../db';
-import { runScriptedDemo } from '../demo/scriptedAssistant';
+import { runScriptedVoiceTriageDemo } from '../demo/scriptedAssistant';
+import { useConversation } from '../voice/ConversationContext';
 import { unlockAudio } from '../voice/speak';
 import { useSync } from '../sync/SyncContext';
 import { useTheme } from '../theme/ThemeContext';
 import { useToast } from './ToastProvider';
 import { IconButton } from './ui';
 import { useAuth, type UserRole } from '../auth/AuthContext';
+import { ALL_ROLES, roleI18nKey, webHomePath } from '../auth/roleAccess';
+
 
 export function PresenterMenu() {
   const { t, i18n } = useTranslation();
@@ -28,7 +31,15 @@ export function PresenterMenu() {
   const { user, switchRole, demoModeEnabled } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const demoPresenter = Boolean(demoModeEnabled && user?.username?.endsWith('.demo'));
+  const conversation = useConversation();
+  const demoPresenter = Boolean(
+    demoModeEnabled &&
+      user &&
+      (user.username.endsWith('.demo') ||
+        user.username === 'health.center' ||
+        user.username === 'super.admin' ||
+        user.username === 'rbc.admin'),
+  );
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -51,7 +62,7 @@ export function PresenterMenu() {
       sex: 'female',
       decision: 'urgent_refer',
       reasons: ['Unable to drink or feed'],
-      summary: 'DEMO: overdue urgent referral — patient has not arrived',
+      summary: 'DEMO: overdue urgent referral  -  patient has not arrived',
       status: 'sent',
       created_at: new Date(Date.now() - 36 * 3600 * 1000).toISOString(),
       synced: false,
@@ -61,7 +72,7 @@ export function PresenterMenu() {
     void syncNow();
     setOpen(false);
     push(t('common.startDemo'), 'success');
-    navigate('/m/triage?demo=A');
+    navigate('/m/triage?demo=ml');
   };
 
   const resetDemo = async () => {
@@ -78,8 +89,8 @@ export function PresenterMenu() {
         <Clapperboard className="h-4 w-4" strokeWidth={1.75} />
       </IconButton>
       {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-card border border-border bg-surface shadow-lift">
-          <p className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        <div className="zm-glass zm-glass-strong absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-[20px] !shadow-lift">
+          <p className="border-b border-[var(--zm-separator)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             {t('common.presenter')}
           </p>
           <button
@@ -94,10 +105,24 @@ export function PresenterMenu() {
             type="button"
             className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
             onClick={() => {
+              setOpen(false);
+              navigate('/demo/board');
+            }}
+          >
+            <Clapperboard className="h-4 w-4 text-accent" strokeWidth={1.75} />
+            {t('liveDemo.openBoard')}
+          </button>
+          <button
+            type="button"
+            className="flex w-full items-center gap-2 px-3 py-3 text-left text-sm hover:bg-surface-muted"
+            onClick={() => {
               unlockAudio();
               setOpen(false);
               push(t('common.demoConversation'), 'info');
-              void runScriptedDemo(i18n.language.startsWith('rw') ? 'rw' : 'en');
+              const lang = i18n.language.startsWith('rw') ? 'rw' : 'en';
+              void runScriptedVoiceTriageDemo(lang, {
+                startGuidedTriage: conversation.startGuidedTriage,
+              });
             }}
           >
             <Clapperboard className="h-4 w-4 text-accent" strokeWidth={1.75} />
@@ -143,23 +168,21 @@ export function PresenterMenu() {
             <div className="border-t border-border px-3 py-2">
               <p className="text-[10px] font-bold uppercase text-ink-muted">{t('auth.switchRole')}</p>
               <div className="mt-1 grid grid-cols-2 gap-1">
-                {(['chw', 'nurse', 'supervisor', 'rbc'] as UserRole[]).map((role) => (
+                {(ALL_ROLES as UserRole[]).map((role) => (
                   <button
                     key={role}
                     type="button"
-                    className="rounded-control px-2 py-1.5 text-left text-xs font-semibold capitalize hover:bg-surface-muted"
+                    className="rounded-control px-2 py-1.5 text-left text-xs font-semibold hover:bg-surface-muted"
                     onClick={() =>
                       void switchRole(role)
                         .then((u) => {
                           setOpen(false);
-                          if (u.role === 'chw') navigate('/app/chw');
-                          else if (u.role === 'nurse') navigate('/app/referrals');
-                          else navigate('/app');
+                          navigate(webHomePath(u.role));
                         })
                         .catch(() => push(t('common.error'), 'danger'))
                     }
                   >
-                    {role}
+                    {t(roleI18nKey(role))}
                   </button>
                 ))}
               </div>

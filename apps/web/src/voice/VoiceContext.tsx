@@ -24,17 +24,12 @@ import {
   type PlaybackSource,
   type VoiceSpeed,
 } from './speak';
+import { parseVoiceIntents, type VoiceIntents } from './intents';
 
 export type VoiceMachineState = 'idle' | 'speaking' | 'listening' | 'confirming';
 
-export type VoiceIntents = {
-  yes?: boolean;
-  no?: boolean;
-  positive?: boolean;
-  negative?: boolean;
-  invalid?: boolean;
-  number?: number;
-};
+export type { VoiceIntents };
+export { parseVoiceIntents };
 
 type ListenResult = { transcript: string; intents: VoiceIntents };
 
@@ -64,28 +59,6 @@ const VoiceContext = createContext<VoiceContextValue | null>(null);
 
 function voiceLangFromI18n(code: string): VoiceLang {
   return code.startsWith('rw') ? 'rw' : 'en';
-}
-
-export function parseVoiceIntents(transcript: string, lang: VoiceLang): VoiceIntents {
-  const t = transcript.toLowerCase().trim();
-  const intents: VoiceIntents = {};
-  const num = Number(t.replace(/[^\d.]/g, ''));
-  if (!Number.isNaN(num) && t.match(/\d/)) intents.number = num;
-
-  if (lang === 'rw') {
-    if (/\byego\b|yes|yeah|y/.test(t)) intents.yes = true;
-    if (/\boya\b|\bno\b|nta/.test(t)) intents.no = true;
-    if (/cyiza|positive|pos/.test(t)) intents.positive = true;
-    if (/nabi|negative|neg/.test(t)) intents.negative = true;
-    if (/nticyemewe|invalid/.test(t)) intents.invalid = true;
-  } else {
-    if (/\byes\b|\by\b|yeah|yep/.test(t)) intents.yes = true;
-    if (/\bno\b|\bn\b|nope/.test(t)) intents.no = true;
-    if (/positive|pos/.test(t)) intents.positive = true;
-    if (/negative|neg/.test(t)) intents.negative = true;
-    if (/invalid/.test(t)) intents.invalid = true;
-  }
-  return intents;
 }
 
 export function VoiceProvider({ children }: { children: ReactNode }) {

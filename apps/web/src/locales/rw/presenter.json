@@ -1,0 +1,12 @@
+{
+  "translationReview": "Isuzuma ry'ubusobanuro",
+  "colKey": "Urufunguzo",
+  "colEn": "Icyongereza",
+  "colRw": "Ikinyarwanda",
+  "colStatus": "Imiterere",
+  "statusDraft": "Icyitegerezo",
+  "statusReviewed": "Byasuzumwe",
+  "draftOnly": "Erekana gusa ibitegereje isuzuma",
+  "devOnlyHint": "Paji ya development. Imvugo zitegereje isuzuma n'umunyarwanda mbere yo gukoreshwa.",
+  "steps": "Intambwe"
+}

@@ -12,6 +12,13 @@ let currentAudio: HTMLAudioElement | null = null;
 let sequenceToken = 0;
 let gestureHookInstalled = false;
 const audioPackCache: Partial<Record<VoiceLang, boolean>> = {};
+const missingAudioLogged = new Set<string>();
+
+/** Fail-fast probe for missing pack files (never hang the UI). */
+const MP3_PROBE_MS = 400;
+const CLOUD_TTS_MS = 2000;
+/** Silent text highlight must not feel like a stalled step. */
+const SILENT_FALLBACK_MS = 80;
 
 function readMute(): boolean {
   return localStorage.getItem(MUTE_KEY) === '1';
@@ -132,27 +139,82 @@ export function getVoiceCapabilities(): {
   };
 }
 
-function estimateSilentMs(text: string, speed: VoiceSpeed): number {
-  const words = text.split(/\s+/).filter(Boolean).length;
-  const base = Math.max(1200, words * 380);
-  return Math.round(base / speed);
+function warnMissingAudio(lang: VoiceLang, id: string) {
+  const key = `${lang}/${id}`;
+  if (missingAudioLogged.has(key)) return;
+  missingAudioLogged.add(key);
+  if (import.meta.env.DEV) {
+    console.warn(`[voice] Missing pre-recorded audio: /audio/${lang}/${id}.mp3 (falling back to text)`);
+  }
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => {
+    const t = window.setTimeout(() => resolve(fallback), ms);
+    promise
+      .then((v) => {
+        window.clearTimeout(t);
+        resolve(v);
+      })
+      .catch(() => {
+        window.clearTimeout(t);
+        resolve(fallback);
+      });
+  });
+}
+
+async function probeMp3Exists(url: string): Promise<boolean> {
+  if (typeof fetch === 'undefined') return true;
+  try {
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), MP3_PROBE_MS);
+    const res = await fetch(url, { method: 'HEAD', signal: ctrl.signal, cache: 'force-cache' });
+    window.clearTimeout(timer);
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
 
 async function tryMp3(id: PhraseId, lang: VoiceLang, speed: VoiceSpeed): Promise<boolean> {
   const url = `/audio/${lang}/${id}.mp3`;
+  // Play directly — do not await a HEAD probe on the UI path (HEAD can hang or 405).
+  // Optional short existence cache warm-up runs in the background only.
+  void withTimeout(probeMp3Exists(url), MP3_PROBE_MS, false).then((exists) => {
+    if (exists) audioPackCache[lang] = true;
+  });
   return new Promise((resolve) => {
     const audio = new Audio(url);
+    audio.preload = 'auto';
     audio.playbackRate = speed;
     currentAudio = audio;
-    audio.onended = () => resolve(true);
-    audio.onerror = () => resolve(false);
-    void audio.play().catch(() => resolve(false));
+    let settled = false;
+    const finish = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(failTimer);
+      if (!ok) warnMissingAudio(lang, id);
+      resolve(ok);
+    };
+    const failTimer = window.setTimeout(() => finish(false), 8000);
+    audio.onended = () => finish(true);
+    audio.onerror = () => finish(false);
+    void audio.play().then(
+      () => {
+        /* playing — resolve onended */
+      },
+      () => finish(false),
+    );
   });
 }
 
 async function tryCloudTts(id: PhraseId, lang: VoiceLang, text: string): Promise<string | null> {
   try {
-    const res = await api.voiceSpeak({ phrase_id: id, language: lang, text });
+    const res = await withTimeout(
+      api.voiceSpeak({ phrase_id: id, language: lang, text }),
+      CLOUD_TTS_MS,
+      { audio_url: null } as Record<string, unknown>,
+    );
     const url = typeof res.audio_url === 'string' ? res.audio_url : null;
     return url;
   } catch {
@@ -165,9 +227,19 @@ async function tryCloudMp3(url: string, speed: VoiceSpeed): Promise<boolean> {
     const audio = new Audio(url);
     audio.playbackRate = speed;
     currentAudio = audio;
-    audio.onended = () => resolve(true);
-    audio.onerror = () => resolve(false);
-    void audio.play().catch(() => resolve(false));
+    const t = window.setTimeout(() => resolve(false), 8000);
+    audio.onended = () => {
+      window.clearTimeout(t);
+      resolve(true);
+    };
+    audio.onerror = () => {
+      window.clearTimeout(t);
+      resolve(false);
+    };
+    void audio.play().catch(() => {
+      window.clearTimeout(t);
+      resolve(false);
+    });
   });
 }
 
@@ -188,8 +260,8 @@ function trySpeechSynthesis(text: string, lang: VoiceLang, speed: VoiceSpeed): P
   });
 }
 
-async function silentHighlight(text: string, speed: VoiceSpeed): Promise<void> {
-  await new Promise((r) => setTimeout(r, estimateSilentMs(text, speed)));
+async function silentHighlight(): Promise<void> {
+  await new Promise((r) => setTimeout(r, SILENT_FALLBACK_MS));
 }
 
 export async function speakPhrase(
@@ -203,24 +275,30 @@ export async function speakPhrase(
   onHighlight?.(id);
 
   if (readMute()) {
-    await silentHighlight(text, speed);
+    await silentHighlight();
     return { source: 'text' };
   }
 
+  // Prefer pre-recorded pack (required for Kinyarwanda - browsers lack rw TTS voices).
   if (audioUnlocked && (await tryMp3(id, lang, speed))) {
+    audioPackCache[lang] = true;
     return { source: 'audio_pack' };
   }
 
-  const cloudUrl = await tryCloudTts(id, lang, text);
-  if (cloudUrl && audioUnlocked && (await tryCloudMp3(cloudUrl, speed))) {
-    return { source: 'cloud' };
+  // Cloud TTS optional when online (hard timeout — never block triage UX).
+  if (typeof navigator === 'undefined' || navigator.onLine) {
+    const cloudUrl = await tryCloudTts(id, lang, text);
+    if (cloudUrl && audioUnlocked && (await tryCloudMp3(cloudUrl, speed))) {
+      return { source: 'cloud' };
+    }
   }
 
-  if (await trySpeechSynthesis(text, lang, speed)) {
+  // Never use English browser TTS for Kinyarwanda. Short text fallback only.
+  if (lang !== 'rw' && (await trySpeechSynthesis(text, lang, speed))) {
     return { source: 'browser' };
   }
 
-  await silentHighlight(text, speed);
+  await silentHighlight();
   return { source: 'text' };
 }
 

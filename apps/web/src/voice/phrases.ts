@@ -9,7 +9,7 @@ function p(id: string, en: string, rw: string): PhraseEntry {
   return { id, en, rw };
 }
 
-/** Fixed read-aloud catalog — not LLM-generated. */
+/** Fixed read-aloud catalog  -  not LLM-generated. */
 export const PHRASES = {
   age: p('age', 'How old is the patient, in months?', 'Umurwayi afite imyaka ingahe, mu mezi?'),
   sex: p('sex', 'Is the patient female or male?', 'Umurwayi ni umugore cyangwa umugabo?'),
@@ -26,28 +26,28 @@ export const PHRASES = {
   ),
   convulsions: p(
     'convulsions',
-    'Convulsions or fits — yes or no?',
-    'Gusetsa cyangwa fits — yego cyangwa oya?',
+    'Convulsions or fits, yes or no?',
+    'Gusetsa cyangwa fits, yego cyangwa oya?',
   ),
   unable_to_drink: p(
     'unable_to_drink',
-    'Unable to drink or feed — yes or no?',
-    'Ntashobora kunywa cyangwa kurya — yego cyangwa oya?',
+    'Unable to drink or feed, yes or no?',
+    'Ntashobora kunywa cyangwa kurya, yego cyangwa oya?',
   ),
   vomiting_everything: p(
     'vomiting_everything',
-    'Vomiting everything — yes or no?',
-    'Araruka byose — yego cyangwa oya?',
+    'Vomiting everything, yes or no?',
+    'Araruka byose, yego cyangwa oya?',
   ),
   lethargy: p(
     'lethargy',
-    'Lethargy or unconsciousness — yes or no?',
-    'Yacitse intege cyangwa ntabona — yego cyangwa oya?',
+    'Lethargy or unconsciousness, yes or no?',
+    'Yacitse intege cyangwa ntabona, yego cyangwa oya?',
   ),
   severe_breathing_difficulty: p(
     'severe_breathing_difficulty',
-    'Severe breathing difficulty — yes or no?',
-    'Agorwa cyane n\'uruhuha — yego cyangwa oya?',
+    'Severe breathing difficulty, yes or no?',
+    'Agorwa cyane n\'uruhuha, yego cyangwa oya?',
   ),
   tdr: p(
     'tdr',
@@ -112,6 +112,11 @@ export const PHRASES = {
     MALARIA_RULES.rules.find((r) => r.id === 'persistent_fever_negative_tdr')!.reason_en,
     MALARIA_RULES.rules.find((r) => r.id === 'persistent_fever_negative_tdr')!.reason_rw,
   ),
+  reason_incomplete_assessment: p(
+    'reason_incomplete_assessment',
+    MALARIA_RULES.rules.find((r) => r.id === 'incomplete_assessment')!.reason_en,
+    MALARIA_RULES.rules.find((r) => r.id === 'incomplete_assessment')!.reason_rw,
+  ),
   reason_default_treat_at_home: p(
     'reason_default_treat_at_home',
     MALARIA_RULES.rules.find((r) => r.id === 'default_treat_at_home')!.reason_en,
@@ -157,8 +162,8 @@ export const PHRASES = {
   ),
   prevention_early_test: p(
     'prevention_early_test',
-    'Test early when fever starts — do not wait many days.',
-    'Kora ikizamini vuba ubushyuhe buhera — ntugere ute iminsi myinshi.',
+    'Test early when fever starts, do not wait many days.',
+    'Kora ikizamini vuba ubushyuhe buhera, ntugere ute iminsi myinshi.',
   ),
   prevention_early_care: p(
     'prevention_early_care',
@@ -209,8 +214,8 @@ export const PHRASES = {
   ),
   help_convulsions: p(
     'help_convulsions',
-    'Convulsions are a danger sign — answer yes if the patient had fits or seizures.',
-    'Gusetsa ni ikimenyetso cy\'akaga — subiza yego niba umurwayi yagize fits cyangwa seizures.',
+    'Convulsions are a danger sign, answer yes if the patient had fits or seizures.',
+    'Gusetsa ni ikimenyetso cy\'akaga, subiza yego niba umurwayi yagize fits cyangwa seizures.',
   ),
   help_unable_to_drink: p(
     'help_unable_to_drink',
@@ -234,13 +239,23 @@ export const PHRASES = {
   ),
   help_tdr: p(
     'help_tdr',
-    'Record the rapid diagnostic test result from the cassette. Invalid means the test failed — do not treat on that result alone.',
-    'Andika igisubizo cy\'ikizamini cy\'umusaraba. Nticyemewe bisobanuye ko ikizamini cyanze — ntuvure ukurikije gusa icyo.',
+    'Record the rapid diagnostic test result from the cassette. Invalid means the test failed, do not treat on that result alone.',
+    'Andika igisubizo cy\'ikizamini cy\'umusaraba. Nticyemewe bisobanuye ko ikizamini cyanze, ntuvure ukurikije gusa icyo.',
   ),
   help_freetext: p(
     'help_freetext',
-    'Optional notes in Kinyarwanda or English. AI may suggest fields — you must verify before applying.',
-    'Inyandiko z\'ubushobozi mu Kinyarwanda cyangwa Icyongereza. AI ishobora gusaba ibice — ugomba kubigenzura mbere yo kubikoresha.',
+    'Optional notes in Kinyarwanda or English. AI may suggest fields, you must verify before applying.',
+    'Inyandiko z\'ubushobozi mu Kinyarwanda cyangwa Icyongereza. AI ishobora gusaba ibice, ugomba kubigenzura mbere yo kubikoresha.',
+  ),
+  guided_greeting: p(
+    'guided_greeting',
+    'Voice guided triage. I will ask each question. Answer clearly, then confirm what I heard.',
+    'Gupima mu ijwi. Nzakubaza ibibazo. Subiza neza, hanyuma wemeze ibyo numvise.',
+  ),
+  confirm_danger_sign: p(
+    'confirm_danger_sign',
+    'This is a danger sign. Please say yes to confirm, or no if I misunderstood.',
+    'Iki ni ikimenyetso cy\'akaga. Vuga yego niba ari ukuri, cyangwa oya niba nabitumvise nabi.',
   ),
 } as const satisfies Record<string, PhraseEntry>;
 

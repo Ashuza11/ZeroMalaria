@@ -55,14 +55,22 @@ class DecisionResult:
     confidence: float | None = None
     human_confirmation_required: bool = True
     disclaimer: str = "Decision support tool. Not a replacement for clinical judgment."
-    synthetic_note: str = "Synthetic demo data / architecture demo — not clinical performance."
+    synthetic_note: str = "Synthetic demo data / architecture demo - not clinical performance."
+    public_decision: str = ""
+    reason_details: list[dict[str, Any]] = field(default_factory=list)
+    missing_info: list[str] = field(default_factory=list)
+    protocol_reference: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "decision": self.decision,
+            "public_decision": self.public_decision,
             "rules_decision": self.rules_decision,
             "reasons": self.reasons,
             "triggered_rules": self.triggered_rules,
+            "reason_details": self.reason_details,
+            "missing_info": self.missing_info,
+            "protocol_reference": self.protocol_reference,
             "ml_escalated": self.ml_escalated,
             "severe_risk": self.severe_risk,
             "referral_noncompletion_risk": self.referral_noncompletion_risk,
@@ -156,6 +164,7 @@ def combine_decision(
     language: str = "en",
     use_ml: bool = True,
     rules_path: str | None = None,
+    demo_scenario: str | None = None,
 ) -> DecisionResult:
     rules_result: RulesResult = evaluate_rules(case, language=language, rules_path=rules_path)
     cfg = load_rules(rules_path)
@@ -167,7 +176,18 @@ def combine_decision(
     shap_factors: list[str] = []
 
     if use_ml:
-        severe_risk, referral_risk, shap_factors = predict_risks(case)
+        # Seeded architecture demo: synthetic score >= escalate_treat_to_refer threshold.
+        # Does not change thresholds or escalate-only lock — only substitutes model output.
+        if demo_scenario == "ml_escalate" and rules_result.decision == "treat_at_home":
+            severe_risk = 0.42
+            referral_risk = 0.20
+            shap_factors = [
+                "Fever duration pattern increases risk (synthetic)",
+                "Age band under-five increases risk (synthetic)",
+                "TDR positive with fever increases risk (synthetic)",
+            ]
+        else:
+            severe_risk, referral_risk, shap_factors = predict_risks(case)
         esc = (cfg.get("ml_escalation") or {}).get("severe_case") or {}
         treat_to_refer = float(esc.get("escalate_treat_to_refer_threshold", 0.35))
         refer_to_urgent = float(esc.get("escalate_refer_to_urgent_threshold", 0.55))
@@ -208,6 +228,8 @@ def combine_decision(
     else:
         confidence = 0.7
 
+    from engine.rules import PUBLIC_DECISION
+
     return DecisionResult(
         decision=final,
         rules_decision=rules_result.decision,
@@ -218,6 +240,10 @@ def combine_decision(
         referral_noncompletion_risk=referral_risk,
         shap_factors=shap_factors,
         confidence=confidence,
+        public_decision=PUBLIC_DECISION.get(final, final),
+        reason_details=[r.to_dict() for r in rules_result.reason_details],
+        missing_info=list(rules_result.missing_info),
+        protocol_reference=rules_result.protocol_reference,
     )
 
 

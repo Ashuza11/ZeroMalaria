@@ -12,7 +12,7 @@ import {
   Skeleton,
   StatusPill,
 } from '../components/ui';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 
 type ReferralRow = {
@@ -186,24 +186,24 @@ export function PatientsPage() {
         <div className="fixed inset-0 z-50 flex justify-end">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/40"
+            className="zm-backdrop absolute inset-0 bg-ink/40"
             aria-label={t('common.cancel')}
             onClick={() => setDetail(null)}
           />
-          <aside className="relative z-10 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-surface shadow-lift">
-            <div className="border-b border-border p-4">
-              <h2 className="text-lg font-semibold">
+          <aside className="zm-sheet relative z-10 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-surface shadow-lift">
+            <div className="border-b border-border px-6 pb-4 pt-6">
+              <h2 className="text-[22px] font-bold tracking-[-0.02em]">
                 {formatPatientLine(detail.age_months, detail.sex, t)}
               </h2>
               <p className="mt-1 text-sm text-ink-muted">{detail.summary}</p>
             </div>
-            <div className="space-y-4 p-4 text-sm">
+            <div className="space-y-5 p-6 text-[15px]">
               <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-control bg-surface-muted p-3">
+                <div className="rounded-[18px] bg-[rgba(118,118,128,0.08)] p-3.5">
                   <p className="text-xs text-ink-muted">{t('patients.colDecision')}</p>
                   <StatusPill status={detail.decision as 'urgent_refer' | 'refer' | 'treat_at_home'} />
                 </div>
-                <div className="rounded-control bg-surface-muted p-3">
+                <div className="rounded-[18px] bg-[rgba(118,118,128,0.08)] p-3.5">
                   <p className="text-xs text-ink-muted">{t('patients.colStatus')}</p>
                   <StatusPill status={detail.status as 'sent' | 'received' | 'arrived' | 'treated'} />
                 </div>

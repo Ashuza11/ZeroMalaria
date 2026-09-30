@@ -13,6 +13,14 @@ Primary user is the Community Health Worker: a non-physician volunteer, often on
 ## 3. Current situation (30s)
 Paper registers. Inconsistent triage. No closed-loop referral. Delayed visibility of outbreaks and stockouts. Online-only apps fail in the same villages that need them most.
 
+**Existing tools and gaps** (*source: RBC problem canvas, to be verified*):
+
+| Tool | What it does | Gap ZeroMalaria targets |
+| --- | --- | --- |
+| RapidSMS (CHW SMS) | Aggregated reporting | Async; no real-time decision support; no referral loop closure |
+| ePOCT+ | Facility clinical decision support | Misses village-to-clinic handover |
+| Drone medicine delivery | Supply logistics | Does not fix triage accuracy or patient journey tracking |
+
 ## 4. Data (30s)
 A real deployment would sit next to cEMR, national malaria protocols, referral records, and HMIS/eLMIS. **This prototype uses synthetic demo data** built from public guideline categories, clearly labeled in the UI and README. We do not claim clinical performance from these files.
 
@@ -32,7 +40,7 @@ Impact is the closed loop: standardized danger-sign checks, digital handover, fo
 Privacy by design (pseudonymous IDs, no real patients). Human in the loop. Clinical rules in one editable YAML marked for clinician validation against Rwanda national guidelines and WHO iCCM. Bias and calibration must be reviewed before any pilot claim. See `ethics_and_safety.md`.
 
 ## 8. Pilot plan (30s)
-Two districts: **Bugesera** and **Nyagatare**. Start with willing CHW cohorts and linked health centers. Validate rules with RBC clinicians. Measure process metrics first (completed danger-sign checks, referral receipt, arrival confirmation), not clinical outcomes, until protocol validation is complete.
+Two districts: **Gisagara** and **Nyamagabe** (*source: RBC problem canvas, to be verified*; seed also includes Nyamasheke / Nyagatare for demo breadth). Start with willing CHW cohorts and linked health centers. Validate rules with RBC clinicians. Measure process metrics first (completed danger-sign checks, referral receipt, arrival confirmation), not clinical outcomes, until protocol validation is complete.
 
 ## 9. Sustainability (20s)
 RBC ownership of rules and data governance. Offline-first PWA keeps costs low. Open, auditable decision layers. Align with existing HMIS/eLMIS rather than replacing them.

@@ -16,3 +16,7 @@ ml/artifacts/
 .venv/
 __pycache__/
 node_modules/
+
+*.db.bak*
+zeromalaria.db.bak*
+apps/web/test-results/

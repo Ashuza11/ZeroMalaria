@@ -20,6 +20,9 @@ train:
 seed:
 	$(VENV)/python apps/api/app/seed.py
 
+seed-demo:
+	$(VENV)/python apps/api/app/seed.py --mode demo
+
 api:
 	cd apps/api && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 

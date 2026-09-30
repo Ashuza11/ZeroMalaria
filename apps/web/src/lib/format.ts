@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 
-/** Age in months — e.g. "18 mo" / "amezi 18" */
+/** Age in months  -  e.g. "18 mo" / "amezi 18" */
 export function formatAgeMonths(months: number, t: TFunction): string {
   return t('format.ageMonths', { count: months });
 }

@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, BellRing, Check } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { api } from '../api/client';
-import { ChwShell } from '../components/shells';
+import { AppOrChwShell } from '../hooks/useAppShell';
 import { Button, Card, EmptyState, Skeleton, StatusPill } from '../components/ui';
 import { db } from '../db';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 import { listContainer, listItem } from '../lib/motion';
 
@@ -78,7 +78,7 @@ export function AlertsPage() {
   const medium = visible.filter((i) => i.severity === 'medium');
 
   return (
-    <ChwShell title={t('alerts.title')}>
+    <AppOrChwShell title={t('alerts.title')} crumbs={[t('nav.alerts')]}>
       {loading ? <Skeleton className="h-32" /> : null}
       {!loading && visible.length === 0 ? (
         <EmptyState
@@ -139,6 +139,6 @@ export function AlertsPage() {
           </div>
         ) : null,
       )}
-    </ChwShell>
+    </AppOrChwShell>
   );
 }

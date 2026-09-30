@@ -1,0 +1,23 @@
+{
+  "placeholderTitle": "Urutonde rw'abarwayi",
+  "placeholderBody": "Urutonde ruzahuza na EMR mu buryo bwa production.",
+  "search": "Shakisha",
+  "searchPlaceholder": "Incamake, akarere, CHW…",
+  "filterStatus": "Imiterere",
+  "filterDecision": "Icyemezo",
+  "decisionUrgent": "Kohereza byihutirwa",
+  "decisionRefer": "Ohereza",
+  "decisionHome": "Uvure mu rugo",
+  "emptyTitle": "Nta woherejwe",
+  "emptyBody": "Abo wohereje bazagaragara hano.",
+  "noMatchTitle": "Nta gihuye",
+  "noMatchBody": "Gerageza gusiba akayunguruzo.",
+  "colPatient": "Umurwayi",
+  "colDecision": "Icyemezo",
+  "colStatus": "Imiterere",
+  "colDistrict": "Akarere",
+  "colChw": "CHW",
+  "colWhen": "Igihe",
+  "refId": "Nomero y'ibaruwa",
+  "clientUuid": "UUID y'umukiriya"
+}

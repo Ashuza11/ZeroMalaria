@@ -1,0 +1,517 @@
+/* ------------------------------------------------------------------
+   ZeroMalaria · Liquid design layer (iOS-style materials & motion)
+   Brand colours are unchanged: ocean #0b3c5d · teal #14807a · amber #d97706
+------------------------------------------------------------------- */
+
+:root {
+  --zm-ocean-950: #03141f;
+  --zm-ocean-900: #06243a;
+  --zm-ocean-800: #08304b;
+  --zm-ocean: #0b3c5d;
+  --zm-ocean-600: #125278;
+  --zm-teal: #14807a;
+  --zm-teal-bright: #2bb3a6;
+  --zm-teal-glow: #5eead4;
+  --zm-amber: #d97706;
+  --zm-amber-bright: #f5a524;
+  --zm-danger: #e5484d;
+
+  --zm-canvas: #f4f7fa;
+  --zm-canvas-2: #eaf1f5;
+  --zm-label: #0b1b2b;
+  --zm-label-2: rgba(11, 27, 43, 0.62);
+  --zm-label-3: rgba(11, 27, 43, 0.42);
+  --zm-separator: rgba(11, 27, 43, 0.1);
+
+  --zm-glass-bg: rgba(255, 255, 255, 0.58);
+  --zm-glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --zm-glass-border: rgba(255, 255, 255, 0.72);
+  --zm-glass-edge: rgba(11, 60, 93, 0.08);
+  --zm-glass-shadow: 0 1px 1px rgba(6, 36, 58, 0.04), 0 12px 40px -12px rgba(6, 36, 58, 0.22);
+  --zm-field-bg: rgba(255, 255, 255, 0.7);
+
+  --zm-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --zm-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark {
+  --zm-canvas: #050f18;
+  --zm-canvas-2: #0a1a27;
+  --zm-label: #eef4f8;
+  --zm-label-2: rgba(238, 244, 248, 0.66);
+  --zm-label-3: rgba(238, 244, 248, 0.42);
+  --zm-separator: rgba(255, 255, 255, 0.1);
+  --zm-glass-bg: rgba(20, 34, 48, 0.55);
+  --zm-glass-bg-strong: rgba(22, 38, 54, 0.8);
+  --zm-glass-border: rgba(255, 255, 255, 0.12);
+  --zm-glass-edge: rgba(0, 0, 0, 0.3);
+  --zm-glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 16px 48px -12px rgba(0, 0, 0, 0.6);
+  --zm-field-bg: rgba(255, 255, 255, 0.06);
+}
+
+.zm-ios {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Inter, 'Segoe UI', system-ui, sans-serif;
+  color: var(--zm-label);
+  background: var(--zm-canvas);
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.zm-display {
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  font-weight: 700;
+}
+
+.zm-title {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  font-weight: 700;
+}
+
+/* ---------- Materials ---------- */
+
+.zm-glass {
+  isolation: isolate;
+  background: var(--zm-glass-bg);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--zm-glass-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 0 0 1px var(--zm-glass-edge),
+    var(--zm-glass-shadow);
+}
+
+.zm-glass-strong {
+  background: var(--zm-glass-bg-strong);
+}
+
+/* Dark-surface glass (used on ocean sections regardless of theme) */
+.zm-glass-dark {
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 20px 60px -20px rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+/* zero-specificity default so Tailwind's absolute/fixed utilities win */
+:where(.zm-glass, .zm-glass-dark) {
+  position: relative;
+}
+
+/* Specular highlight that follows the pointer (set --mx/--my on the element) */
+.zm-specular::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--spec-o, 0);
+  transition: opacity 0.4s var(--zm-ease-out);
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0.08) 38%,
+    transparent 62%
+  );
+  mix-blend-mode: soft-light;
+}
+.zm-specular:hover::after {
+  --spec-o: 1;
+}
+
+/* Glass rim  -  a thin refracted edge like Liquid Glass */
+.zm-rim::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.35)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 2;
+}
+
+/* ---------- Living backgrounds ---------- */
+
+.zm-ocean {
+  background:
+    radial-gradient(120% 80% at 80% -10%, rgba(20, 128, 122, 0.45), transparent 55%),
+    radial-gradient(90% 70% at -10% 30%, rgba(18, 82, 120, 0.9), transparent 60%),
+    linear-gradient(180deg, var(--zm-ocean-900) 0%, var(--zm-ocean-950) 100%);
+  color: #fff;
+}
+
+.zm-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+  animation: zm-drift 22s var(--zm-ease) infinite alternate;
+}
+
+@keyframes zm-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(6%, -8%, 0) scale(1.12); }
+  66% { transform: translate3d(-8%, 6%, 0) scale(0.94); }
+  100% { transform: translate3d(4%, 4%, 0) scale(1.06); }
+}
+
+.zm-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Siri-style glowing edge */
+.zm-siri {
+  position: relative;
+  isolation: isolate;
+}
+.zm-siri::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  z-index: -1;
+  background: conic-gradient(
+    from var(--zm-angle, 0deg),
+    var(--zm-teal-glow),
+    var(--zm-amber-bright),
+    #7dd3fc,
+    var(--zm-teal-bright),
+    var(--zm-teal-glow)
+  );
+  filter: blur(14px);
+  opacity: 0.85;
+  animation: zm-spin 6s linear infinite;
+}
+.zm-siri::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  z-index: -1;
+  background: conic-gradient(
+    from var(--zm-angle, 0deg),
+    var(--zm-teal-glow),
+    var(--zm-amber-bright),
+    #7dd3fc,
+    var(--zm-teal-bright),
+    var(--zm-teal-glow)
+  );
+  animation: zm-spin 6s linear infinite;
+}
+@property --zm-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes zm-spin {
+  to { --zm-angle: 360deg; }
+}
+
+/* Gradient text */
+.zm-text-aurora {
+  background: linear-gradient(100deg, #ffffff 0%, var(--zm-teal-glow) 45%, var(--zm-amber-bright) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.zm-text-ocean {
+  background: linear-gradient(100deg, var(--zm-ocean) 0%, var(--zm-teal) 60%, var(--zm-amber) 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dark .zm-text-ocean {
+  background: linear-gradient(100deg, #7dd3fc 0%, var(--zm-teal-glow) 60%, var(--zm-amber-bright) 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Live dot */
+.zm-live-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #34d399;
+}
+.zm-live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: zm-ping 1.8s var(--zm-ease-out) infinite;
+}
+@keyframes zm-ping {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* Inset grouped fields (iOS Settings style) */
+.zm-group {
+  border-radius: 18px;
+  background: var(--zm-field-bg);
+  border: 1px solid var(--zm-separator);
+  overflow: hidden;
+  transition: box-shadow 0.3s var(--zm-ease-out), border-color 0.3s var(--zm-ease-out);
+}
+.zm-group:focus-within {
+  border-color: rgba(20, 128, 122, 0.55);
+  box-shadow: 0 0 0 4px rgba(20, 128, 122, 0.14);
+}
+.zm-group > * + * {
+  border-top: 1px solid var(--zm-separator);
+}
+
+.zm-field-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--zm-label);
+  font-size: 17px;
+  line-height: 22px;
+  padding: 26px 16px 9px;
+}
+.zm-field-input::placeholder {
+  color: transparent;
+}
+.zm-field-label {
+  position: absolute;
+  left: 16px;
+  top: 17px;
+  font-size: 17px;
+  color: var(--zm-label-3);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.35s var(--zm-ease), color 0.35s var(--zm-ease);
+}
+.zm-field-input:focus + .zm-field-label,
+.zm-field-input:not(:placeholder-shown) + .zm-field-label,
+.zm-field-label[data-float='true'] {
+  transform: translateY(-9px) scale(0.72);
+  color: var(--zm-teal);
+}
+.zm-field-input:not(:focus):not(:placeholder-shown) + .zm-field-label {
+  color: var(--zm-label-3);
+}
+
+.zm-scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+.zm-scroll-hide {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zm-blob,
+  .zm-siri::before,
+  .zm-siri::after,
+  .zm-live-dot::after {
+    animation: none !important;
+  }
+}
+
+/* ---------- Living orb (replaces icon tiles) ---------- */
+.zm-orb {
+  position: absolute;
+  inset: 0;
+  display: block;
+  isolation: isolate;
+  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  background: conic-gradient(from var(--zm-angle, 0deg), var(--o1), var(--o2), var(--o3), var(--o1));
+  animation: zm-morph 9s ease-in-out infinite, zm-spin 12s linear infinite;
+  box-shadow:
+    inset -6px -8px 16px rgba(0, 0, 0, 0.25),
+    inset 6px 8px 14px rgba(255, 255, 255, 0.35),
+    0 10px 24px -10px var(--o-glow, rgba(11, 60, 93, 0.6));
+}
+.zm-orb::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 20%;
+  width: 38%;
+  height: 26%;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.75), transparent);
+  filter: blur(1px);
+}
+@keyframes zm-morph {
+  0%, 100% { border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%; }
+  33% { border-radius: 58% 42% 44% 56% / 55% 58% 42% 45%; }
+  66% { border-radius: 48% 52% 60% 40% / 40% 52% 48% 60%; }
+}
+
+/* Animated gradient sweep on text */
+.zm-shimmer {
+  background-size: 220% 100% !important;
+  animation: zm-sweep 7s ease-in-out infinite alternate;
+}
+@keyframes zm-sweep {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+/* Marquee */
+.zm-marquee {
+  display: flex;
+  width: max-content;
+  animation: zm-marquee 38s linear infinite;
+}
+.zm-marquee:hover { animation-play-state: paused; }
+@keyframes zm-marquee {
+  to { transform: translateX(-50%); }
+}
+.zm-fade-x {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zm-orb, .zm-shimmer, .zm-marquee { animation: none !important; }
+}
+
+/* =================================================================
+   App (dashboards) layer
+================================================================= */
+.zm-card {
+  background: var(--zm-card-bg, rgba(255, 255, 255, 0.82));
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid var(--zm-card-border, rgba(255, 255, 255, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(11, 60, 93, 0.05),
+    0 12px 32px -16px rgba(6, 36, 58, 0.22);
+  transition: transform 0.5s var(--zm-ease), box-shadow 0.5s var(--zm-ease);
+}
+.dark .zm-card {
+  --zm-card-bg: rgba(16, 30, 44, 0.78);
+  --zm-card-border: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 16px 40px -18px rgba(0, 0, 0, 0.7);
+}
+.zm-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(11, 60, 93, 0.06),
+    0 24px 48px -20px rgba(6, 36, 58, 0.35);
+}
+
+/* Tables inside cards: iOS list rhythm */
+.zm-card table { border-collapse: separate; border-spacing: 0; }
+.zm-card thead th {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  background: transparent !important;
+  border-bottom: 1px solid var(--color-border);
+}
+.zm-card tbody tr { transition: background-color 0.25s var(--zm-ease-out); }
+.zm-card tbody tr:hover { background: rgba(20, 128, 122, 0.05); }
+.zm-card tbody td { border-bottom: 1px solid var(--color-border); }
+.zm-card tbody tr:last-child td { border-bottom: 0; }
+
+/* Overlays: backdrop, side sheet, popover, toast */
+.dark { --zm-overlay-bg: rgba(16, 30, 44, 0.96); --zm-popover-bg: #122232; }
+.zm-backdrop {
+  background: rgba(3, 20, 31, 0.32) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  animation: zm-fade-in 0.35s var(--zm-ease-out) both;
+}
+.zm-sheet {
+  background: var(--zm-overlay-bg, rgba(250, 252, 253, 0.95)) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  border-left: 1px solid var(--zm-glass-border) !important;
+  box-shadow: -30px 0 80px -30px rgba(3, 20, 31, 0.45) !important;
+  animation: zm-sheet-in 0.6s var(--zm-ease) both;
+}
+@media (min-width: 640px) {
+  .zm-sheet { margin: 12px; height: calc(100% - 24px) !important; border-radius: 28px; border: 1px solid var(--zm-glass-border) !important; }
+}
+.zm-popover {
+  background: var(--zm-popover-bg, #fbfcfd) !important;
+  border: 1px solid var(--zm-glass-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 60px -20px rgba(3, 20, 31, 0.45) !important;
+  transform-origin: top right;
+  animation: zm-pop 0.42s var(--zm-ease) both;
+  overflow: hidden;
+}
+.zm-popover button:hover, .zm-popover li:hover { background: rgba(20, 128, 122, 0.08) !important; }
+.zm-dialog {
+  background: var(--zm-overlay-bg, rgba(250, 252, 253, 0.95)) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid var(--zm-glass-border) !important;
+  border-radius: 26px !important;
+  box-shadow: 0 40px 100px -30px rgba(3, 20, 31, 0.55) !important;
+  animation: zm-dialog-in 0.5s var(--zm-ease) both;
+  overflow: hidden;
+}
+.zm-toast { animation: zm-toast-in 0.55s var(--zm-ease) both; }
+
+@keyframes zm-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zm-sheet-in { from { transform: translateX(104%); } to { transform: translateX(0); } }
+@keyframes zm-pop { from { opacity: 0; transform: scale(0.9) translateY(-6px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes zm-dialog-in { from { opacity: 0; transform: scale(0.94) translateY(12px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes zm-toast-in { from { opacity: 0; transform: translate(-50%, 24px) scale(0.95); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+
+/* Soft fixed aurora behind every dashboard */
+.zm-app-canvas {
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgba(20, 128, 122, 0.10), transparent 60%),
+    radial-gradient(50% 50% at 0% 100%, rgba(217, 119, 6, 0.07), transparent 60%),
+    radial-gradient(70% 60% at 0% 0%, rgba(18, 82, 120, 0.08), transparent 60%),
+    var(--color-app);
+  background-attachment: fixed;
+}
+
+/* iOS-style thin scrollbars */
+.zm-ios-scroll *::-webkit-scrollbar { width: 10px; height: 10px; }
+.zm-ios-scroll *::-webkit-scrollbar-thumb { background: rgba(120, 120, 128, 0.32); border-radius: 9999px; border: 3px solid transparent; background-clip: padding-box; }
+.zm-ios-scroll *::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  .zm-backdrop, .zm-sheet, .zm-popover, .zm-dialog, .zm-toast { animation: none !important; }
+}
+
+/* An empty state placed inside a card should not draw a second card */
+.zm-card .zm-empty {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}

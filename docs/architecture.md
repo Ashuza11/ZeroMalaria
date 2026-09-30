@@ -4,27 +4,117 @@
 
 ## Roles and access
 
+See [docs/rbac.md](rbac.md) for the permission matrix and anti-escalation rules.
+
 ```mermaid
 flowchart TB
-  CHW[chw — village triage PWA]
-  Nurse[nurse — facility inbox]
-  Sup[supervisor — users + scoped referrals]
-  RBC[rbc — district dashboard + all referrals]
+  CHW[CHW — village triage PWA]
+  HC[HEALTH_CENTER — facility inbox]
+  Adm[RBC_ADMIN — national admin]
+  SA[SUPER_ADMIN — matrix + all]
 
-  CHW -->|JWT scoped to chw_code| API[(FastAPI + SQLite)]
-  Nurse -->|JWT scoped to facility_id| API
-  Sup -->|JWT facility + POST /users| API
-  RBC -->|JWT all analytics| API
+  CHW -->|JWT scope own| API[(FastAPI + SQLite)]
+  HC -->|JWT scope facility| API
+  Adm -->|JWT national| API
+  SA -->|JWT all| API
+```
+
+```mermaid
+sequenceDiagram
+  participant U as Browser
+  participant API as FastAPI
+  U->>API: POST /auth/login
+  API-->>U: access_token + refresh_token (+ httpOnly cookie)
+  U->>API: API calls Authorization Bearer
+  alt 401
+    U->>API: POST /auth/refresh
+    API-->>U: new access_token
+  end
+  U->>API: GET /events?access_token=…
+  Note over API: SSE scoped via same role/permission helpers
+```
+
+### RBAC tables (ER)
+
+```mermaid
+erDiagram
+  users ||--o{ refresh_tokens : has
+  users ||--o{ user_permission_overrides : may_have
+  roles ||--o{ role_permissions : grants
+  permissions ||--o{ role_permissions : granted_by
+  users ||--o{ audit_logs : acts
+  users {
+    string id PK
+    string username
+    string role
+    bool must_change_password
+    string password_prompt_status  // pending | changed | dismissed
+    datetime deleted_at
+    int version
+  }
+  permissions {
+    string code PK
+  }
+  roles {
+    string code PK
+    bool locked
+  }
+  role_permissions {
+    int id PK
+    string role_code
+    string permission_code
+  }
 ```
 
 | Role | Primary UI | API scope |
 | --- | --- | --- |
-| `chw` | Desktop `/app/chw` + `/app/triage` (StepperLayout); phone `/m/*` | Own referrals; sync queue |
-| `nurse` | `/app/referrals` TwoPanel inbox | Facility referrals; status PATCH |
-| `supervisor` | `/app/dashboard` scoped + Users | Facility referrals; create CHW users |
-| `rbc` | `/app/dashboard` analytics + hotspots | Analytics, hotspots, all referrals |
+| `CHW` | `/app/home` + `/app/triage`; phone `/m/*` | Own referrals; sync queue |
+| `HEALTH_CENTER` | `/app/referrals` inbox | Facility referrals; status PATCH; CHWs read-only |
+| `RBC_ADMIN` | `/app/dashboard` + admin CRUD | National (no matrix edit) |
+| `SUPER_ADMIN` | All + `/app/permissions` | Full |
 
-Demo logins: `chw.demo`, `nurse.demo`, `supervisor.demo`, `rbc.demo` (password `demo1234`).
+Login: username/password only → server returns role + permissions → redirect by role (or prior URL if allowed).
+
+Demo-only logins: see README § Demo only.
+
+Pilot districts in seed (synthetic; *source: RBC problem canvas, to be verified*): **Gisagara**, **Nyamagabe**, plus Nyamasheke / Nyagatare.
+
+## Live cross-role events
+
+```mermaid
+sequenceDiagram
+  participant CHW
+  participant API
+  participant Nurse
+  participant RBC
+  CHW->>API: Confirm urgent → POST /referrals
+  API->>API: AppEvent referral.created
+  Nurse->>API: GET /events/poll
+  API-->>Nurse: new referral toast + inbox row
+  Nurse->>API: PATCH status received + message
+  API-->>CHW: poll → timeline + thread
+  Note over API: If SLA overdue without arrived → alert CHW + supervisor + RBC feed
+```
+
+Frontend: `EventProvider` opens SSE `GET /events?access_token=…` with poll fallback (12s safety / 4s if SSE fails). Live Demo Board: `/demo/board` (three panes).
+
+i18n: `apps/web/src/locales/{rw,en}/*.json` is the translation source of truth (`lng`/`fallbackLng`=`rw`; browser language ignored).
+
+## Voice dialogue state machine
+
+```mermaid
+stateDiagram-v2
+  [*] --> idle
+  idle --> greeting: Start voice guided triage
+  greeting --> asking
+  asking --> listening: TTS finished
+  listening --> confirming: intent match / danger always
+  confirming --> asking: next slot
+  confirming --> responding: triage complete
+  responding --> idle: result catalog speech
+```
+
+Result speech = fixed catalog + `triggered_rules` only (never free LLM text). Playback: audio pack → `/voice/speak` → lang-matched browser TTS → text highlight.
 
 ## Offline vs online tiers
 

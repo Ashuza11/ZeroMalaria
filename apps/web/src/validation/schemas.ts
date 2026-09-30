@@ -26,7 +26,10 @@ const rwandaPhone = z
 export const addUserSchema = z.object({
   display_name: z.string().trim().min(2).max(128),
   phone: rwandaPhone.or(z.literal('')),
-  role: z.enum(['chw', 'nurse', 'supervisor', 'rbc']).default('chw'),
+  role: z
+    .enum(['CHW', 'HEALTH_CENTER', 'RBC_ADMIN', 'SUPER_ADMIN'])
+    .default('CHW'),
+
   facility_id: z.string().min(1).max(32),
   village: z.string().trim().min(1).max(128),
 });

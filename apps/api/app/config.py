@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     demo_password: str = "demo1234"
     jwt_secret: str = "zeromalaria-demo-secret-change-in-production"
     jwt_expire_hours: int = 8
+    # prompt = dismissible modal (default); enforce = cannot dismiss until password changed
+    password_change_policy: str = "prompt"
     # AI
     gemini_api_key: str = ""
     groq_api_key: str = ""

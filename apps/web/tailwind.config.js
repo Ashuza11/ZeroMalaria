@@ -42,7 +42,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         xs: ['12px', { lineHeight: '16px' }],
@@ -54,12 +54,12 @@ export default {
         '3xl': ['40px', { lineHeight: '48px' }],
       },
       borderRadius: {
-        card: '12px',
-        control: '10px',
+        card: '22px',
+        control: '14px',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06)',
-        lift: '0 2px 4px rgba(15,23,42,0.06), 0 12px 28px rgba(15,23,42,0.10)',
+        card: '0 1px 1px rgba(6,36,58,0.03), 0 10px 30px -14px rgba(6,36,58,0.20)',
+        lift: '0 2px 6px rgba(6,36,58,0.06), 0 24px 48px -18px rgba(6,36,58,0.32)',
       },
       spacing: {
         18: '4.5rem',
@@ -76,10 +76,20 @@ export default {
           '70%': { boxShadow: '0 0 0 12px rgba(220,38,38,0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(220,38,38,0)' },
         },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        modalIn: {
+          from: { transform: 'scale(0.98) translateY(8px)' },
+          to: { transform: 'scale(1) translateY(0)' },
+        },
       },
       animation: {
         shimmer: 'shimmer 1.4s infinite',
         'pulse-ring': 'pulseRing 1.6s ease-out infinite',
+        fadeIn: 'fadeIn 150ms ease-out forwards',
+        modalIn: 'modalIn 150ms ease-out forwards',
       },
     },
   },

@@ -32,6 +32,7 @@ export function VoiceControls({
   showLabels = false,
   compact = false,
   onTranscriptConfirmed,
+  language,
 }: {
   phraseIds: PhraseId[];
   helpPhraseId?: PhraseId;
@@ -39,10 +40,14 @@ export function VoiceControls({
   showLabels?: boolean;
   compact?: boolean;
   onTranscriptConfirmed?: (payload: { transcript: string; intents: VoiceIntents }) => void;
+  /** When rw, mic is experimental (browser STT rarely supports Kinyarwanda). */
+  language?: 'rw' | 'en';
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const voice = useVoice();
   const { capabilities, playbackSource, unlocked, mute, state } = voice;
+  const lang = language || (i18n.language.startsWith('rw') ? 'rw' : 'en');
+  const micExperimental = lang === 'rw';
 
   const onListen = () => {
     voice.unlock();
@@ -60,16 +65,15 @@ export function VoiceControls({
   };
 
   if (!unlocked) {
+    // Inline only — never cover the triage question/choices with a full-screen overlay.
     return (
-      <div className={cn('relative', className)}>
+      <div className={cn('space-y-2', className)}>
         <button
           type="button"
-          className="fixed inset-0 z-40 flex items-center justify-center bg-white/85 p-6 backdrop-blur-sm dark:bg-black/70"
+          className="w-full rounded-control border border-border bg-surface-muted px-4 py-3 text-left text-sm font-semibold text-ink"
           onClick={() => voice.unlock()}
         >
-          <span className="max-w-sm rounded-card border border-border bg-surface px-8 py-6 text-center text-lg font-semibold shadow-lift">
-            {t('voice.unlockTap')}
-          </span>
+          {t('voice.unlockTap')}
         </button>
       </div>
     );
@@ -81,52 +85,53 @@ export function VoiceControls({
     <div className={cn('space-y-2', className)}>
       <div className={cn('flex flex-wrap items-center gap-2', compact && 'gap-1')}>
         <IconButton
-          label={t('voice.listen')}
+          label={t('voice.tooltipListen')}
           showLabel={showLabels}
           onClick={onListen}
           disabled={state === 'speaking'}
         >
-          <Volume2 className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.listen')}</span> : null}
+          <Volume2 className="h-4 w-4" aria-hidden />
         </IconButton>
-        {capabilities.sttBrowser ? (
+        {capabilities.sttBrowser && !micExperimental ? (
           <IconButton
-            label={t('voice.mic')}
+            label={t('voice.tooltipMic')}
             showLabel={showLabels}
             onClick={onMic}
             disabled={state === 'listening'}
           >
-            <Mic className="h-4 w-4" />
-            {showLabels ? <span className="text-xs font-semibold">{t('voice.mic')}</span> : null}
+            <Mic className="h-4 w-4" aria-hidden />
+          </IconButton>
+        ) : null}
+        {capabilities.sttBrowser && micExperimental ? (
+          <IconButton
+            label={`${t('voice.micExperimental')}. ${t('voice.micExperimentalHint')}`}
+            showLabel={showLabels}
+            onClick={onMic}
+            disabled={state === 'listening'}
+          >
+            <Mic className="h-4 w-4 opacity-70" aria-hidden />
           </IconButton>
         ) : null}
         {helpPhraseId ? (
           <IconButton label={t('voice.help')} showLabel={showLabels} onClick={onHelp}>
-            <HelpCircle className="h-4 w-4" />
-            {showLabels ? <span className="text-xs font-semibold">{t('voice.help')}</span> : null}
+            <HelpCircle className="h-4 w-4" aria-hidden />
           </IconButton>
         ) : null}
-        <IconButton label={t('voice.replay')} showLabel={showLabels} onClick={() => void voice.replay()}>
-          <RotateCcw className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.replay')}</span> : null}
+        <IconButton label={t('voice.tooltipReplay')} showLabel={showLabels} onClick={() => void voice.replay()}>
+          <RotateCcw className="h-4 w-4" aria-hidden />
         </IconButton>
-        <IconButton label={t('voice.slower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
-          <Snail className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.slower')}</span> : null}
+        <IconButton label={t('voice.tooltipSlower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
+          <Snail className="h-4 w-4" aria-hidden />
         </IconButton>
-        <IconButton label={t('voice.stop')} showLabel={showLabels} onClick={() => voice.stop()}>
-          <Pause className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.stop')}</span> : null}
+        <IconButton label={t('voice.tooltipStop')} showLabel={showLabels} onClick={() => voice.stop()}>
+          <Pause className="h-4 w-4" aria-hidden />
         </IconButton>
         <IconButton
-          label={mute ? t('voice.unmute') : t('voice.mute')}
+          label={t('voice.tooltipMute')}
           showLabel={showLabels}
           onClick={() => voice.toggleMute()}
         >
-          {mute ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          {showLabels ? (
-            <span className="text-xs font-semibold">{mute ? t('voice.unmute') : t('voice.mute')}</span>
-          ) : null}
+          {mute ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
         </IconButton>
       </div>
       {badge ? (

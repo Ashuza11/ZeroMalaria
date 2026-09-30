@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ArrowRight, ClipboardPlus, Users } from 'lucide-react';
+import { ArrowRight, Users } from 'lucide-react';
+import { Orb } from '../components/liquid/alive';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ChwShell } from '../components/shells';
 import { Button, Card, EmptyState, StatusPill } from '../components/ui';
 import { db } from '../db';
 import type { LocalReferral } from '../types';
-import { relativeTime } from '../lib/cn';
+import { relativeTime } from '../lib/relativeTime';
 import { formatPatientLine } from '../lib/format';
 import { listContainer, listItem } from '../lib/motion';
 
@@ -40,29 +41,27 @@ export function HomePage() {
     <ChwShell>
       <div className="mb-4">
         <p className="text-sm text-ink-muted">{t('home.chwLabel')} · {t('home.village')}</p>
-        <h2 className="mt-1 text-2xl font-semibold text-ink">{t('home.greeting')}</h2>
+        <h2 className="mt-1 text-[32px] font-bold leading-tight tracking-[-0.03em] text-ink">{t('home.greeting')}</h2>
         <p className="mt-1 text-sm text-ink-muted">{t('home.subtitle')}</p>
       </div>
 
       <div className="mb-4 grid grid-cols-3 gap-2">
         {[
-          { label: t('home.todayPatients'), value: recent.length || 0, icon: Users },
-          { label: t('home.pendingReferrals'), value: pending, icon: ClipboardPlus },
-          { label: t('home.openAlerts'), value: alerts, icon: AlertTriangle },
-        ].map((s) => (
-          <Card key={s.label} className="p-3">
-            <s.icon className="h-4 w-4 text-ink-muted" strokeWidth={1.75} />
-            <p className="mt-2 tabular text-xl font-semibold">{s.value}</p>
+          { label: t('home.todayPatients'), value: recent.length || 0, tone: 'teal' as const },
+          { label: t('home.pendingReferrals'), value: pending, tone: 'sky' as const },
+          { label: t('home.openAlerts'), value: alerts, tone: 'amber' as const },
+        ].map((s, i) => (
+          <Card key={s.label} className="p-3.5">
+            <Orb size={22} tone={s.tone} delay={i} />
+            <p className="mt-2.5 tabular text-[26px] font-bold leading-none tracking-[-0.03em]">{s.value}</p>
             <p className="text-[11px] text-ink-muted">{s.label}</p>
           </Card>
         ))}
       </div>
 
-      <Card className="mb-4 border-primary/20 bg-primary-soft/40 p-5" hover>
+      <Card className="mb-5 bg-[linear-gradient(135deg,rgba(11,60,93,0.08),rgba(20,128,122,0.10))] p-5" hover>
         <div className="flex items-start gap-3">
-          <div className="rounded-control bg-primary p-3 text-primary-foreground">
-            <ClipboardPlus className="h-6 w-6" strokeWidth={1.75} />
-          </div>
+          <Orb size={48} tone="ocean" />
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-ink">{t('home.newPatient')}</h3>
             <p className="mt-1 text-sm text-ink-muted">{t('home.subtitle')}</p>
@@ -73,7 +72,7 @@ export function HomePage() {
         </div>
       </Card>
 
-      <h3 className="mb-2 text-sm font-semibold text-ink">{t('home.recent')}</h3>
+      <h3 className="mb-2.5 px-1 text-[13px] font-semibold uppercase tracking-[0.08em] text-ink-muted">{t('home.recent')}</h3>
       {recent.length === 0 ? (
         <EmptyState
           icon={<Users className="h-8 w-8" strokeWidth={1.75} />}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* AUTO-GENERATED from rules/malaria_rules.yaml — do not edit by hand.
  * Run: python apps/web/scripts/generate_rules_ts.py
  * PLACEHOLDER - TO BE VALIDATED against Rwanda national malaria treatment guidelines
@@ -5,10 +6,12 @@
  */
 export const MALARIA_RULES = {
   "meta": {
-    "version": "1.0.0-placeholder",
+    "version": "1.1.0-placeholder",
     "synthetic_demo": true,
     "disclaimer": "Decision support tool. Not a replacement for clinical judgment.",
-    "validation_banner": "PLACEHOLDER - TO BE VALIDATED against the Rwanda national malaria treatment guidelines and WHO iCCM guidance by a clinician."
+    "validation_banner": "PLACEHOLDER - TO BE VALIDATED against the Rwanda national malaria treatment guidelines and WHO iCCM guidance by a clinician.",
+    "protocol_reference": "WHO iCCM / Rwanda national malaria community care (PLACEHOLDER)",
+    "clinical_config": "rules/clinical_config.yaml"
   },
   "decision_rank": {
     "treat_at_home": 0,
@@ -22,6 +25,7 @@ export const MALARIA_RULES = {
       "id": "convulsions",
       "field": "convulsions",
       "when_true": "urgent_refer",
+      "protocol_section": "iCCM danger signs - convulsions / fits",
       "reason_en": "Convulsions (fits) reported",
       "reason_rw": "Gusetsa (fits) byavuzwe"
     },
@@ -29,6 +33,7 @@ export const MALARIA_RULES = {
       "id": "unable_to_drink",
       "field": "unable_to_drink",
       "when_true": "urgent_refer",
+      "protocol_section": "iCCM danger signs - unable to drink or feed",
       "reason_en": "Unable to drink or feed",
       "reason_rw": "Ntashobora kunywa cyangwa kurya"
     },
@@ -36,6 +41,7 @@ export const MALARIA_RULES = {
       "id": "vomiting_everything",
       "field": "vomiting_everything",
       "when_true": "urgent_refer",
+      "protocol_section": "iCCM danger signs - vomiting everything",
       "reason_en": "Vomiting everything",
       "reason_rw": "Araruka byose"
     },
@@ -43,6 +49,7 @@ export const MALARIA_RULES = {
       "id": "lethargy",
       "field": "lethargy",
       "when_true": "urgent_refer",
+      "protocol_section": "iCCM danger signs - lethargy / unconscious",
       "reason_en": "Lethargy or unconsciousness",
       "reason_rw": "Yacitse intege cyangwa ntabona"
     },
@@ -50,6 +57,7 @@ export const MALARIA_RULES = {
       "id": "severe_breathing_difficulty",
       "field": "severe_breathing_difficulty",
       "when_true": "urgent_refer",
+      "protocol_section": "iCCM danger signs - severe breathing difficulty",
       "reason_en": "Severe breathing difficulty",
       "reason_rw": "Agorwa cyane n'uruhuha"
     }
@@ -58,6 +66,7 @@ export const MALARIA_RULES = {
     {
       "id": "infant_age_referral",
       "description": "PLACEHOLDER: sick infants below infant_refer_months are referred urgently from community care (common iCCM convention). Not a Rwanda-validated cutoff.",
+      "protocol_section": "iCCM young infant referral",
       "when": {
         "age_months_lt": "infant_refer_months"
       },
@@ -67,18 +76,20 @@ export const MALARIA_RULES = {
     },
     {
       "id": "invalid_tdr_refer",
-      "description": "PLACEHOLDER operational referral for invalid TDR \u2014 not a severity grade.",
+      "description": "PLACEHOLDER operational referral for invalid TDR - not a severity grade.",
+      "protocol_section": "RDT invalid / repeat testing",
       "when": {
         "tdr_result": "invalid",
         "no_urgent_already": true
       },
       "decision": "refer",
-      "reason_en": "Invalid TDR \u2014 refer for repeat testing / assessment",
-      "reason_rw": "TDR ntabwo yemewe \u2014 ohereze gukorera ikizamini cyangwa gusuzumwa"
+      "reason_en": "Invalid TDR - refer for repeat testing / assessment",
+      "reason_rw": "TDR ntabwo yemewe - ohereze gukorera ikizamini cyangwa gusuzumwa"
     },
     {
       "id": "persistent_fever_negative_tdr",
       "description": "PLACEHOLDER: common iCCM counseling interval (~day 3) if illness is not improving and TDR is negative. Not a severe-malaria threshold.",
+      "protocol_section": "iCCM fever follow-up with negative RDT",
       "when": {
         "tdr_result": "negative",
         "fever_days_gte": "persistent_fever_days",
@@ -89,10 +100,24 @@ export const MALARIA_RULES = {
       "reason_rw": "Ubushyuhe bw'iminsi {persistent_fever_days}+ hamwe na TDR mbi (placeholder)"
     },
     {
-      "id": "default_treat_at_home",
-      "description": "Default when no referral rule fires. Includes uncomplicated TDR-positive fever in this demo. Does NOT prescribe drugs or doses.",
+      "id": "incomplete_assessment",
+      "description": "Fired when required danger-sign answers are missing. Unanswered is never treated as No; default home care is withheld.",
+      "protocol_section": "Incomplete community assessment (operational)",
       "when": {
-        "no_referral_already": true
+        "missing_danger_signs": true,
+        "no_urgent_already": true
+      },
+      "decision": "refer",
+      "reason_en": "Incomplete assessment - danger signs not fully answered",
+      "reason_rw": "Isuzuma ntiruzuye - ibimenyetso by'akaga ntibyuzuye"
+    },
+    {
+      "id": "default_treat_at_home",
+      "description": "Default when no referral rule fires and assessment is complete. Includes uncomplicated TDR-positive fever in this demo. Does NOT prescribe drugs or doses.",
+      "protocol_section": "Uncomplicated malaria community care (PLACEHOLDER)",
+      "when": {
+        "no_referral_already": true,
+        "assessment_complete": true
       },
       "decision": "treat_at_home",
       "reason_en": "No placeholder danger sign or referral rule triggered",

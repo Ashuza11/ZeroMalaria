@@ -27,6 +27,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2,json,mp3}'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api') || url.port === '8000',
@@ -34,6 +35,21 @@ export default defineConfig({
             options: {
               cacheName: 'api-cache',
               networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            // Pre-recorded Kinyarwanda / English phrase packs for offline voice.
+            urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'audio-pack',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
             },
           },
         ],
@@ -50,4 +66,19 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 4173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/dist/**'],
+  },
 });
+

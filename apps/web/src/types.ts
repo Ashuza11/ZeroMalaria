@@ -1,4 +1,6 @@
 export type Decision = 'treat_at_home' | 'refer' | 'urgent_refer';
+/** Public labels for UI / eval (maps from Decision). */
+export type PublicDecision = 'treat_locally' | 'monitor' | 'urgent_referral';
 
 export type TriageInput = {
   age_months: number;
@@ -13,10 +15,22 @@ export type TriageInput = {
   tdr_result: 'positive' | 'negative' | 'invalid';
 };
 
+export type ReasonDetail = {
+  rule_id: string;
+  field: string | null;
+  answer: unknown;
+  text: string;
+  protocol_section?: string | null;
+};
+
 export type RulesResult = {
   decision: Decision;
+  public_decision: PublicDecision;
   reasons: string[];
   triggered_rules: string[];
+  reason_details: ReasonDetail[];
+  missing_info: string[];
+  protocol_reference: string;
 };
 
 export type DecisionResult = RulesResult & {
@@ -27,6 +41,19 @@ export type DecisionResult = RulesResult & {
   confidence: number;
   human_confirmation_required: true;
   disclaimer: string;
+  ai_advisory?: AiAdvisory | null;
+};
+
+export type AiAdvisory = {
+  explanation_rw: string;
+  explanation_en: string;
+  inconsistencies: string[];
+  caregiver_advice_rw: string;
+  handover_summary: string;
+  suggested_escalation: boolean;
+  citations: string[];
+  needs_native_review: boolean;
+  chw_followed?: boolean | null;
 };
 
 export type ReferralStatus = 'sent' | 'received' | 'arrived' | 'treated';

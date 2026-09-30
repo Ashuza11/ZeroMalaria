@@ -1,14 +1,26 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import { AuthProvider, useAuth, type UserRole } from './auth/AuthContext';
-import { homePath } from './auth/roleAccess';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import {
+  ALL_ROLES,
+  BROAD_ROLES,
+  homePath,
+  normalizeRole,
+  webHomePath,
+} from './auth/roleAccess';
+
 import { RequireAuth, RequireRole } from './auth/guards';
+import { ViewportShellSync } from './auth/ViewportShellSync';
 import { SyncProvider } from './sync/SyncContext';
+import { EventProvider } from './events/EventContext';
+import { DemoBoardGate } from './auth/DemoBoardGate';
 import { ThemeProvider } from './theme/ThemeContext';
+import { ConversationProvider } from './voice/ConversationContext';
 import { VoiceProvider } from './voice/VoiceContext';
 import { ToastProvider } from './components/ToastProvider';
 import { Skeleton } from './components/ui';
 import { LoginPage } from './pages/LoginPage';
+import { AuthLayout } from './pages/auth/AuthLayout';
 import { HomePage } from './pages/HomePage';
 import { TriagePage } from './pages/TriagePage';
 import { ResultPage } from './pages/ResultPage';
@@ -19,6 +31,13 @@ import { FacilityPage } from './pages/FacilityPage';
 import { MobileLandingPage } from './pages/MobileLandingPage';
 import { NotAuthorizedPage } from './pages/NotAuthorizedPage';
 import { UsersPage } from './pages/UsersPage';
+import { PermissionsPage } from './pages/PermissionsPage';
+import { AuditLogPage } from './pages/AuditLogPage';
+import { AiActivityPage } from './pages/AiActivityPage';
+import { ChangePasswordPage } from './pages/ChangePasswordPage';
+import { PasswordPromptModal } from './components/PasswordPromptModal';
+import { FacilitiesAdminPage } from './pages/FacilitiesAdminPage';
+import { ConfigPage } from './pages/ConfigPage';
 import { AboutPage } from './pages/AboutPage';
 import { AppLanguagePage } from './pages/AppLanguagePage';
 import { PatientsPage } from './pages/PatientsPage';
@@ -29,8 +48,12 @@ import { LanguagePage } from './pages/LanguagePage';
 import { ChwWebHome } from './pages/ChwWebHome';
 import { VoiceReviewPage } from './pages/VoiceReviewPage';
 import { TranslationReviewPage } from './pages/TranslationReviewPage';
+import { DevTranslationsPage } from './pages/DevTranslationsPage';
 
 const RbcPage = lazy(() => import('./pages/RbcPage'));
+const LandingPage = lazy(() =>
+  import('./pages/landing/LandingPage').then((m) => ({ default: m.LandingPage })),
+);
 
 function DashFallback() {
   return (
@@ -45,17 +68,38 @@ function DashFallback() {
   );
 }
 
-function RootRedirect() {
+/** Public marketing home. Authed users go to role home. */
+function PublicLanding() {
   const { user, loading } = useAuth();
   if (loading) return <DashFallback />;
-  if (user) return <Navigate to={homePath(user.role as UserRole)} replace />;
+  if (user) return <Navigate to={homePath(user.role)} replace />;
+  return (
+    <Suspense fallback={<DashFallback />}>
+      <LandingPage />
+    </Suspense>
+  );
+}
+
+function AppHome() {
+  const { user } = useAuth();
+  const role = user ? normalizeRole(user.role) : undefined;
+  if (role === 'CHW') return <ChwWebHome />;
+  if (role === 'HEALTH_CENTER') return <Navigate to="/app/referrals" replace />;
+  if (role && BROAD_ROLES.includes(role)) {
+    return (
+      <Suspense fallback={<DashFallback />}>
+        <RbcPage />
+      </Suspense>
+    );
+  }
   return <Navigate to="/login" replace />;
 }
 
 function AppDashboard() {
   const { user } = useAuth();
-  if (user?.role === 'nurse') return <Navigate to="/app/referrals" replace />;
-  if (user?.role === 'chw') return <Navigate to="/app/chw" replace />;
+  const role = user ? normalizeRole(user.role) : undefined;
+  if (role === 'HEALTH_CENTER') return <Navigate to={webHomePath('HEALTH_CENTER')} replace />;
+  if (role === 'CHW') return <Navigate to={webHomePath('CHW')} replace />;
   return (
     <Suspense fallback={<DashFallback />}>
       <RbcPage />
@@ -72,13 +116,25 @@ export default function App() {
   return (
     <ThemeProvider>
       <VoiceProvider>
+        <ConversationProvider>
         <AuthProvider>
           <SyncProvider>
             <ToastProvider>
-              <BrowserRouter>
+              <EventProvider>
+              <BrowserRouter
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true,
+                }}
+              >
+              <ViewportShellSync />
+              <PasswordPromptModal />
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/" element={<RootRedirect />} />
+                <Route path="/" element={<PublicLanding />} />
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                </Route>
+                <Route path="/dev/translations" element={<DevTranslationsPage />} />
 
                 <Route path="/m" element={<MobileLandingPage />} />
                 <Route path="/m/home" element={<HomePage />} />
@@ -94,7 +150,15 @@ export default function App() {
                   path="/app"
                   element={
                     <RequireAuth>
-                      <AppDashboard />
+                      <Navigate to="/app/home" replace />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/home"
+                  element={
+                    <RequireAuth>
+                      <AppHome />
                     </RequireAuth>
                   }
                 />
@@ -110,7 +174,7 @@ export default function App() {
                   path="/app/referrals"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['nurse', 'supervisor', 'rbc']}>
+                      <RequireRole roles={['HEALTH_CENTER', ...BROAD_ROLES]}>
                         <FacilityPage />
                       </RequireRole>
                     </RequireAuth>
@@ -120,7 +184,7 @@ export default function App() {
                   path="/app/patients"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['nurse', 'supervisor', 'rbc']}>
+                      <RequireRole roles={['HEALTH_CENTER', ...BROAD_ROLES]}>
                         <PatientsPage />
                       </RequireRole>
                     </RequireAuth>
@@ -130,7 +194,7 @@ export default function App() {
                   path="/app/analytics"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['supervisor', 'rbc']}>
+                      <RequireRole roles={[...BROAD_ROLES]}>
                         <Suspense fallback={<DashFallback />}>
                           <RbcPage />
                         </Suspense>
@@ -142,7 +206,7 @@ export default function App() {
                   path="/app/supplies"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['supervisor', 'rbc']}>
+                      <RequireRole roles={[...BROAD_ROLES]}>
                         <SuppliesPage />
                       </RequireRole>
                     </RequireAuth>
@@ -152,9 +216,67 @@ export default function App() {
                   path="/app/users"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['supervisor', 'rbc']}>
+                      <RequireRole roles={[...BROAD_ROLES]}>
                         <UsersPage />
                       </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/permissions"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={['SUPER_ADMIN']}>
+                        <PermissionsPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/audit"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={[...BROAD_ROLES]}>
+                        <AuditLogPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/ai-activity"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={[...BROAD_ROLES]}>
+                        <AiActivityPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/facilities"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={[...BROAD_ROLES]}>
+                        <FacilitiesAdminPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/config"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={['SUPER_ADMIN', 'RBC_ADMIN']}>
+                        <ConfigPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/change-password"
+                  element={
+                    <RequireAuth>
+                      <ChangePasswordPage />
                     </RequireAuth>
                   }
                 />
@@ -178,8 +300,8 @@ export default function App() {
                   path="/app/chw"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
-                        <ChwWebHome />
+                      <RequireRole roles={['CHW']}>
+                        <Navigate to="/app/home" replace />
                       </RequireRole>
                     </RequireAuth>
                   }
@@ -188,7 +310,7 @@ export default function App() {
                   path="/app/my-referrals"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
+                      <RequireRole roles={['CHW']}>
                         <ReferralsPage />
                       </RequireRole>
                     </RequireAuth>
@@ -198,7 +320,7 @@ export default function App() {
                   path="/app/my-patients"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
+                      <RequireRole roles={['CHW']}>
                         <PatientsPage />
                       </RequireRole>
                     </RequireAuth>
@@ -208,7 +330,7 @@ export default function App() {
                   path="/app/alerts"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
+                      <RequireRole roles={['CHW']}>
                         <AlertsPage />
                       </RequireRole>
                     </RequireAuth>
@@ -218,7 +340,7 @@ export default function App() {
                   path="/app/triage"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
+                      <RequireRole roles={['CHW']}>
                         <TriagePage />
                       </RequireRole>
                     </RequireAuth>
@@ -228,7 +350,7 @@ export default function App() {
                   path="/app/result"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw']}>
+                      <RequireRole roles={['CHW']}>
                         <ResultPage />
                       </RequireRole>
                     </RequireAuth>
@@ -246,7 +368,7 @@ export default function App() {
                   path="/app/settings/voice-review"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw', 'nurse', 'supervisor', 'rbc']}>
+                      <RequireRole roles={[...ALL_ROLES]}>
                         <VoiceReviewPage />
                       </RequireRole>
                     </RequireAuth>
@@ -256,7 +378,7 @@ export default function App() {
                   path="/app/settings/translations"
                   element={
                     <RequireAuth>
-                      <RequireRole roles={['chw', 'nurse', 'supervisor', 'rbc']}>
+                      <RequireRole roles={[...ALL_ROLES]}>
                         <TranslationReviewPage />
                       </RequireRole>
                     </RequireAuth>
@@ -267,6 +389,14 @@ export default function App() {
                   element={
                     <RequireAuth>
                       <NotAuthorizedPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/demo/board"
+                  element={
+                    <RequireAuth>
+                      <DemoBoardGate />
                     </RequireAuth>
                   }
                 />
@@ -285,9 +415,11 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
+              </EventProvider>
           </ToastProvider>
         </SyncProvider>
       </AuthProvider>
+        </ConversationProvider>
       </VoiceProvider>
     </ThemeProvider>
   );
