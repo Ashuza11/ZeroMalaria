@@ -20,6 +20,7 @@ import { VoiceProvider } from './voice/VoiceContext';
 import { ToastProvider } from './components/ToastProvider';
 import { Skeleton } from './components/ui';
 import { LoginPage } from './pages/LoginPage';
+import { AuthLayout } from './pages/auth/AuthLayout';
 import { HomePage } from './pages/HomePage';
 import { TriagePage } from './pages/TriagePage';
 import { ResultPage } from './pages/ResultPage';
@@ -49,6 +50,9 @@ import { TranslationReviewPage } from './pages/TranslationReviewPage';
 import { DevTranslationsPage } from './pages/DevTranslationsPage';
 
 const RbcPage = lazy(() => import('./pages/RbcPage'));
+const LandingPage = lazy(() =>
+  import('./pages/landing/LandingPage').then((m) => ({ default: m.LandingPage })),
+);
 
 function DashFallback() {
   return (
@@ -63,11 +67,16 @@ function DashFallback() {
   );
 }
 
-function RootRedirect() {
+/** Public marketing home. Authed users go to role home. */
+function PublicLanding() {
   const { user, loading } = useAuth();
   if (loading) return <DashFallback />;
   if (user) return <Navigate to={homePath(user.role)} replace />;
-  return <Navigate to="/login" replace />;
+  return (
+    <Suspense fallback={<DashFallback />}>
+      <LandingPage />
+    </Suspense>
+  );
 }
 
 function AppHome() {
@@ -120,9 +129,11 @@ export default function App() {
               <ViewportShellSync />
               <PasswordPromptModal />
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<PublicLanding />} />
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                </Route>
                 <Route path="/dev/translations" element={<DevTranslationsPage />} />
-                <Route path="/" element={<RootRedirect />} />
 
                 <Route path="/m" element={<MobileLandingPage />} />
                 <Route path="/m/home" element={<HomePage />} />

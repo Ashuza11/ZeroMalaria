@@ -146,8 +146,8 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
           </Button>
         </div>
       ) : null}
-      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card sm:min-h-[calc(100vh-0px)]">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-surface/95 px-4 py-3 backdrop-blur">
+      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card sm:min-h-[calc(100vh-0px)] md:my-4 md:min-h-[calc(100vh-2rem)] md:overflow-hidden md:rounded-[36px] md:border md:border-white/70 md:bg-app/60 md:shadow-lift dark:md:border-white/10">
+        <header className="zm-glass zm-glass-strong sticky top-0 z-30 flex items-center justify-between gap-2 !border-x-0 !border-t-0 px-4 py-3 !shadow-none">
           <LogoMark />
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <SyntheticBadge label={t('common.synthetic')} />
@@ -188,10 +188,10 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
 
         {!hideTabs ? (
           <nav
-            className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 border-t border-border bg-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur"
+            className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
             data-testid="mobile-tab-bar"
           >
-            <div className="mx-auto grid max-w-chw grid-cols-4 gap-1">
+            <div className="zm-glass zm-glass-strong mx-auto grid max-w-chw grid-cols-4 gap-1 rounded-[30px] p-1.5">
               <Tab to="/m/home" icon={<Home className="h-5 w-5" strokeWidth={1.75} />} label={t('nav.home')} />
               <Tab
                 to="/m/triage"
@@ -500,12 +500,12 @@ export function WebShell({
     <aside
       data-testid={testId}
       className={cn(
-        'flex h-full flex-col border-r border-border bg-surface transition-[width] duration-200',
+        'zm-glass zm-glass-strong flex h-full flex-col overflow-hidden rounded-[28px] transition-[width] duration-500 [transition-timing-function:cubic-bezier(.32,.72,0,1)]',
         reduce && 'transition-none',
         slim ? 'w-[72px]' : 'w-60',
       )}
     >
-      <div className="flex shrink-0 items-center justify-between border-b border-border p-4">
+      <div className="flex shrink-0 items-center justify-between border-b border-[var(--zm-separator)] p-4">
         <LogoMark compact={slim} />
         <button
           type="button"
@@ -544,7 +544,7 @@ export function WebShell({
                   setMobileNav(false);
                 }}
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
+                  'relative flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-[14.5px] font-medium transition-colors duration-300',
                   active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
                   slim && 'justify-center px-2',
                 )}
@@ -577,7 +577,7 @@ export function WebShell({
                   setMobileNav(false);
                 }}
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-sm font-semibold transition',
+                  'relative flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-[14.5px] font-medium transition-colors duration-300',
                   active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
                   slim && 'justify-center px-2',
                 )}
@@ -614,24 +614,26 @@ export function WebShell({
 
   return (
     <div className="flex h-dvh overflow-hidden bg-app text-ink" data-testid="app-shell">
-      <div className="hidden h-full shrink-0 lg:block">{renderSidebar('web-sidebar')}</div>
+      <div className="hidden h-full shrink-0 p-3 pr-0 lg:block">{renderSidebar('web-sidebar')}</div>
       {mobileNav ? (
         <div className="fixed inset-0 z-40 flex lg:hidden" role="dialog" aria-modal="true" data-testid="mobile-nav">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/40"
+            className="zm-backdrop absolute inset-0 bg-ink/40"
             aria-label={t('common.close')}
             onClick={() => setMobileNav(false)}
           />
-          <div className="relative z-10 h-full shadow-lift">{renderSidebar('web-sidebar-drawer', true)}</div>
+          <div className="relative z-10 h-full p-3 [animation:zm-pop_.45s_cubic-bezier(.32,.72,0,1)_both] [transform-origin:left_center]">
+            {renderSidebar('web-sidebar-drawer', true)}
+          </div>
         </div>
       ) : null}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header
           data-testid="app-header"
           className={cn(
-            'z-20 flex h-16 shrink-0 flex-nowrap items-center gap-2 border-b border-border bg-surface px-3 lg:px-4',
-            mainScrolled && 'shadow-sm',
+            'z-20 mx-3 mt-3 flex h-[64px] shrink-0 flex-nowrap items-center gap-2 rounded-[24px] border border-white/70 bg-surface/75 px-3 shadow-[0_10px_30px_-18px_rgba(6,36,58,0.35)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/[0.07] dark:bg-[rgba(14,27,40,0.72)] sm:px-4',
+            mainScrolled && 'shadow-[0_12px_36px_-16px_rgba(6,36,58,0.45)]',
           )}
         >
             <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -704,7 +706,7 @@ export function WebShell({
                   ) : null}
                 </IconButton>
                 {notifOpen ? (
-                  <div className="absolute right-0 z-40 mt-2 w-72 rounded-card border border-border bg-surface shadow-lift">
+                  <div className="zm-glass zm-glass-strong absolute right-0 z-40 mt-2 w-72 overflow-hidden rounded-[20px] !shadow-lift">
                     <p className="border-b border-border px-3 py-2 text-xs font-semibold uppercase text-ink-muted">
                       {t('nav.notifications')}
                     </p>
@@ -738,7 +740,7 @@ export function WebShell({
                   {initials}
                 </button>
                 {avatarOpen ? (
-                  <div className="absolute right-0 z-40 mt-2 w-56 rounded-card border border-border bg-surface shadow-lift">
+                  <div className="zm-glass zm-glass-strong absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-[20px] !shadow-lift">
                     <div className="border-b border-border px-3 py-2">
                       <p className="text-sm font-semibold">{user?.display_name}</p>
                       <p className="text-xs text-ink-muted">{user?.username}</p>
@@ -816,8 +818,8 @@ export function WebShell({
         </div>
 
       {paletteOpen ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-ink/40 p-4 pt-[15vh]">
-          <div className="w-full max-w-lg rounded-card border border-border bg-surface shadow-lift">
+        <div className="zm-backdrop fixed inset-0 z-50 flex items-start justify-center bg-ink/40 p-4 pt-[15vh]">
+          <div className="zm-glass zm-glass-strong w-full max-w-lg overflow-hidden rounded-[28px] !shadow-lift">
             <div className="flex items-center gap-2 border-b border-border px-3 py-2">
               <Search className="h-4 w-4 text-ink-muted" />
               <input

@@ -3,55 +3,39 @@
 **Decision support tool. Not a replacement for clinical judgment.**  
 **Synthetic demo data** only.
 
-## Current sprint: password prompt modal (2026-09-30) — DONE
+## Current sprint: Ardent visual merge (2026-09-30) — DONE
 
-### STEP 0 — Audit (`must_change_password`)
+**Branch:** `test-merge-ardent` (do not touch `main`).
 
-| Location | Role |
-| --- | --- |
-| `apps/api/app/db.py` | column + `_ensure_columns` |
-| `apps/api/app/routers_auth.py` | login/me/create/reset/change |
-| `apps/web/src/auth/guards.tsx` | was redirecting to `/app/change-password` — **removed** |
-| `apps/web/src/auth/AuthContext.tsx` | session normalize |
-| `apps/web/src/api/client.ts` | types |
-| Locales `mustChangePassword` | kept (unused for gating) |
-| Seed | demo users `dismissed` |
-| Server blocking | none under `prompt`; middleware under `enforce` |
+### Goal
+
+Use Ardent’s liquid-glass landing + auth visuals while keeping local RBAC, auth gate, 4 roles, password-prompt modal, Kinyarwanda default, fixed shell (sticky header/sidebar, main scrolls), centered Modal.
 
 ### Assumptions
 
-- `must_change_password` kept synced (`pending`↔true) for legacy; gating uses `password_prompt_status` + `ZM_PASSWORD_CHANGE_POLICY`.
-- Default policy `prompt`; document `enforce` for non-demo.
-- Modal once after auth on home; server `dismissed` = never again on any device.
-- Skip modal on `/login`, during `/triage`, or while voice `state !== idle`.
+- No self-service forgot-password API → login hides forgot link; `ForgotPasswordPage.tsx` left unrouted.
+- No `/signup`; `SignUpPage.tsx` deleted (admin creates accounts).
+- Ardent `src/i18n/*.json` not used; keys live in `locales/{rw,en}/landing.json` + `authx.json` (draft in `_review.json`).
+- Demo role-orb quick login removed from login UI (role auto-detection only).
 
 ### What shipped
 
-1. Backend: `password_prompt_status` (`pending|changed|dismissed`), migration v1 (+ reverse helper), `POST /auth/password-prompt/dismiss`, login fields `password_prompt_status` + `password_change_policy`, create/reset → pending, change → changed, demos → dismissed, enforce middleware.
-2. Frontend: no redirect; `PasswordPromptModal` (centered / bottom sheet); Ignore dismisses server-side; Change password page still in Settings / avatar menu.
-3. i18n RW/EN + draft `_review.json`.
-4. Tests: `test_password_prompt.py` + Playwright `e2e/password-prompt.spec.ts` (3/3). Screenshots: `docs/screenshots/password-prompt-modal-light.png`, `password-prompt-modal-dark.png`, `password-prompt-modal-mobile.png`.
+1. **`/`** → lazy `LandingPage` (public); authed users → role home. **`/login`** under `AuthLayout`.
+2. **LoginPage** restyled with AuthLayout / Field / PasswordField / PillButton; local login, 429/lockout, `canAccess` + role home redirect.
+3. **App chrome** glass tokens on shells, Modal, PresenterMenu, PageHeader/SectionCard, Users bulk bar.
+4. **i18n:** landing + authx namespaces; hard-coded Loading / Primary / image alts → `t()`.
 
-### Gates (final)
+### Gates
 
 | Check | Result |
 | --- | --- |
 | pytest | **56 passed** |
-| npm run build | **OK** |
+| npm run build | **OK** (LandingPage lazy chunk) |
 | npm run lint | **OK** |
-| npm run i18n:check | **OK** (485 keys) |
-| Playwright password-prompt | **3 passed** |
+| npm run i18n:check | **OK** (647 keys) |
 
-### Step tracker
+### Not done / leftover
 
-| Step | Status |
-| --- | --- |
-| 0 Audit | **Done** |
-| 1 Backend | **Done** |
-| 2 Frontend Modal | **Done** |
-| 3 i18n | **Done** |
-| 4 Tests / docs | **Done** |
-
-### Mocked / not verified
-
-- Native RW glossary review (draft keys in `_review.json`).
+- Native RW review for draft landing/authx keys.
+- `ForgotPasswordPage.tsx` still on disk but not routed (no backend endpoint).
+- Place-name hardcode `Nyamata · Bugesera` on landing problem card (proper noun).

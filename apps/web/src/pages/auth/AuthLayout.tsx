@@ -53,7 +53,7 @@ export function AuthLayout() {
             className="zm-ocean relative hidden overflow-hidden rounded-[40px] lg:block"
           >
             <div className="absolute inset-0">
-              <SmartImage src="/images/landing/auth-side.jpg" alt="Community health worker on a hillside path at golden hour" hue="teal" priority className="h-full w-full">
+              <SmartImage src="/images/landing/auth-side.jpg" alt={t('landing.altAuthSide')} hue="teal" priority className="h-full w-full">
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,20,31,0.55)_0%,rgba(3,20,31,0.1)_35%,rgba(3,20,31,0.85)_100%)]" />
               </SmartImage>
             </div>
@@ -61,7 +61,7 @@ export function AuthLayout() {
 
             <div className="relative flex h-full flex-col justify-between p-10 text-white">
               <div>
-                <Link to="/" className="inline-block rounded-full" aria-label="ZeroMalaria">
+                <Link to="/" className="inline-block rounded-full" aria-label={t('common.appName')}>
                   <Wordmark light />
                 </Link>
                 <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...spring, delay: 0.5 }} className="mt-10 max-w-[400px]">

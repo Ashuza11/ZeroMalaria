@@ -317,9 +317,10 @@ export function PillLink({ variant = 'primary', size = 'md', className, children
 }
 
 export function Spinner({ className }: { className?: string }) {
+  const { t } = useTranslation();
   // iOS activity indicator: 8 fading spokes
   return (
-    <span className={cn('absolute inset-0 flex items-center justify-center', className)} role="status" aria-label="Loading">
+    <span className={cn('absolute inset-0 flex items-center justify-center', className)} role="status" aria-label={t('common.loading')}>
       <span className="relative h-5 w-5">
         {Array.from({ length: 8 }).map((_, i) => (
           <span
@@ -344,17 +345,17 @@ export function Spinner({ className }: { className?: string }) {
    Language segmented control: RW | EN
 ---------------------------------------------------------------- */
 export function LangSwitch({ tone = 'light', className }: { tone?: 'light' | 'dark'; className?: string }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const current = i18n.language.startsWith('rw') ? 'rw' : 'en';
   const uid = useId();
   const opts: Array<{ id: 'rw' | 'en'; label: string; full: string }> = [
-    { id: 'rw', label: 'RW', full: 'Ikinyarwanda' },
-    { id: 'en', label: 'EN', full: 'English' },
+    { id: 'rw', label: 'RW', full: t('lang.kinyarwanda') },
+    { id: 'en', label: 'EN', full: t('lang.english') },
   ];
   return (
     <div
       role="radiogroup"
-      aria-label="Language / Ururimi"
+      aria-label={t('nav.language')}
       className={cn(
         'relative inline-flex h-9 items-center rounded-full p-[3px]',
         tone === 'dark' ? 'bg-white/10 ring-1 ring-white/15' : 'bg-[rgba(11,27,43,0.06)] ring-1 ring-[var(--zm-separator)]',

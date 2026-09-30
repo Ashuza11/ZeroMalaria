@@ -43,11 +43,11 @@ import { HealthCard } from './HealthCard';
 const img = (name: string) => `/images/landing/${name}`;
 
 export function LandingPage() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     document.documentElement.lang = i18n.language.startsWith('rw') ? 'rw' : 'en';
-    document.title = 'ZeroMalaria';
-  }, [i18n.language]);
+    document.title = t('common.appName');
+  }, [i18n.language, t]);
 
   return (
     <div className="zm-ios min-h-screen overflow-x-clip">
@@ -103,9 +103,9 @@ function NavBar() {
           onDark ? 'zm-glass-dark' : 'zm-glass zm-glass-strong',
           !compact && onDark && '!border-transparent !bg-transparent !shadow-none !backdrop-blur-0',
         )}
-        aria-label="Primary"
+        aria-label={t('landing.navPrimary')}
       >
-        <a href="#top" className="shrink-0 rounded-full px-1" aria-label="ZeroMalaria">
+        <a href="#top" className="shrink-0 rounded-full px-1" aria-label={t('common.appName')}>
           <Wordmark light={onDark} />
         </a>
 
@@ -132,14 +132,9 @@ function NavBar() {
               {t('landing.openWorkspace')}
             </PillLink>
           ) : (
-            <>
-              <PillLink to="/login" variant={onDark ? 'glassDark' : 'glass'} size="sm" className="hidden sm:inline-flex">
-                {t('landing.signIn')}
-              </PillLink>
-              <PillLink to="/signup" variant={onDark ? 'white' : 'primary'} size="sm" className="hidden sm:inline-flex">
-                {t('landing.requestAccess')}
-              </PillLink>
-            </>
+            <PillLink to="/login" variant={onDark ? 'white' : 'primary'} size="sm" className="hidden sm:inline-flex">
+              {t('landing.signIn')}
+            </PillLink>
           )}
           <button
             type="button"
@@ -189,11 +184,8 @@ function NavBar() {
               <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--zm-separator)] pt-4">
                 <LangSwitch />
                 <div className="flex gap-2">
-                  <PillLink to="/login" variant="glass" size="sm">
+                  <PillLink to="/login" variant="primary" size="sm">
                     {t('landing.signIn')}
-                  </PillLink>
-                  <PillLink to="/signup" variant="primary" size="sm">
-                    {t('landing.requestAccess')}
                   </PillLink>
                 </div>
               </div>
@@ -303,7 +295,7 @@ function Hero() {
           >
             <SmartImage
               src={img('hero-chw.jpg')}
-              alt="Community health worker reviewing a malaria assessment with a mother and her child"
+              alt={t('landing.altHero')}
               hue="teal"
               priority
               className="h-full w-full rounded-[44px] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] ring-1 ring-white/15"
@@ -463,7 +455,7 @@ function Problem() {
         </div>
 
         <Reveal>
-          <ParallaxImage src={img('problem-village.jpg')} alt="Rwandan hillside village at dawn" hue="dusk" className="h-[520px] rounded-[40px] lg:h-[640px]">
+          <ParallaxImage src={img('problem-village.jpg')} alt={t('landing.altVillage')} hue="dusk" className="h-[520px] rounded-[40px] lg:h-[640px]">
             <div className="absolute inset-x-4 bottom-4">
               <Glass tone="dark" className="rounded-[24px] p-4">
                 <div className="flex items-center gap-3">
@@ -908,7 +900,7 @@ function VoiceAndOffline() {
 
           <div className="grid gap-4">
             <Reveal>
-              <ParallaxImage src={img('voice-listening.jpg')} alt="Health worker explaining a question to a mother during a malaria check" hue="ocean" className="h-[340px] rounded-[36px] ring-1 ring-white/10" />
+              <ParallaxImage src={img('voice-listening.jpg')} alt={t('landing.altVoice')} hue="ocean" className="h-[340px] rounded-[36px] ring-1 ring-white/10" />
             </Reveal>
             <Reveal delay={0.08}>
               <OfflineCard />
@@ -1006,7 +998,7 @@ function FinalCta() {
   return (
     <section className="mx-auto max-w-[1180px] px-5 py-24 sm:px-8 lg:py-32">
       <Reveal>
-        <SmartImage src={img('cta-community.jpg')} alt="Rwandan community gathered at a health post" hue="dusk" className="rounded-[44px]">
+        <SmartImage src={img('cta-community.jpg')} alt={t('landing.altCta')} hue="dusk" className="rounded-[44px]">
           <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(3,20,31,0.92)_20%,rgba(6,36,58,0.55)_60%,rgba(6,36,58,0.2))]" />
           <div className="relative px-7 py-16 text-white sm:px-14 sm:py-24">
             <h2 className="zm-title max-w-[640px] text-[38px] sm:text-[56px]">{t('landing.ctaTitle')}</h2>
@@ -1018,9 +1010,6 @@ function FinalCta() {
                   <GlideArrow />
                 </PillLink>
               </Magnetic>
-              <PillLink to="/signup" variant="glassDark" size="lg">
-                {t('landing.requestAccess')}
-              </PillLink>
             </div>
           </div>
         </SmartImage>

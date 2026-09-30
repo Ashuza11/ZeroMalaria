@@ -210,9 +210,10 @@ export function Checkbox({ checked, onChange, children, invalid }: { checked: bo
 /** Map API error text to a translation key. */
 export function authErrorKey(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
+  const status = err instanceof Error && 'status' in err ? Number((err as Error & { status?: number }).status) : 0;
   if (/Failed to fetch|NetworkError|Load failed|ECONNREFUSED|proxy/i.test(msg)) return 'authx.network';
   if (/deactivated/i.test(msg)) return 'authx.inactive';
-  if (/Too many/i.test(msg)) return 'authx.tooMany';
+  if (status === 429 || /login_locked|Too many/i.test(msg)) return 'authx.tooMany';
   if (/Invalid username|Unauthorized|401/i.test(msg)) return 'authx.invalid';
   if (/^\s*$|5\d\d|Internal/i.test(msg)) return 'authx.network';
   return 'authx.invalid';

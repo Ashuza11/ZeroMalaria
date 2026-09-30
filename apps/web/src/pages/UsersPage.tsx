@@ -513,7 +513,7 @@ export function UsersPage() {
           setParams(next, { replace: true });
         }}
         bulkBar={
-          <div className="flex flex-wrap items-center gap-2 rounded-card border border-border bg-surface px-3 py-2 text-sm">
+          <div className="zm-glass flex flex-wrap items-center gap-2 rounded-[18px] px-3 py-2 text-sm">
             <span className="font-semibold">
               {t('common.selected')}: {selected.size}
             </span>

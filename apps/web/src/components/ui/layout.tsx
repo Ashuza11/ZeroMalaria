@@ -17,10 +17,10 @@ export function PageHeader({
   badge?: ReactNode;
 }) {
   return (
-    <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <header className="zm-glass mb-6 flex flex-wrap items-start justify-between gap-4 rounded-[24px] px-4 py-4 sm:px-5">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-semibold text-ink md:text-2xl">{title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-ink md:text-2xl">{title}</h1>
           {badge}
         </div>
         {subtitle ? <p className="mt-1 max-w-2xl text-sm text-ink-muted">{subtitle}</p> : null}
@@ -44,11 +44,11 @@ export function SectionCard({
   action?: ReactNode;
 }) {
   return (
-    <Card className={cn('p-5', className)}>
+    <Card className={cn('zm-glass rounded-[24px] border-white/60 p-5 shadow-[0_10px_30px_-18px_rgba(6,36,58,0.28)] dark:border-white/10', className)}>
       {(title || action) && (
         <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
           <div>
-            {title ? <h2 className="text-base font-semibold text-ink">{title}</h2> : null}
+            {title ? <h2 className="text-base font-semibold tracking-tight text-ink">{title}</h2> : null}
             {subtitle ? <p className="mt-0.5 text-sm text-ink-muted">{subtitle}</p> : null}
           </div>
           {action}

@@ -1333,5 +1333,653 @@
   },
   "auth.changePasswordHint": {
     "status": "draft"
+  },
+  "landing.navHow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.navWho": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.navSafety": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.navVoice": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.signIn": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.requestAccess": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.openWorkspace": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.menu": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.close": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.eyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.heroTitle1": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.heroTitle2": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.heroBody": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.ctaStart": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.ctaHow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.chipOffline": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.chipLang": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.chipRules": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.liveTag": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.statToday": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.statUrgent": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.statArrival": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.statHours": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.syntheticNote": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phFever": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phDanger": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phConvulsions": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phDrink": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phVomit": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phUrgent": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phUrgentWhy": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.phHandoverTo": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problemEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problemTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem1T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem1B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem2T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem2B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem3T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.problem3B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.howEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.howTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how1T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how1B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how2T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how2B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how3T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how3B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how4T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.how4B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoChwT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoChwB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoNurseT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoNurseB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoSupT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoSupB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoRbcT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.whoRbcB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.inboxNew": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.inboxArrived": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.inboxTreated": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.safetyEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.safetyTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer1T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer1B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer2T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer2B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer3T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layer3B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layerTag1": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layerTag2": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.layerTag3": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.voiceEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.voiceTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.voiceBody": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.voiceSample": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.voiceListening": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineEyebrow": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineBody": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineToggle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineQueued": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.offlineSynced": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.ctaTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.ctaBody": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.footerBuilt": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.footerOwner": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.imagePending": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.marqueeLabel": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcPatient": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcRdt": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcRdtPos": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcAssessing": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcSent": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcReceived": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.hcArrived": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.navPrimary": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.altHero": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.altVillage": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.altVoice": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.altCta": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "landing.altAuthSide": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.welcomeBack": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.signInSub": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.identifier": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.password": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.forgot": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.signIn": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.noAccount": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.createAccount": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.haveAccount": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.backToSignIn": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.backHome": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.demoAccess": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.invalid": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.inactive": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.tooMany": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.network": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.signUpTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.signUpSub": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.fullName": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.phone": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.role": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.roleChw": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.roleNurse": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.facility": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.facilityPick": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.submitRequest": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.requestSentT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.requestSentB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.requestTemplate": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.copy": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.copied": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.sendSms": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.edit": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.forgotTitle": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.forgotSub": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.sendReset": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.resetSentT": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.resetSentB": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.resetTemplate": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.vName": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.vPhone": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.vPassword": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.vIdentifier": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.quote1": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.quote2": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.quote3": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.secure": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif1T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif1B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif2T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif2B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif3T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif3B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif4T": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.notif4B": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.now": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
+  },
+  "authx.minAgo": {
+    "status": "draft",
+    "note": "Ardent design merge — needs native RW review"
   }
 }

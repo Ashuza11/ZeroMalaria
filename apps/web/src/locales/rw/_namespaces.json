@@ -11,7 +11,9 @@
       "presenter",
       "status",
       "liveDemo",
-      "prevention"
+      "prevention",
+      "landing",
+      "authx"
     ],
     "triage": [
       "home",

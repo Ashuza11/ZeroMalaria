@@ -89,8 +89,8 @@ export function PresenterMenu() {
         <Clapperboard className="h-4 w-4" strokeWidth={1.75} />
       </IconButton>
       {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-card border border-border bg-surface shadow-lift">
-          <p className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        <div className="zm-glass zm-glass-strong absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-[20px] !shadow-lift">
+          <p className="border-b border-[var(--zm-separator)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
             {t('common.presenter')}
           </p>
           <button

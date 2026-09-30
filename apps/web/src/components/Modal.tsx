@@ -151,7 +151,7 @@ export function Modal({
       <button
         type="button"
         className={cn(
-          'absolute inset-0 bg-ink/50 backdrop-blur-sm',
+          'zm-backdrop absolute inset-0 bg-ink/45 backdrop-blur-md',
           !reduce && 'animate-fadeIn',
         )}
         aria-label={t('common.close')}
@@ -167,15 +167,15 @@ export function Modal({
         tabIndex={-1}
         data-testid="modal-panel"
         className={cn(
-          'relative z-10 flex w-full max-h-[92dvh] flex-col rounded-t-2xl border border-border shadow-lift outline-none sm:max-h-[90dvh] sm:rounded-card',
-          'bg-white text-ink dark:bg-[var(--color-surface)]',
+          'zm-glass zm-glass-strong relative z-10 flex w-full max-h-[92dvh] flex-col overflow-hidden rounded-t-[28px] outline-none sm:max-h-[90dvh] sm:rounded-[32px]',
+          'text-ink',
           sizeClass[size],
           !reduce && 'animate-modalIn',
         )}
       >
-        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-border bg-white px-4 py-3 dark:bg-[var(--color-surface)] sm:px-5">
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[var(--zm-separator)] px-4 py-3 sm:px-5">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-lg font-semibold text-ink">
+            <h2 id={titleId} className="text-lg font-semibold tracking-tight text-ink">
               {title}
             </h2>
             {description ? (
@@ -187,7 +187,7 @@ export function Modal({
           {closable ? (
             <button
               type="button"
-              className="touch-target inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border text-ink-muted hover:bg-surface-muted"
+              className="touch-target inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--zm-separator)] text-ink-muted hover:bg-surface-muted"
               aria-label={t('common.close')}
               onClick={requestClose}
             >
@@ -195,11 +195,11 @@ export function Modal({
             </button>
           ) : null}
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white px-4 py-4 dark:bg-[var(--color-surface)] sm:px-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">
           {children}
         </div>
         {footer ? (
-          <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border bg-white px-4 py-3 dark:bg-[var(--color-surface)] sm:px-5">
+          <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-[var(--zm-separator)] px-4 py-3 sm:px-5">
             {footer}
           </footer>
         ) : null}
@@ -211,7 +211,7 @@ export function Modal({
             role="alertdialog"
             aria-modal="true"
             aria-labelledby={`${titleId}-discard`}
-            className="w-full max-w-sm rounded-card border border-border bg-surface p-4 shadow-lift"
+            className="zm-glass zm-glass-strong w-full max-w-sm rounded-[24px] p-4 !shadow-lift"
           >
             <p id={`${titleId}-discard`} className="text-sm font-semibold text-ink">
               {t('common.discardChanges')}
