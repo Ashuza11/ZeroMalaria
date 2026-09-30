@@ -18,8 +18,7 @@ function sourceLabel(t: (k: string) => string, source: PlaybackSource | null): s
   if (!source) return null;
   const map: Record<PlaybackSource, string> = {
     audio_pack: t('voice.sourceAudioPack'),
-    cloud: t('voice.sourceCloud'),
-    browser: t('voice.sourceBrowser'),
+    pindo: t('voice.sourcePindo'),
     text: t('voice.sourceText'),
   };
   return map[source];

@@ -144,11 +144,8 @@
   "voiceSettings.playback",
   "voiceSettings.playbackHint",
   "voiceSettings.speechRecognition",
-  "voiceSettings.speechSynthesis",
   "voiceSettings.speed",
   "voiceSettings.title",
-  "voiceSettings.ttsLangEn",
-  "voiceSettings.ttsLangRw",
   "voiceSettings.unavailable",
   "voiceSettings.unmute"
 ]

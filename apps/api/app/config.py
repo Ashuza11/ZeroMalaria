@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -32,6 +33,11 @@ class Settings(BaseSettings):
     google_cloud_project: str = ""
     ai_provider_order: str = "gemini,groq,local"
     ai_timeout_seconds: float = 4.0
+    # Pindo VoiceAI (server-side only; never expose through VITE_* variables)
+    pindo_api_token: str = ""
+    pindo_access_mode: Literal["public", "authenticated"] = "public"
+    pindo_api_base_url: str = "https://api.pindo.io"
+    pindo_timeout_seconds: float = 20.0
     app_version: str = "0.2.0"
 
 

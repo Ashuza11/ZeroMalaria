@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user, write_audit
+from app.config import settings
 from app.db import User, get_db
 from app.services.ai.router import get_ai_router
+from app.services.pindo import PindoTtsError, pindo_is_configured, synthesize_pindo_tts
 
 router = APIRouter(tags=["ai"])
 
@@ -45,8 +47,9 @@ class ChatBody(BaseModel):
 
 class SpeakBody(BaseModel):
     phrase_id: str
-    language: str = "en"
-    text: str
+    language: str = Field(default="rw", pattern="^rw$")
+    text: str = Field(min_length=1, max_length=1024)
+    speech_rate: float = Field(default=1.0, ge=0.5, le=2.0)
 
 
 class AdvisoryBody(BaseModel):
@@ -339,14 +342,28 @@ def assistant_chat(
 
 @router.post("/voice/speak")
 def voice_speak(body: SpeakBody, user: Annotated[User, Depends(get_current_user)]) -> dict:
-    """Mock cloud TTS — returns metadata; clients use Web Speech / pre-recorded audio."""
+    """Generate Kinyarwanda speech through the configured Pindo access mode."""
+    try:
+        audio_url = synthesize_pindo_tts(body.text, body.speech_rate)
+    except PindoTtsError as exc:
+        status_code = 503 if not pindo_is_configured() else 502
+        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
     return {
         "ok": True,
-        "provider_used": "mock",
+        "provider_used": "pindo",
         "phrase_id": body.phrase_id,
-        "language": body.language,
-        "audio_url": None,
-        "note": "No cloud audio in demo. Use browser speechSynthesis or /public/audio files.",
+        "language": "rw",
+        "audio_url": audio_url,
+    }
+
+
+@router.get("/voice/status")
+def voice_status(user: Annotated[User, Depends(get_current_user)]) -> dict:
+    return {
+        "provider": "pindo",
+        "configured": pindo_is_configured(),
+        "access_mode": settings.pindo_access_mode,
+        "supported_languages": ["rw"],
     }
 
 

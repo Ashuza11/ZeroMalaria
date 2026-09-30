@@ -5,7 +5,7 @@ const MUTE_KEY = 'zm_voice_mute';
 const SPEED_KEY = 'zm_voice_speed';
 
 export type VoiceSpeed = 0.8 | 1 | 1.2;
-export type PlaybackSource = 'audio_pack' | 'cloud' | 'browser' | 'text';
+export type PlaybackSource = 'audio_pack' | 'pindo' | 'text';
 
 let audioUnlocked = false;
 let currentAudio: HTMLAudioElement | null = null;
@@ -70,34 +70,6 @@ export function stopSpeaking(): void {
     currentAudio.pause();
     currentAudio = null;
   }
-  if (typeof window !== 'undefined' && window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-  }
-}
-
-function speechLang(lang: VoiceLang): string {
-  return lang === 'rw' ? 'rw-RW' : 'en-US';
-}
-
-function voiceLangMatches(voiceLang: string, target: VoiceLang): boolean {
-  const v = voiceLang.toLowerCase();
-  if (target === 'rw') {
-    return v.startsWith('rw') || v.includes('kin');
-  }
-  return v.startsWith('en');
-}
-
-export function browserTtsMatchesLang(lang: VoiceLang): boolean {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return false;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return lang === 'en';
-  return voices.some((voice) => voiceLangMatches(voice.lang, lang));
-}
-
-function pickVoice(lang: VoiceLang): SpeechSynthesisVoice | undefined {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return undefined;
-  const voices = window.speechSynthesis.getVoices();
-  return voices.find((v) => voiceLangMatches(v.lang, lang));
 }
 
 function sttBrowserAvailable(): boolean {
@@ -110,32 +82,15 @@ function sttBrowserAvailable(): boolean {
 }
 
 export function getLanguageCapabilities(lang: VoiceLang): {
-  ttsBrowser: boolean;
+  ttsPindo: boolean;
   sttBrowser: boolean;
   audioPack: boolean;
-  cloudReachable: boolean;
 } {
   const cachedPack = audioPackCache[lang];
   return {
-    ttsBrowser: browserTtsMatchesLang(lang),
+    ttsPindo: lang === 'rw' && (typeof navigator === 'undefined' || navigator.onLine),
     sttBrowser: sttBrowserAvailable(),
-    audioPack: cachedPack ?? false,
-    cloudReachable: typeof navigator !== 'undefined' ? navigator.onLine : false,
-  };
-}
-
-/** @deprecated use getLanguageCapabilities */
-export function getVoiceCapabilities(): {
-  speechSynthesis: boolean;
-  speechRecognition: boolean;
-  speechSynthesisLangEn: boolean;
-  speechSynthesisLangRw: boolean;
-} {
-  return {
-    speechSynthesis: typeof window !== 'undefined' && 'speechSynthesis' in window,
-    speechRecognition: sttBrowserAvailable(),
-    speechSynthesisLangEn: browserTtsMatchesLang('en'),
-    speechSynthesisLangRw: browserTtsMatchesLang('rw'),
+    audioPack: lang === 'rw' && (cachedPack ?? false),
   };
 }
 
@@ -208,10 +163,16 @@ async function tryMp3(id: PhraseId, lang: VoiceLang, speed: VoiceSpeed): Promise
   });
 }
 
-async function tryCloudTts(id: PhraseId, lang: VoiceLang, text: string): Promise<string | null> {
+async function tryPindoTts(
+  id: PhraseId,
+  lang: VoiceLang,
+  text: string,
+  speed: VoiceSpeed,
+): Promise<string | null> {
+  if (lang !== 'rw') return null;
   try {
     const res = await withTimeout(
-      api.voiceSpeak({ phrase_id: id, language: lang, text }),
+      api.voiceSpeak({ phrase_id: id, language: lang, text, speech_rate: speed }),
       CLOUD_TTS_MS,
       { audio_url: null } as Record<string, unknown>,
     );
@@ -222,10 +183,9 @@ async function tryCloudTts(id: PhraseId, lang: VoiceLang, text: string): Promise
   }
 }
 
-async function tryCloudMp3(url: string, speed: VoiceSpeed): Promise<boolean> {
+async function tryPindoAudio(url: string): Promise<boolean> {
   return new Promise((resolve) => {
     const audio = new Audio(url);
-    audio.playbackRate = speed;
     currentAudio = audio;
     const t = window.setTimeout(() => resolve(false), 8000);
     audio.onended = () => {
@@ -240,23 +200,6 @@ async function tryCloudMp3(url: string, speed: VoiceSpeed): Promise<boolean> {
       window.clearTimeout(t);
       resolve(false);
     });
-  });
-}
-
-function trySpeechSynthesis(text: string, lang: VoiceLang, speed: VoiceSpeed): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (!browserTtsMatchesLang(lang)) {
-      resolve(false);
-      return;
-    }
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = speechLang(lang);
-    utter.rate = speed;
-    const voice = pickVoice(lang);
-    if (voice) utter.voice = voice;
-    utter.onend = () => resolve(true);
-    utter.onerror = () => resolve(false);
-    window.speechSynthesis.speak(utter);
   });
 }
 
@@ -279,23 +222,20 @@ export async function speakPhrase(
     return { source: 'text' };
   }
 
-  // Prefer pre-recorded pack (required for Kinyarwanda - browsers lack rw TTS voices).
+  // Pindo TTS currently supports Kinyarwanda only. English remains text-only.
+  if (lang !== 'rw') {
+    await silentHighlight();
+    return { source: 'text' };
+  }
+
+  const pindoUrl = await tryPindoTts(id, lang, text, speed);
+  if (pindoUrl && audioUnlocked && (await tryPindoAudio(pindoUrl))) {
+    return { source: 'pindo' };
+  }
+
   if (audioUnlocked && (await tryMp3(id, lang, speed))) {
     audioPackCache[lang] = true;
     return { source: 'audio_pack' };
-  }
-
-  // Cloud TTS optional when online (hard timeout — never block triage UX).
-  if (typeof navigator === 'undefined' || navigator.onLine) {
-    const cloudUrl = await tryCloudTts(id, lang, text);
-    if (cloudUrl && audioUnlocked && (await tryCloudMp3(cloudUrl, speed))) {
-      return { source: 'cloud' };
-    }
-  }
-
-  // Never use English browser TTS for Kinyarwanda. Short text fallback only.
-  if (lang !== 'rw' && (await trySpeechSynthesis(text, lang, speed))) {
-    return { source: 'browser' };
   }
 
   await silentHighlight();
@@ -335,8 +275,8 @@ export async function probePreRecordedAudio(
 export async function probeCloudReachable(): Promise<boolean> {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
   try {
-    await api.health();
-    return true;
+    const status = await api.voiceStatus();
+    return status.provider === 'pindo' && status.configured && status.supported_languages.includes('rw');
   } catch {
     return false;
   }

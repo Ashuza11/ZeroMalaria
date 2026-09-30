@@ -170,6 +170,10 @@ copy .env.example .env
 | `ZM_GOOGLE_CLOUD_PROJECT` | API | Optional Vertex | empty → skip |
 | `ZM_AI_PROVIDER_ORDER` | API | Fallback chain | `gemini,groq,local` |
 | `ZM_AI_TIMEOUT_SECONDS` | API | Per-provider timeout | `4` |
+| `ZM_PINDO_ACCESS_MODE` | API | Pindo access strategy | `public` |
+| `ZM_PINDO_API_TOKEN` | API | Authenticated Kinyarwanda TTS; ignored in public mode | `your-token` placeholder |
+| `ZM_PINDO_API_BASE_URL` | API | Pindo API origin | `https://api.pindo.io` |
+| `ZM_PINDO_TIMEOUT_SECONDS` | API | Pindo request timeout | `20` |
 | `VITE_DEMO_MODE` | Web (`.env.development`) | Show demo login buttons | `true` in development; `false` in production build |
 
 **Security:** If `ZM_DEMO_MODE=false` and JWT secret or demo password are still the example defaults, the API **refuses to start**.  
@@ -307,12 +311,13 @@ Invalid JSON / drug-dose language → reject and fall through.
 
 ### Voice
 
-Playback order per phrase + language:
+Playback order for Kinyarwanda:
 
-1. `/public/audio/{rw|en}/<phrase_id>.mp3`  
-2. `POST /voice/speak` (cloud or Mock)  
-3. Browser TTS **only if voice language matches** (Kinyarwanda is never read with an English voice)  
-4. On-screen highlighted text  
+1. `POST /voice/speak` → Pindo VoiceAI TTS (`public` rate-limited mode by default)
+2. `/public/audio/rw/<phrase_id>.mp3` offline fallback
+3. On-screen highlighted text
+
+Browser TTS and English voice output are disabled. Create a token at <https://app.pindo.io/login>, then open **Profile → Security** and put it in `ZM_PINDO_API_TOKEN`.
 
 Result audio uses **fixed catalog + triggered rules only** — not free LLM text.
 
@@ -349,7 +354,8 @@ npm run screenshots
 | Seeded SQLite analytics | Real aggregates on **synthetic** data |
 | ML models | Trained on synthetic data — **architecture demo metrics only** |
 | Gemini / Groq / Vertex | Optional; without keys → **Local NLP** |
-| Cloud TTS / STT | Mock unless configured |
+| Kinyarwanda TTS | Pindo VoiceAI public rate-limited mode; authenticated mode is optional |
+| STT | Browser-based prototype; Pindo STT is not integrated yet |
 | Audio pack MP3s | Manifests / placeholders; native recordings recommended |
 | Hotspot wording | Statistical signal only — not outbreak confirmation |
 | App shell scroll / Users CRUD UI | Real UI; Playwright scroll assertions in `e2e/shell-scroll.spec.ts` (needs API + web) |
