@@ -1,4 +1,4 @@
-/* AUTO-GENERATED from rules/malaria_rules.yaml — do not edit by hand.
+/* AUTO-GENERATED from rules/malaria_rules.yaml  -  do not edit by hand.
  * Run: python apps/web/scripts/generate_rules_ts.py
  * PLACEHOLDER - TO BE VALIDATED against Rwanda national malaria treatment guidelines
  * and WHO iCCM guidance by a clinician.

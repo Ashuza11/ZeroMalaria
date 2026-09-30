@@ -84,11 +84,11 @@ export function EventProvider({ children }: { children: ReactNode }) {
           sinceRef.current = data.server_at;
         }
       } catch {
-        /* offline or auth — skip */
+        /* offline or auth  -  skip */
       }
     };
 
-    // Prefer SSE (token via query — EventSource cannot set Authorization).
+    // Prefer SSE (token via query  -  EventSource cannot set Authorization).
     try {
       const base = import.meta.env.VITE_API_BASE || '/api';
       const url = `${base}/events?access_token=${encodeURIComponent(token)}&since=${encodeURIComponent(sinceRef.current)}`;

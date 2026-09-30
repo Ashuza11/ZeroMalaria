@@ -21,10 +21,10 @@
   "vsPrev": "vs prior period",
   "recommendedAction": "Recommended action",
   "evidence": "Evidence",
-  "hotspotNote": "Statistical signal only — not outbreak confirmation. Verify with facility registers before any public claim.",
+  "hotspotNote": "Statistical signal only. Not outbreak confirmation. Verify with facility registers before any public claim.",
   "hotspotBanner": "Potential increase detected (statistical signal)",
   "under5": "Under 5",
-  "age5to14": "5–14",
+  "age5to14": "5, 14",
   "age15plus": "15+",
   "funnelReferred": "Referred",
   "funnelReceived": "Received",
@@ -33,6 +33,6 @@
   "baselineSeries": "Baseline forecast",
   "clearFilter": "Clear filter",
   "compareTools": "How this compares to existing tools",
-  "compareToolsBody": "RapidSMS, ePOCT+, and drone delivery each help parts of the pathway — none closes the village-to-clinic referral loop. Source: RBC problem canvas, to be verified.",
+  "compareToolsBody": "RapidSMS, ePOCT+, and drone delivery each help parts of the pathway. None closes the village-to-clinic referral loop. Source: RBC problem canvas, to be verified.",
   "sourceCanvas": "Source: RBC problem canvas, to be verified"
 }

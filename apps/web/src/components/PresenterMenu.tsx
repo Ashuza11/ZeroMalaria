@@ -62,7 +62,7 @@ export function PresenterMenu() {
       sex: 'female',
       decision: 'urgent_refer',
       reasons: ['Unable to drink or feed'],
-      summary: 'DEMO: overdue urgent referral — patient has not arrived',
+      summary: 'DEMO: overdue urgent referral  -  patient has not arrived',
       status: 'sent',
       created_at: new Date(Date.now() - 36 * 3600 * 1000).toISOString(),
       synced: false,

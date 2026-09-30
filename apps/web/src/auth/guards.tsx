@@ -21,7 +21,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
 
-  // Password prompt is a dismissible Modal on home — never redirect to /change-password.
+  // Password prompt is a dismissible Modal on home  -  never redirect to /change-password.
 
   if (!canAccess(location.pathname, user.role)) {
     return <Navigate to="/app/not-authorized" replace />;

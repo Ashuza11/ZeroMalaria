@@ -9,7 +9,7 @@ function p(id: string, en: string, rw: string): PhraseEntry {
   return { id, en, rw };
 }
 
-/** Fixed read-aloud catalog — not LLM-generated. */
+/** Fixed read-aloud catalog  -  not LLM-generated. */
 export const PHRASES = {
   age: p('age', 'How old is the patient, in months?', 'Umurwayi afite imyaka ingahe, mu mezi?'),
   sex: p('sex', 'Is the patient female or male?', 'Umurwayi ni umugore cyangwa umugabo?'),
@@ -244,8 +244,8 @@ export const PHRASES = {
   ),
   guided_greeting: p(
     'guided_greeting',
-    'Voice guided triage. I will ask each question — answer clearly, then confirm what I heard.',
-    'Gupima mu ijwi. Nzakubaza ibibazo — subiza neza, hanyuma wemeze ibyo numvise.',
+    'Voice guided triage. I will ask each question. Answer clearly, then confirm what I heard.',
+    'Gupima mu ijwi. Nzakubaza ibibazo. Subiza neza, hanyuma wemeze ibyo numvise.',
   ),
   confirm_danger_sign: p(
     'confirm_danger_sign',

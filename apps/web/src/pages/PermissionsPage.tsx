@@ -102,7 +102,7 @@ export function PermissionsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <Card className="max-w-md space-y-4 p-5">
             <p className="text-sm text-ink">
-              {pending.role} — {pending.code} → {String(pending.allowed)}
+              {pending.role}  -  {pending.code} → {String(pending.allowed)}
             </p>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setPending(null)}>

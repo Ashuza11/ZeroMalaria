@@ -11,6 +11,6 @@
   "benefit3": "RBC dashboard and alerts",
   "showPassword": "Show password",
   "hidePassword": "Hide password",
-  "demoBanner": "Demo mode — synthetic data. Not for clinical use.",
+  "demoBanner": "Demo mode. Synthetic data only. Not for clinical use.",
   "demoCredentials": "Try: super.admin / demo1234"
 }

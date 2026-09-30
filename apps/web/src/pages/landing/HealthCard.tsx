@@ -83,9 +83,9 @@ export function HealthCard({ className }: { className?: string }) {
           {s >= 3 ? (
             <motion.div
               key="urgent"
-              initial={{ opacity: 0, y: 12, scale: 0.96, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8 }}
               transition={spring}
               className="absolute inset-0 flex items-center gap-3 overflow-hidden rounded-[20px] bg-[linear-gradient(135deg,#f0555a,#c53035)] px-4 text-white shadow-[0_16px_32px_-14px_rgba(229,72,77,0.8)]"
             >

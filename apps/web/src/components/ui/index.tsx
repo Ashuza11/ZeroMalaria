@@ -408,9 +408,9 @@ export function KpiCard({
         <Orb size={26} tone={tone} />
       </div>
       <motion.p
-        initial={{ opacity: 0, y: 8, filter: 'blur(6px)' }}
-        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        transition={{ duration: 0.7, ease: iosEase }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: iosEase }}
         className="mt-3 text-[34px] font-bold leading-none tracking-[-0.035em] text-ink tabular"
       >
         {value}

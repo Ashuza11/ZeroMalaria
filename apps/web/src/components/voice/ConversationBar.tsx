@@ -35,7 +35,7 @@ export function ConversationBar({
 
   return (
     <div
-      className="sticky bottom-0 z-30 border-t border-border bg-surface/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-surface/80"
+      className="relative z-10 mt-4 rounded-[20px] border border-border bg-surface px-3 py-3 shadow-card"
       role="region"
       aria-label={t('voice.guidedTriage')}
     >

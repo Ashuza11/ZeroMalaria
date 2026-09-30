@@ -164,7 +164,7 @@ export function FilterBar({ storageKey, fields, resultCount, debounceMs = 300, s
       }
       data-testid="filter-bar"
     >
-      {/* Desktop grid — labels + 40px controls share one baseline */}
+      {/* Desktop grid  -  labels + 40px controls share one baseline */}
       <div className="hidden gap-3 md:grid md:items-end md:[grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
         {fields.map(renderField)}
         <div className="flex min-w-[200px] items-end">

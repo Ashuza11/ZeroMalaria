@@ -173,7 +173,10 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
 
         <motion.main
           key={location.pathname + location.search}
-          className={cn('flex-1 px-4 py-4', !hideTabs && 'pb-[calc(6.5rem+env(safe-area-inset-bottom))]')}
+          className={cn(
+            'relative flex-1 px-4 py-4',
+            !hideTabs && 'pb-[calc(6.5rem+env(safe-area-inset-bottom))]',
+          )}
           variants={reduce ? undefined : pageVariants}
           initial="initial"
           animate="animate"
@@ -806,7 +809,7 @@ export function WebShell({
           <motion.main
             key={location.pathname}
             data-testid="app-main"
-            className="mx-auto w-full max-w-[1440px] min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-smooth p-4 [scrollbar-gutter:stable] sm:p-6"
+            className="relative mx-auto w-full max-w-[1440px] min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-smooth p-4 [scrollbar-gutter:stable] sm:p-6"
             variants={reduce ? undefined : pageVariants}
             initial="initial"
             animate="animate"

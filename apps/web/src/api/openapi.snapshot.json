@@ -520,7 +520,7 @@
           "ai"
         ],
         "summary": "Voice Speak",
-        "description": "Mock cloud TTS — returns metadata; clients use Web Speech / pre-recorded audio.",
+        "description": "Mock cloud TTS  -  returns metadata; clients use Web Speech / pre-recorded audio.",
         "operationId": "voice_speak_voice_speak_post",
         "requestBody": {
           "content": {
@@ -844,7 +844,7 @@
     "/analytics/hotspots": {
       "get": {
         "summary": "Analytics Hotspots",
-        "description": "Statistical signal only — never 'outbreak confirmed'.",
+        "description": "Statistical signal only  -  never 'outbreak confirmed'.",
         "operationId": "analytics_hotspots_analytics_hotspots_get",
         "security": [
           {

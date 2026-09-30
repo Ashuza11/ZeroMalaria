@@ -18,5 +18,5 @@
   "cloudTts": "Cloud voice service",
   "testVoice": "Test voice",
   "ttsBrowserDetail": "Browser voice matches language",
-  "rwHonestHint": "Kinyarwanda read-aloud needs a matching browser voice, audio pack, or cloud service — English voices will never be used for Kinyarwanda phrases."
+  "rwHonestHint": "Kinyarwanda read-aloud needs a matching browser voice, audio pack, or cloud service. English voices will never be used for Kinyarwanda phrases."
 }

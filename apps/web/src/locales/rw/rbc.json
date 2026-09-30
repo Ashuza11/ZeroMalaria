@@ -21,10 +21,10 @@
   "vsPrev": "ugereranije n'igihe kibanza",
   "recommendedAction": "Igikorwa cyasabwa",
   "evidence": "Ibibazo / ibimenyetso",
-  "hotspotNote": "Ikimenyetso cy'ibarurishamibare gusa — si ukwemeza icyorezo.",
+  "hotspotNote": "Ikimenyetso cy'ibarurishamibare gusa. Si ukwemeza icyorezo.",
   "hotspotBanner": "Ubwiyongere bushobora kuba (ikimenyetso cya statistike)",
   "under5": "Munsi y'imyaka 5",
-  "age5to14": "5–14",
+  "age5to14": "5, 14",
   "age15plus": "15+",
   "funnelReferred": "Byoherejwe",
   "funnelReceived": "Byakiriwe",
@@ -33,6 +33,6 @@
   "baselineSeries": "Iteganywa rya baseline",
   "clearFilter": "Siba akayunguruzo",
   "compareTools": "Uko bihuye n'ibikoresho bisanzwe",
-  "compareToolsBody": "RapidSMS, ePOCT+, n'ibinyabiziga bya drone bifasha ibice — nta na kimwe gifunga inzira kuva ku mudugudu kugeza ku kigo. Inkomoko: RBC problem canvas, bisaba kwemezwa.",
+  "compareToolsBody": "RapidSMS, ePOCT+, n'ibinyabiziga bya drone bifasha ibice. Nta na kimwe gifunga inzira kuva ku mudugudu kugeza ku kigo. Inkomoko: RBC problem canvas, bisaba kwemezwa.",
   "sourceCanvas": "Inkomoko: RBC problem canvas, bisaba kwemezwa"
 }

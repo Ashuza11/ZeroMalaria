@@ -19,11 +19,11 @@
   "yes": "Yes",
   "no": "No",
   "freeText": "Optional free-text symptoms",
-  "freeTextHint": "Kinyarwanda or English. Fills the form only — does not decide.",
+  "freeTextHint": "Kinyarwanda or English. Fills the form only. Does not decide.",
   "extract": "Fill from text",
   "voice": "Voice (if available)",
   "voiceUnavailable": "Speech recognition not available on this device.",
-  "aiVerifyBadge": "AI-suggested — please verify",
+  "aiVerifyBadge": "AI-suggested. Please verify.",
   "aiApply": "Apply to form",
   "whyMatters": "Why this matters",
   "liveSummary": "Answers so far",
@@ -33,5 +33,10 @@
   "ageYearsMonths": "{{years}} years = {{months}} months",
   "tempInvalid": "Temperature must be between 30 and 45 °C",
   "increase": "Increase",
-  "decrease": "Decrease"
+  "decrease": "Decrease",
+  "notAnswered": "-",
+  "elapsed": "Elapsed time",
+  "chipMonths": "{{n}} mo",
+  "chipYears": "{{n}} y"
 }
+

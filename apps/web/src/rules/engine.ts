@@ -18,7 +18,7 @@ export function maxDecision(a: Decision, b: Decision): Decision {
   return decisionRank(a) >= decisionRank(b) ? a : b;
 }
 
-/** Offline Layer 1 — same YAML as the API. Never invents thresholds. */
+/** Offline Layer 1  -  same YAML as the API. Never invents thresholds. */
 export function evaluateRules(input: TriageInput, language: Lang = 'en'): RulesResult {
   const cfg = MALARIA_RULES;
   const reasons: string[] = [];

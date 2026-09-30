@@ -44,7 +44,7 @@ export function ForgotPasswordPage() {
           />
         </motion.div>
       ) : (
-        <motion.div key="form" exit={{ opacity: 0, scale: 0.98, filter: 'blur(6px)' }}>
+        <motion.div key="form" exit={{ opacity: 0, scale: 0.98 }}>
           <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...bouncy, delay: 0.1 }} className="mb-6 inline-flex">
             <Orb size={64} tone="ocean" />
           </motion.span>

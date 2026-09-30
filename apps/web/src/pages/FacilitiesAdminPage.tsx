@@ -66,7 +66,7 @@ export function FacilitiesAdminPage() {
   const columns: DataColumn<FacRow>[] = [
     { id: 'id', header: t('users.colFacility'), cell: (r) => r.facility_id, truncate: true },
     { id: 'name', header: t('users.colName'), cell: (r) => r.name, primary: true, truncate: true },
-    { id: 'district', header: t('users.colDistrict'), cell: (r) => r.district || '—' },
+    { id: 'district', header: t('users.colDistrict'), cell: (r) => r.district || ' - ' },
     {
       id: 'status',
       header: t('common.status'),

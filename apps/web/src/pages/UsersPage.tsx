@@ -157,7 +157,7 @@ export function UsersPage() {
     if (!formOpen) return;
     void (async () => {
       try {
-        // API page_size max is 100 — larger values return 422.
+        // API page_size max is 100  -  larger values return 422.
         const first = await api.listAdminFacilities({ page: 1, page_size: 100, status: 'active' });
         const items = [...first.items];
         const pages = Math.max(1, Math.ceil(first.total / 100));
@@ -402,19 +402,19 @@ export function UsersPage() {
       id: 'district',
       header: t('users.colDistrict'),
       truncate: true,
-      cell: (r) => r.district || '—',
+      cell: (r) => r.district || '-',
     },
     {
       id: 'facility',
       header: t('users.colFacility'),
       truncate: true,
-      cell: (r) => r.facility_id || '—',
+      cell: (r) => r.facility_id || '-',
     },
     {
       id: 'village',
       header: t('users.colVillage'),
       truncate: true,
-      cell: (r) => r.village || '—',
+      cell: (r) => r.village || '-',
     },
     {
       id: 'status',
@@ -776,23 +776,23 @@ export function UsersPage() {
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.email')}</dt>
-              <dd>{detail.email || '—'}</dd>
+              <dd>{detail.email || '-'}</dd>
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.phone')}</dt>
-              <dd>{detail.phone || '—'}</dd>
+              <dd>{detail.phone || '-'}</dd>
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.colDistrict')}</dt>
-              <dd>{detail.district || '—'}</dd>
+              <dd>{detail.district || '-'}</dd>
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.colFacility')}</dt>
-              <dd>{detail.facility_id || '—'}</dd>
+              <dd>{detail.facility_id || '-'}</dd>
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.colVillage')}</dt>
-              <dd>{detail.village || '—'}</dd>
+              <dd>{detail.village || '-'}</dd>
             </div>
             <div>
               <dt className="text-ink-muted">{t('users.colStatus')}</dt>

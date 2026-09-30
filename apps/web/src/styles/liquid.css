@@ -127,7 +127,7 @@
   --spec-o: 1;
 }
 
-/* Glass rim — a thin refracted edge like Liquid Glass */
+/* Glass rim  -  a thin refracted edge like Liquid Glass */
 .zm-rim::before {
   content: '';
   position: absolute;

@@ -28,9 +28,15 @@ export const fadeIn: Variants = {
 export const scalePress = { scale: 0.98 };
 
 export const slideInRight: Variants = {
-  initial: { opacity: 0, x: 24 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -24 },
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+};
+
+/** Step card transition: opacity + y only (never animate filter with springs). */
+export const stepCardTransition: Transition = {
+  duration: 0.25,
+  ease: [0.22, 1, 0.36, 1],
 };
 
 export function motionSafe(reduced: boolean | null, variants: Variants): Variants | undefined {
@@ -43,8 +49,11 @@ export const softSpring: Transition = { type: 'spring', stiffness: 170, damping:
 export const bouncy: Transition = { type: 'spring', stiffness: 520, damping: 22, mass: 0.7 };
 export const iosEase = [0.32, 0.72, 0, 1] as const;
 
-/** Blur-in reveal used for content entering the viewport. */
+/** Blur-in reveal: tween only, blur always >= 0 (springs overshoot and break filter). */
 export const blurUp: Variants = {
-  hidden: { opacity: 0, y: 28, filter: 'blur(10px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: iosEase } },
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: iosEase } },
 };
+
+/** Safe tween for any remaining filter blur animations. */
+export const blurTween: Transition = { duration: 0.28, ease: [0.22, 1, 0.36, 1] };

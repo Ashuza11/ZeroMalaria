@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { enResources, rwResources } from './loadLocales';
 
-/** Language from saved user choice only — never browser language. */
+/** Language from saved user choice only  -  never browser language. */
 function savedLanguage(): 'rw' | 'en' {
   try {
     const saved = localStorage.getItem('zm_lang');
@@ -33,7 +33,7 @@ void i18n.use(initReactI18next).init({
   nonExplicitSupportedLngs: true,
   load: 'languageOnly',
   interpolation: { escapeValue: false },
-  // Do not use i18next-browser-languagedetector — ignore navigator language.
+  // Do not use i18next-browser-languagedetector  -  ignore navigator language.
 });
 
 i18n.on('languageChanged', (lng) => {

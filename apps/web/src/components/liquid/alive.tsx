@@ -331,10 +331,10 @@ export function NotificationStack({ items, interval = 3200, className }: { items
         {visible.map((n) => (
           <motion.div
             key={n.key}
-            initial={{ opacity: 0, y: -40, scale: 0.9, filter: 'blur(6px)' }}
-            animate={{ opacity: n.k === 0 ? 1 : n.k === 1 ? 0.75 : 0.45, y: n.k * 12, scale: 1 - n.k * 0.06, filter: 'blur(0px)', zIndex: 10 - n.k }}
+            initial={{ opacity: 0, y: -40, scale: 0.9 }}
+            animate={{ opacity: n.k === 0 ? 1 : n.k === 1 ? 0.75 : 0.45, y: n.k * 12, scale: 1 - n.k * 0.06, zIndex: 10 - n.k }}
             exit={{ opacity: 0, y: 40, scale: 0.85 }}
-            transition={spring}
+            transition={{ duration: 0.28, ease: iosEase }}
             className="absolute inset-x-0 top-0 flex items-center gap-3 rounded-[22px] border border-white/15 bg-[rgba(10,52,78,0.92)] px-4 py-3 text-white shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)] backdrop-blur-xl"
           >
             <motion.div className="flex min-w-0 flex-1 items-center gap-3" animate={{ opacity: n.k === 0 ? 1 : 0 }} transition={{ duration: 0.25 }}>

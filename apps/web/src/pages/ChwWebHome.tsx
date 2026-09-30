@@ -7,7 +7,7 @@ import { WebShell } from '../components/shells';
 import { ConversationBar } from '../components/voice/ConversationBar';
 import { Badge, Button, Card } from '../components/ui';
 
-/** Desktop CHW workspace — web shell with reduced menu (not a phone frame). */
+/** Desktop CHW workspace  -  web shell with reduced menu (not a phone frame). */
 export function ChwWebHome() {
   const { t } = useTranslation();
   const navigate = useNavigate();

@@ -12,7 +12,7 @@
   "heroTitle1": "Buri munota",
   "heroTitle2": "urabara.",
   "heroBody": "ZeroMalaria ifasha umujyanama w'ubuzima gusuzuma malaria, kumenya kare ibimenyetso by'akaga no kohereza umurwayi ku kigo nderabuzima, n'iyo nta interineti ihari.",
-  "ctaStart": "Tangira ubu",
+  "ctaStart": "Injira",
   "ctaHow": "Reba uko ikora",
   "chipOffline": "Ikora nta interineti",
   "chipLang": "Mu Kinyarwanda",
@@ -85,7 +85,7 @@
   "offlineQueued": "{{count}} bitegereje koherezwa",
   "offlineSynced": "Byose byoherejwe",
   "ctaTitle": "Kurandura malaria bitangirira mu mudugudu.",
-  "ctaBody": "Injira ukoresheje konti yawe, cyangwa usabe konti umuyobozi wawe.",
+  "ctaBody": "Injira ukoresheje konti yatanzwe n'umuyobozi wawe.",
   "footerBuilt": "AI for Public Good Hackathon · Kaminuza y'u Rwanda · UR UNIPOD",
   "footerOwner": "Izaba iya: Ikigo cy'Igihugu cy'Ubuzima (RBC)",
   "imagePending": "Ifoto iraza vuba",
@@ -103,5 +103,6 @@
   "altVillage": "Umudugudu wo ku musozi mu Rwanda mu gitondo",
   "altVoice": "Umujyanama w'ubuzima asobanura ikibazo kuri mama mu isuzuma rya malaria",
   "altCta": "Abaturage bo mu Rwanda bahuze ku kigo nderabuzima",
-  "altAuthSide": "Umujyanama w'ubuzima ku nzira yo ku musozi mu gitondo"
+  "altAuthSide": "Umujyanama w'ubuzima ku nzira yo ku musozi mu gitondo",
+  "phLocation": "Nyamata, Bugesera"
 }

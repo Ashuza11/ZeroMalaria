@@ -87,7 +87,6 @@ export function VoiceControls({
           disabled={state === 'speaking'}
         >
           <Volume2 className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.listen')}</span> : null}
         </IconButton>
         {capabilities.sttBrowser ? (
           <IconButton
@@ -97,26 +96,21 @@ export function VoiceControls({
             disabled={state === 'listening'}
           >
             <Mic className="h-4 w-4" />
-            {showLabels ? <span className="text-xs font-semibold">{t('voice.mic')}</span> : null}
           </IconButton>
         ) : null}
         {helpPhraseId ? (
           <IconButton label={t('voice.help')} showLabel={showLabels} onClick={onHelp}>
             <HelpCircle className="h-4 w-4" />
-            {showLabels ? <span className="text-xs font-semibold">{t('voice.help')}</span> : null}
           </IconButton>
         ) : null}
         <IconButton label={t('voice.replay')} showLabel={showLabels} onClick={() => void voice.replay()}>
           <RotateCcw className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.replay')}</span> : null}
         </IconButton>
         <IconButton label={t('voice.slower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
           <Snail className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.slower')}</span> : null}
         </IconButton>
         <IconButton label={t('voice.stop')} showLabel={showLabels} onClick={() => voice.stop()}>
           <Pause className="h-4 w-4" />
-          {showLabels ? <span className="text-xs font-semibold">{t('voice.stop')}</span> : null}
         </IconButton>
         <IconButton
           label={mute ? t('voice.unmute') : t('voice.mute')}
@@ -124,9 +118,6 @@ export function VoiceControls({
           onClick={() => voice.toggleMute()}
         >
           {mute ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          {showLabels ? (
-            <span className="text-xs font-semibold">{mute ? t('voice.unmute') : t('voice.mute')}</span>
-          ) : null}
         </IconButton>
       </div>
       {badge ? (

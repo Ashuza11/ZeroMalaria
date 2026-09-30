@@ -158,9 +158,9 @@ function NavBar() {
               onClick={() => setOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.96, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -12, scale: 0.97, filter: 'blur(8px)' }}
+              initial={{ opacity: 0, y: -20, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.97 }}
               transition={spring}
               className="zm-glass zm-glass-strong fixed inset-x-3 top-3 z-50 rounded-[28px] p-4"
               role="dialog"
@@ -207,14 +207,13 @@ function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -80]);
   const textO = useTransform(scrollYProgress, [0, 0.7], [1, reduce ? 1 : 0]);
-  const textBlur = useTransform(scrollYProgress, [0, 0.7], ['blur(0px)', reduce ? 'blur(0px)' : 'blur(12px)']);
   const cardFloatY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -60]);
   const cardY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 200]);
   const cardR = useTransform(scrollYProgress, [0, 1], [-7, reduce ? -7 : -14]);
 
   const line = {
-    hidden: { opacity: 0, y: 40, filter: 'blur(14px)' },
-    show: (i: number) => ({ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.1, ease: iosEase, delay: 0.15 + i * 0.12 } }),
+    hidden: { opacity: 0, y: 40 },
+    show: (i: number) => ({ opacity: 1, y: 0, transition: { duration: 1.1, ease: iosEase, delay: 0.15 + i * 0.12 } }),
   };
 
   return (
@@ -222,7 +221,7 @@ function Hero() {
       <LiveBackground variant="ocean" />
 
       <div className="relative mx-auto grid max-w-[1180px] items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
-        <motion.div style={{ y: textY, opacity: textO, filter: textBlur }}>
+        <motion.div style={{ y: textY, opacity: textO }}>
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -306,8 +305,8 @@ function Hero() {
 
           <motion.div
             style={{ y: cardFloatY }}
-            initial={{ opacity: 0, y: 60, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.3, ease: iosEase, delay: 0.5 }}
             className="relative z-10 -mt-40 flex justify-center sm:absolute sm:bottom-6 sm:left-0 sm:mt-0 sm:block"
           >
@@ -463,7 +462,7 @@ function Problem() {
                     <Ping color="var(--zm-amber-bright)" size={10} />
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold">Nyamata · Bugesera</p>
+                    <p className="text-[15px] font-semibold">{t('landing.phLocation')}</p>
                     <p className="text-[13px] text-white/65">{t('landing.phHandoverTo')}</p>
                   </div>
                 </div>
@@ -557,7 +556,6 @@ function HowItWorks() {
                   animate={{
                     opacity: active === i ? 1 : 0,
                     scale: active === i ? 1 : active > i ? 0.92 : 1.04,
-                    filter: active === i ? 'blur(0px)' : 'blur(12px)',
                   }}
                   transition={{ duration: 0.9, ease: iosEase }}
                   className="absolute inset-0"
@@ -742,9 +740,9 @@ function InboxMini() {
             <AnimatePresence mode="wait">
               <motion.span
                 key={st}
-                initial={{ opacity: 0, y: 6, filter: 'blur(3px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -6, filter: 'blur(3px)' }}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
                 className={cn(
                   'rounded-full px-2.5 py-1 text-[12px] font-semibold',
                   st === 0 && 'bg-[rgba(11,60,93,0.1)] text-[var(--zm-ocean)] dark:text-sky-300',

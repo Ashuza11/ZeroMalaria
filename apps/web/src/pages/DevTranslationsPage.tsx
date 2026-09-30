@@ -68,8 +68,8 @@ export function DevTranslationsPage() {
                 <td className="px-3 py-2">
                   {row.status === 'draft' ? t('presenter.statusDraft') : t('presenter.statusReviewed')}
                 </td>
-                <td className="px-3 py-2">{row.en || '—'}</td>
-                <td className="px-3 py-2">{row.rw || '—'}</td>
+                <td className="px-3 py-2">{row.en || ' - '}</td>
+                <td className="px-3 py-2">{row.rw || ' - '}</td>
               </tr>
             ))}
           </tbody>

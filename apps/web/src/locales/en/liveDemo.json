@@ -1,10 +1,10 @@
 {
   "title": "Live coordination board",
-  "subtitle": "Three roles side by side — watch referrals and messages update in near real time.",
+  "subtitle": "Three roles side by side. Watch referrals and messages update in near real time.",
   "openBoard": "Live demo board",
   "runLoop": "Run loop demo",
   "running": "Running demo…",
-  "disclaimer": "Demo only. Synthetic scenarios — always confirm with the patient and facility before acting.",
+  "disclaimer": "Demo only. Synthetic scenarios. Always confirm with the patient and facility before acting.",
   "chwColumn": "CHW (mobile)",
   "nurseColumn": "Health center",
   "rbcColumn": "RBC overview",

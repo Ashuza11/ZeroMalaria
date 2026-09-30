@@ -1,41 +1,31 @@
-# ZeroMalaria — Progress
+# ZeroMalaria - Progress
 
 **Decision support tool. Not a replacement for clinical judgment.**  
 **Synthetic demo data** only.
 
-## Current sprint: Ardent visual merge (2026-09-30) — DONE
+## Current sprint: guided triage UX (2026-09-30) - DONE
 
 **Branch:** `test-merge-ardent` (do not touch `main`).
 
-### Goal
+### Problems fixed
 
-Use Ardent’s liquid-glass landing + auth visuals while keeping local RBAC, auth gate, 4 roles, password-prompt modal, Kinyarwanda default, fixed shell (sticky header/sidebar, main scrolls), centered Modal.
-
-### Assumptions
-
-- No self-service forgot-password API → login hides forgot link; `ForgotPasswordPage.tsx` left unrouted.
-- No `/signup`; `SignUpPage.tsx` deleted (admin creates accounts).
-- Ardent `src/i18n/*.json` not used; keys live in `locales/{rw,en}/landing.json` + `authx.json` (draft in `_review.json`).
-- Demo role-orb quick login removed from login UI (role auto-detection only).
-
-### What shipped
-
-1. **`/`** → lazy `LandingPage` (public); authed users → role home. **`/login`** under `AuthLayout`.
-2. **LoginPage** restyled with AuthLayout / Field / PasswordField / PillButton; local login, 429/lockout, `canAccess` + role home redirect.
-3. **App chrome** glass tokens on shells, Modal, PresenterMenu, PageHeader/SectionCard, Users bulk bar.
-4. **i18n:** landing + authx namespaces; hard-coded Loading / Primary / image alts → `t()`.
+1. **Empty question card / filter blur** - Removed `filter: blur()` from spring/step transitions (tween opacity+y only). `AnimatePresence mode="wait"` with keyed step card always ends at opacity 1, y 0.
+2. **Auto-save on answer** - Choice chips/yes-no/sex/TDR advance after ~250 ms with selection checkmark. Stepper +/- debounced 800 ms (Continue stays). Free-text keeps Continue/Confirm. Input locked during transitions. Voice uses the same `selectChoice` path.
+3. **Time + draft** - `started_at`, per-step `answered_at`, `duration_ms` stored in IndexedDB draft + `sessionStorage` result payload. **API `TriageRequest` has no timing fields** (kept local only). Draft resumes after refresh; cleared on submit.
+4. **Answers so far** - Only user-answered steps show values; others show translated `-`.
+5. **Layout** - ConversationBar is inline (not sticky overlay). Voice control labels no longer duplicated. Age chips follow Months/Years unit.
+6. **Console** - `motion.create(Link)`; scroll mains `position: relative`; blur/filter keyframes removed from triage-adjacent motion.
 
 ### Gates
 
 | Check | Result |
 | --- | --- |
 | pytest | **56 passed** |
-| npm run build | **OK** (LandingPage lazy chunk) |
+| npm run build | **OK** |
 | npm run lint | **OK** |
-| npm run i18n:check | **OK** (647 keys) |
+| npm run i18n:check | **OK** (652 keys) |
 
-### Not done / leftover
+### Assumptions
 
-- Native RW review for draft landing/authx keys.
-- `ForgotPasswordPage.tsx` still on disk but not routed (no backend endpoint).
-- Place-name hardcode `Nyamata · Bugesera` on landing problem card (proper noun).
+- Timing is local-only until API schema is extended.
+- Demo `?demo=A|B` still pre-fills and marks clinical steps answered.

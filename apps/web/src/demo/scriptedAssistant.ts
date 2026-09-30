@@ -1,4 +1,4 @@
-/** ~30s offline demo dialogue — fixed phrase catalog, no network. */
+/** ~30s offline demo dialogue  -  fixed phrase catalog, no network. */
 
 import { buildResultSequence, type PhraseId, type VoiceLang } from '../voice/phrases';
 import { speakSequence, stopSpeaking } from '../voice/speak';

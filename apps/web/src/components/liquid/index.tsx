@@ -294,7 +294,7 @@ export function PillButton({
   );
 }
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 export function PillLink({ variant = 'primary', size = 'md', className, children, ...rest }: PillCommon & LinkProps) {
   const reduce = useReducedMotion();

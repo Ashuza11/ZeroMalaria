@@ -74,10 +74,10 @@ export function AuthLayout() {
                   <AnimatePresence mode="wait">
                     <motion.p
                       key={q + i18n.language}
-                      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, y: -16, filter: 'blur(10px)' }}
-                      transition={{ duration: 0.8, ease: iosEase }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -16 }}
+                      transition={{ duration: 0.45, ease: iosEase }}
                       className="zm-title absolute bottom-0 max-w-[520px] text-[40px]"
                     >
                       {quotes[q]}
@@ -148,10 +148,10 @@ export function AuthLayout() {
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={location.pathname}
-                      initial={reduce ? false : { opacity: 0, y: 14, filter: 'blur(8px)' }}
-                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                      exit={reduce ? undefined : { opacity: 0, y: -10, filter: 'blur(8px)' }}
-                      transition={{ duration: 0.42, ease: iosEase }}
+                      initial={reduce ? false : { opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduce ? undefined : { opacity: 0, y: -10 }}
+                      transition={{ duration: 0.28, ease: iosEase }}
                     >
                       {outlet}
                     </motion.div>

@@ -19,11 +19,11 @@
   "yes": "Yego",
   "no": "Oya",
   "freeText": "Andika ibimenyetso (bithari ngombwa)",
-  "freeTextHint": "Ikinyarwanda cyangwa Icyongereza. Byuzuza form gusa — ntibihitamo icyemezo.",
+  "freeTextHint": "Ikinyarwanda cyangwa Icyongereza. Byuzuza form gusa. Ntibihitamo icyemezo.",
   "extract": "Uzuza uhereye ku magambo",
   "voice": "Ijwi (niba biboneka)",
   "voiceUnavailable": "Kumenya ijwi ntibiboneka kuri iki gikoresho.",
-  "aiVerifyBadge": "Byasuzumwe na AI — nyamuneka wemeze",
+  "aiVerifyBadge": "Byasuzumwe na AI. Nyamuneka wemeze.",
   "aiApply": "Shyira kuri form",
   "whyMatters": "Impamvu ibi ari ngombwa",
   "liveSummary": "Ibisubizo ubu",
@@ -33,5 +33,10 @@
   "ageYearsMonths": "Imyaka {{years}} = amezi {{months}}",
   "tempInvalid": "Ubushyuhe bugomba kuba hagati ya 30 na 45 °C",
   "increase": "Ongera",
-  "decrease": "Gabanya"
+  "decrease": "Gabanya",
+  "notAnswered": "-",
+  "elapsed": "Igihe cyarangiye",
+  "chipMonths": "Amezi {{n}}",
+  "chipYears": "Imyaka {{n}}"
 }
+
