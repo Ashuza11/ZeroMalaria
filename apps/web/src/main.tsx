@@ -6,6 +6,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import './i18n';
 import './index.css';
+import './styles/liquid.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(

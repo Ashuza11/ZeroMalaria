@@ -64,10 +64,10 @@ export function VoiceControls({
       <div className={cn('relative', className)}>
         <button
           type="button"
-          className="fixed inset-0 z-40 flex items-center justify-center bg-white/85 p-6 backdrop-blur-sm dark:bg-black/70"
+          className="zm-backdrop fixed inset-0 z-40 flex items-center justify-center bg-white/85 p-6 backdrop-blur-sm dark:bg-black/70"
           onClick={() => voice.unlock()}
         >
-          <span className="max-w-sm rounded-card border border-border bg-surface px-8 py-6 text-center text-lg font-semibold shadow-lift">
+          <span className="zm-dialog max-w-sm ring-4 ring-accent/20 shadow-[0_0_60px_-10px_rgba(94,234,212,0.6)] rounded-card border border-border bg-surface px-10 py-8 text-center text-[19px] font-semibold tracking-[-0.02em] shadow-lift">
             {t('voice.unlockTap')}
           </span>
         </button>

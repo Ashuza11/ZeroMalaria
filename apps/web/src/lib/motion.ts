@@ -36,3 +36,15 @@ export const slideInRight: Variants = {
 export function motionSafe(reduced: boolean | null, variants: Variants): Variants | undefined {
   return reduced ? undefined : variants;
 }
+
+/* ---------- iOS-style springs ---------- */
+export const spring: Transition = { type: 'spring', stiffness: 380, damping: 34, mass: 0.9 };
+export const softSpring: Transition = { type: 'spring', stiffness: 170, damping: 26, mass: 1 };
+export const bouncy: Transition = { type: 'spring', stiffness: 520, damping: 22, mass: 0.7 };
+export const iosEase = [0.32, 0.72, 0, 1] as const;
+
+/** Blur-in reveal used for content entering the viewport. */
+export const blurUp: Variants = {
+  hidden: { opacity: 0, y: 28, filter: 'blur(10px)' },
+  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: iosEase } },
+};
