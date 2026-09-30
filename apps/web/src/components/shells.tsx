@@ -70,8 +70,12 @@ function LogoMark({ compact }: { compact?: boolean }) {
       </div>
       {!compact ? (
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold leading-none text-ink">{t('common.appName')}</p>
-          <p className="mt-1 truncate text-[11px] text-ink-muted">{t('common.tagline')}</p>
+          <p className="text-sm font-bold leading-tight text-ink whitespace-normal break-words">
+            {t('common.appName')}
+          </p>
+          <p className="mt-0.5 line-clamp-1 text-[10px] leading-tight text-ink-muted" title={t('common.tagline')}>
+            {t('common.tagline')}
+          </p>
         </div>
       ) : null}
     </div>
@@ -379,6 +383,7 @@ export function WebShell({
         badge: overdueAlerts.length || undefined,
       },
       { to: '/app/analytics', label: t('nav.analytics'), icon: BarChart3, roles: [...BROAD_ROLES] },
+      { to: '/app/ai-activity', label: t('nav.aiActivity'), icon: Activity, roles: [...BROAD_ROLES] },
       { to: '/app/supplies', label: t('nav.supplies'), icon: Package, roles: [...BROAD_ROLES] },
       { to: '/app/users', label: t('nav.users'), icon: User, roles: [...BROAD_ROLES], group: 'settings' },
       {

@@ -65,16 +65,15 @@ export function VoiceControls({
   };
 
   if (!unlocked) {
+    // Inline only — never cover the triage question/choices with a full-screen overlay.
     return (
-      <div className={cn('relative', className)}>
+      <div className={cn('space-y-2', className)}>
         <button
           type="button"
-          className="zm-backdrop fixed inset-0 z-40 flex items-center justify-center bg-white/85 p-6 backdrop-blur-sm dark:bg-black/70"
+          className="w-full rounded-control border border-border bg-surface-muted px-4 py-3 text-left text-sm font-semibold text-ink"
           onClick={() => voice.unlock()}
         >
-          <span className="zm-dialog max-w-sm ring-4 ring-accent/20 shadow-[0_0_60px_-10px_rgba(94,234,212,0.6)] rounded-card border border-border bg-surface px-10 py-8 text-center text-[19px] font-semibold tracking-[-0.02em] shadow-lift">
-            {t('voice.unlockTap')}
-          </span>
+          {t('voice.unlockTap')}
         </button>
       </div>
     );
@@ -86,21 +85,21 @@ export function VoiceControls({
     <div className={cn('space-y-2', className)}>
       <div className={cn('flex flex-wrap items-center gap-2', compact && 'gap-1')}>
         <IconButton
-          label={t('voice.listen')}
+          label={t('voice.tooltipListen')}
           showLabel={showLabels}
           onClick={onListen}
           disabled={state === 'speaking'}
         >
-          <Volume2 className="h-4 w-4" />
+          <Volume2 className="h-4 w-4" aria-hidden />
         </IconButton>
         {capabilities.sttBrowser && !micExperimental ? (
           <IconButton
-            label={t('voice.mic')}
+            label={t('voice.tooltipMic')}
             showLabel={showLabels}
             onClick={onMic}
             disabled={state === 'listening'}
           >
-            <Mic className="h-4 w-4" />
+            <Mic className="h-4 w-4" aria-hidden />
           </IconButton>
         ) : null}
         {capabilities.sttBrowser && micExperimental ? (
@@ -115,24 +114,24 @@ export function VoiceControls({
         ) : null}
         {helpPhraseId ? (
           <IconButton label={t('voice.help')} showLabel={showLabels} onClick={onHelp}>
-            <HelpCircle className="h-4 w-4" />
+            <HelpCircle className="h-4 w-4" aria-hidden />
           </IconButton>
         ) : null}
-        <IconButton label={t('voice.replay')} showLabel={showLabels} onClick={() => void voice.replay()}>
-          <RotateCcw className="h-4 w-4" />
+        <IconButton label={t('voice.tooltipReplay')} showLabel={showLabels} onClick={() => void voice.replay()}>
+          <RotateCcw className="h-4 w-4" aria-hidden />
         </IconButton>
-        <IconButton label={t('voice.slower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
-          <Snail className="h-4 w-4" />
+        <IconButton label={t('voice.tooltipSlower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
+          <Snail className="h-4 w-4" aria-hidden />
         </IconButton>
-        <IconButton label={t('voice.stop')} showLabel={showLabels} onClick={() => voice.stop()}>
-          <Pause className="h-4 w-4" />
+        <IconButton label={t('voice.tooltipStop')} showLabel={showLabels} onClick={() => voice.stop()}>
+          <Pause className="h-4 w-4" aria-hidden />
         </IconButton>
         <IconButton
-          label={mute ? t('voice.unmute') : t('voice.mute')}
+          label={t('voice.tooltipMute')}
           showLabel={showLabels}
           onClick={() => voice.toggleMute()}
         >
-          {mute ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          {mute ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
         </IconButton>
       </div>
       {badge ? (

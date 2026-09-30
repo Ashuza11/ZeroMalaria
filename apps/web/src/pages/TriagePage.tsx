@@ -14,12 +14,13 @@ import { type PhraseId, type VoiceLang, getPhrase } from '../voice/phrases';
 import { dialogueStepIndex } from '../voice/dialogue';
 import { useConversation } from '../voice/ConversationContext';
 import { useVoice, type VoiceIntents } from '../voice/VoiceContext';
-import { DEMO_CASE_A, DEMO_CASE_B } from '../demo/scenario';
+import { DEMO_CASE_A, DEMO_CASE_B, DEMO_CASE_ML } from '../demo/scenario';
 import { clearTriageDraft, loadTriageDraft, saveTriageDraft } from '../db';
 import { localDecide } from '../rules/engine';
 import type { TriageInput } from '../types';
 import { cn } from '../lib/cn';
-import { slideInRight, stepCardTransition } from '../lib/motion';
+import { stepCardTransition } from '../lib/motion';
+import { useTheme } from '../theme/ThemeContext';
 
 /** Display defaults only. Not treated as answers until the user acts. */
 const displayDefaults: TriageInput = {
@@ -156,6 +157,7 @@ export function TriagePage() {
   const [params] = useSearchParams();
   const demo = params.get('demo');
   const reduce = useReducedMotion();
+  const { offlineSim } = useTheme();
   const desktop = useDesktopTriageLayout();
   const voice = useVoice();
   const conversation = useConversation();
@@ -180,7 +182,6 @@ export function TriagePage() {
   const [stepAnsweredAt, setStepAnsweredAt] = useState<Record<string, string>>({});
   const [elapsedMs, setElapsedMs] = useState(0);
   const [draftReady, setDraftReady] = useState(false);
-  const spokeStep = useRef<number>(-1);
 
   const lang: VoiceLang = i18n.language.startsWith('rw') ? 'rw' : 'en';
   const step = STEPS[stepIndex];
@@ -195,8 +196,8 @@ export function TriagePage() {
     if (hydrated.current) return;
     hydrated.current = true;
     void (async () => {
-      if (demo === 'A' || demo === 'B') {
-        const seed = demo === 'A' ? DEMO_CASE_A : DEMO_CASE_B;
+      if (demo === 'A' || demo === 'B' || demo === 'ml') {
+        const seed = demo === 'A' ? DEMO_CASE_A : demo === 'ml' ? DEMO_CASE_ML : DEMO_CASE_B;
         setForm({ ...seed });
         setAnswered(allAnsweredExceptFreeText());
         setStartedAt(new Date().toISOString());
@@ -229,32 +230,46 @@ export function TriagePage() {
     return () => window.clearInterval(id);
   }, [startedAt]);
 
-  // Persist draft after every change
+  // Persist draft off the render path (fire-and-forget).
   useEffect(() => {
     if (!draftReady || demo) return;
-    void saveTriageDraft({
-      form,
-      answered: Array.from(answered),
-      stepIndex,
-      ageUnit,
-      freeText,
-      startedAt,
-      stepAnsweredAt,
-    });
+    const handle = window.setTimeout(() => {
+      void saveTriageDraft({
+        form,
+        answered: Array.from(answered),
+        stepIndex,
+        ageUnit,
+        freeText,
+        startedAt,
+        stepAnsweredAt,
+      }).catch((err) => {
+        if (import.meta.env.DEV) console.warn('[triage] draft save failed', err);
+      });
+    }, 0);
+    return () => window.clearTimeout(handle);
   }, [answered, ageUnit, demo, draftReady, form, freeText, startedAt, stepAnsweredAt, stepIndex]);
 
-  useEffect(() => {
-    if (conversation.active || !voice.unlocked || !phraseId || step === 'freetext' || spokeStep.current === stepIndex)
-      return;
-    spokeStep.current = stepIndex;
-    void voice.play([phraseId]);
-  }, [step, stepIndex, phraseId, voice, voice.unlocked, conversation.active]);
+  // No auto-play on step change — Listen is user-triggered only.
 
-  // Focus new question card after step change
+  // Perf log: step change → choices visible
+  useEffect(() => {
+    const label = `triage-step-${stepIndex}-choices`;
+    console.time(label);
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        console.timeEnd(label);
+        cardRef.current?.setAttribute('data-choices-ready', '1');
+        cardRef.current?.setAttribute('data-step', step);
+      });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [step, stepIndex]);
+
+  // Focus new question card after step change (non-blocking)
   useEffect(() => {
     const id = window.setTimeout(() => {
       cardRef.current?.focus({ preventScroll: true });
-    }, ADVANCE_MS + 40);
+    }, 0);
     return () => window.clearTimeout(id);
   }, [stepIndex]);
 
@@ -288,19 +303,25 @@ export function TriagePage() {
   const goNext = useCallback(() => {
     setFlash(null);
     setLocked(false);
+    // Stop any in-flight speech so it cannot re-render mid step swap.
+    voice.stop();
     setStepIndex((i) => {
       if (i < STEPS.length - 1) return i + 1;
       return i;
     });
-  }, []);
+  }, [voice]);
 
   const selectChoice = useCallback(
     (s: Step, patch: Partial<TriageInput>, flashKey?: string) => {
       if (locked) return;
+      // Gesture unlock only — never auto-play speech on step change.
+      voice.unlock();
       setLocked(true);
       setFlash(flashKey || 'ok');
       markAnswered(s, patch);
       if (advanceTimer.current) window.clearTimeout(advanceTimer.current);
+      // Advance immediately for choice steps so sex/yes-no appear without waiting on audio.
+      const delay = CHOICE_STEPS.includes(s) || s === 'age' ? 0 : ADVANCE_MS;
       advanceTimer.current = window.setTimeout(() => {
         if (s === STEPS[STEPS.length - 1]) {
           setLocked(false);
@@ -308,9 +329,9 @@ export function TriagePage() {
           return;
         }
         goNext();
-      }, ADVANCE_MS);
+      }, delay);
     },
-    [goNext, locked, markAnswered],
+    [goNext, locked, markAnswered, voice],
   );
 
   const bumpStepper = useCallback(
@@ -335,7 +356,39 @@ export function TriagePage() {
       if (s === 'freetext') return [];
       return [s];
     });
-    const result = localDecide(form, lang, answeredFields);
+    let result = localDecide(form, lang, answeredFields);
+    // Online: merge ML layer from API (escalate-only). Seeded demo=ml forces synthetic score >= 0.35.
+    const onlineNow = !offlineSim && (typeof navigator !== 'undefined' ? navigator.onLine : true);
+    if (onlineNow) {
+      try {
+        const remote = (await api.triage({
+          ...form,
+          language: lang,
+          use_ml: true,
+          demo_scenario: demo === 'ml' ? 'ml_escalate' : undefined,
+        })) as Record<string, unknown>;
+        if (remote && typeof remote.decision === 'string') {
+          result = {
+            ...result,
+            decision: remote.decision as typeof result.decision,
+            rules_decision: (remote.rules_decision as typeof result.decision) || result.rules_decision,
+            public_decision: (remote.public_decision as typeof result.public_decision) || result.public_decision,
+            reasons: Array.isArray(remote.reasons) ? (remote.reasons as string[]) : result.reasons,
+            triggered_rules: Array.isArray(remote.triggered_rules)
+              ? (remote.triggered_rules as string[])
+              : result.triggered_rules,
+            ml_escalated: Boolean(remote.ml_escalated),
+            severe_risk: typeof remote.severe_risk === 'number' ? remote.severe_risk : result.severe_risk,
+            shap_factors: Array.isArray(remote.shap_factors)
+              ? (remote.shap_factors as string[])
+              : result.shap_factors,
+            confidence: typeof remote.confidence === 'number' ? remote.confidence : result.confidence,
+          };
+        }
+      } catch {
+        /* offline / API fail: keep local rules result */
+      }
+    }
     const endedAt = new Date().toISOString();
     const durationMs = Date.now() - new Date(startedAt).getTime();
     // Timing kept local: TriageRequest schema has no started_at / answered_at / duration.
@@ -352,7 +405,7 @@ export function TriagePage() {
     );
     await clearTriageDraft();
     navigate(resultPath);
-  }, [aiExtractUsed, aiSuggested, demo, form, lang, navigate, resultPath, startedAt, stepAnsweredAt]);
+  }, [aiExtractUsed, aiSuggested, demo, form, lang, navigate, offlineSim, resultPath, startedAt, stepAnsweredAt]);
 
   const runGuidedTriage = useCallback(() => {
     voice.unlock();
@@ -553,29 +606,47 @@ export function TriagePage() {
     return out;
   };
 
+  const localExtractFallback = () => {
+    const lower = freeText.toLowerCase();
+    const suggestion: Partial<TriageInput> = {};
+    if (/gusetsa|convuls|fits/.test(lower)) suggestion.convulsions = true;
+    if (/kunywa|drink/.test(lower)) suggestion.unable_to_drink = true;
+    if (/araruka|vomit/.test(lower)) suggestion.vomiting_everything = true;
+    if (/intege|letharg|unconscious/.test(lower)) suggestion.lethargy = true;
+    if (/uruhuha|breath/.test(lower)) suggestion.severe_breathing_difficulty = true;
+    if (Object.keys(suggestion).length) {
+      setAiSuggested(suggestion);
+      setAiExtractUsed(true);
+    }
+  };
+
+  /** Free-text step only (not steps 1–9). 2s timeout + local fallback. */
   const extract = async () => {
+    if (!freeText.trim() || step !== 'freetext') {
+      localExtractFallback();
+      return;
+    }
+    let timedOut = false;
+    const timer = window.setTimeout(() => {
+      timedOut = true;
+      localExtractFallback();
+    }, 2000);
     try {
       const data = (await api.extract(freeText, i18n.language)) as {
         suggested_fields?: Record<string, unknown>;
       };
-      const s = data.suggested_fields || {};
-      const suggestion = buildSuggestion(s);
+      window.clearTimeout(timer);
+      if (timedOut) return;
+      const suggestion = buildSuggestion(data.suggested_fields || {});
       if (Object.keys(suggestion).length) {
         setAiSuggested(suggestion);
         setAiExtractUsed(true);
+      } else {
+        localExtractFallback();
       }
     } catch {
-      const lower = freeText.toLowerCase();
-      const suggestion: Partial<TriageInput> = {};
-      if (/gusetsa|convuls|fits/.test(lower)) suggestion.convulsions = true;
-      if (/kunywa|drink/.test(lower)) suggestion.unable_to_drink = true;
-      if (/araruka|vomit/.test(lower)) suggestion.vomiting_everything = true;
-      if (/intege|letharg|unconscious/.test(lower)) suggestion.lethargy = true;
-      if (/uruhuha|breath/.test(lower)) suggestion.severe_breathing_difficulty = true;
-      if (Object.keys(suggestion).length) {
-        setAiSuggested(suggestion);
-        setAiExtractUsed(true);
-      }
+      window.clearTimeout(timer);
+      if (!timedOut) localExtractFallback();
     }
   };
 
@@ -662,17 +733,15 @@ export function TriagePage() {
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {stepLabel(step, t)}
       </div>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={step}
-          variants={reduce ? undefined : slideInRight}
-          initial={reduce ? false : 'initial'}
-          animate="animate"
-          exit={reduce ? undefined : 'exit'}
-          transition={stepCardTransition}
-          className="relative mt-4"
-          style={{ filter: 'none' }}
-        >
+      {/* No mode="wait": wait+exit left step 2 blank and threw deferred DOM Node errors. */}
+      <motion.div
+        key={step}
+        initial={reduce ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={stepCardTransition}
+        className="relative mt-4"
+        style={{ filter: 'none' }}
+      >
           <Card className={cn('relative p-5', desktop ? 'min-h-[360px]' : 'min-h-[300px]')}>
             <div
               ref={cardRef}
@@ -680,6 +749,7 @@ export function TriagePage() {
               className="outline-none"
               role="group"
               aria-label={stepLabel(step, t)}
+              data-testid={`triage-step-${step}`}
             >
               {selectionFlash}
               <div className="mb-4">{iconFor(step)}</div>
@@ -992,7 +1062,6 @@ export function TriagePage() {
             </div>
           </Card>
         </motion.div>
-      </AnimatePresence>
 
       <div className="mt-4 flex gap-3">
         <Button

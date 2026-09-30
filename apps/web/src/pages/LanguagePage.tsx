@@ -2,14 +2,14 @@ import { Check, Globe2, Languages } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { setLanguage } from '../i18n';
+import { setLanguage, type AppLang } from '../i18n';
 import { Button, Card, Disclaimer } from '../components/ui';
 import { cn } from '../lib/cn';
 
 export function LanguagePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<'rw' | 'en'>('rw');
+  const [selected, setSelected] = useState<AppLang>('rw');
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-app px-4 py-8">
@@ -27,6 +27,7 @@ export function LanguagePage() {
             [
               { id: 'rw' as const, label: t('lang.kinyarwanda'), Icon: Languages },
               { id: 'en' as const, label: t('lang.english'), Icon: Globe2 },
+              { id: 'fr' as const, label: t('lang.french'), Icon: Globe2 },
             ]
           ).map((opt) => (
             <button

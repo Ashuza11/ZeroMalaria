@@ -22,6 +22,8 @@ function loadLang(modules: Record<string, JsonModule>): Record<string, unknown> 
 
 const rwModules = import.meta.glob('../locales/rw/*.json', { eager: true }) as Record<string, JsonModule>;
 const enModules = import.meta.glob('../locales/en/*.json', { eager: true }) as Record<string, JsonModule>;
+const frModules = import.meta.glob('../locales/fr/*.json', { eager: true }) as Record<string, JsonModule>;
 
 export const rwResources = loadLang(rwModules);
 export const enResources = loadLang(enModules);
+export const frResources = loadLang(frModules);

@@ -164,6 +164,7 @@ def combine_decision(
     language: str = "en",
     use_ml: bool = True,
     rules_path: str | None = None,
+    demo_scenario: str | None = None,
 ) -> DecisionResult:
     rules_result: RulesResult = evaluate_rules(case, language=language, rules_path=rules_path)
     cfg = load_rules(rules_path)
@@ -175,7 +176,18 @@ def combine_decision(
     shap_factors: list[str] = []
 
     if use_ml:
-        severe_risk, referral_risk, shap_factors = predict_risks(case)
+        # Seeded architecture demo: synthetic score >= escalate_treat_to_refer threshold.
+        # Does not change thresholds or escalate-only lock — only substitutes model output.
+        if demo_scenario == "ml_escalate" and rules_result.decision == "treat_at_home":
+            severe_risk = 0.42
+            referral_risk = 0.20
+            shap_factors = [
+                "Fever duration pattern increases risk (synthetic)",
+                "Age band under-five increases risk (synthetic)",
+                "TDR positive with fever increases risk (synthetic)",
+            ]
+        else:
+            severe_risk, referral_risk, shap_factors = predict_risks(case)
         esc = (cfg.get("ml_escalation") or {}).get("severe_case") or {}
         treat_to_refer = float(esc.get("escalate_treat_to_refer_threshold", 0.35))
         refer_to_urgent = float(esc.get("escalate_refer_to_urgent_threshold", 0.55))

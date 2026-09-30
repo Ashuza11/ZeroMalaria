@@ -112,6 +112,11 @@ export const PHRASES = {
     MALARIA_RULES.rules.find((r) => r.id === 'persistent_fever_negative_tdr')!.reason_en,
     MALARIA_RULES.rules.find((r) => r.id === 'persistent_fever_negative_tdr')!.reason_rw,
   ),
+  reason_incomplete_assessment: p(
+    'reason_incomplete_assessment',
+    MALARIA_RULES.rules.find((r) => r.id === 'incomplete_assessment')!.reason_en,
+    MALARIA_RULES.rules.find((r) => r.id === 'incomplete_assessment')!.reason_rw,
+  ),
   reason_default_treat_at_home: p(
     'reason_default_treat_at_home',
     MALARIA_RULES.rules.find((r) => r.id === 'default_treat_at_home')!.reason_en,

@@ -3,36 +3,32 @@
 **Decision support tool. Not a replacement for clinical judgment.**  
 **Synthetic demo data** only.
 
-## Current sprint: RBC hackathon AI triage (2026-09-30) - DONE
+## Current sprint: AI visibility + consult (2026-09-30)
 
 **Branch:** `test-merge-ardent` (do not touch `main`).
 
-### Delivered
+### Done
 
-1. **Kinyarwanda audio** - Pre-recorded `/audio/rw/<id>.mp3` preferred; browser TTS skipped for `rw`; silent text fallback + DEV missing-file warnings; PWA CacheFirst + mp3 glob; `audio:manifest` / `audio:check` (+ repo-root wrappers). RW mic labelled experimental.
-2. **Rules** - Thresholds in `rules/clinical_config.yaml` with protocol citations / `TODO_CLINICAL_REVIEW`; danger → urgent; unanswered ≠ No; public decisions `treat_locally|monitor|urgent_referral`; reason_details + missing_info; 30+ coverage tests.
-3. **AI advisory** - `POST /ai/advisory` after rules; strict JSON; escalate-only code guardrail; Result UI rules-first + AI suggestion card (RW first, needs review) + CHW follow/override audit; handover attaches AI summary; overdue alerts keep `id`/`summary`.
-4. **Eval / safety** - `apps/api/tests/eval_cases.json` (40) + `eval_rules_agreement.py`; `docs/ai_safety.md` + `docs/protocol/excerpts.md`.
+1. **AI insights on Result** — risk gauge, top-3 SHAP factors, provenance chips, provider/latency/fallback; Rules only / Rules+AI toggle; ML escalation banner; offline message; visit summary via `/ai/visit-summary` (attached to handover).
+2. **Ask about this case** — chips + free text + mic; `POST /ai/ask` on sanitized snapshot; protocol-only answers; out-of-scope → nurse.
+3. **AI consult** — three agents (Triage/Guideline/Referral), max 2 rounds / 6 turns / timeouts; final answer first; expandable transcript; follow-up round; escalate-only + dose/injection rejection; activity logging without free text.
+4. **AI activity page** (`/app/ai-activity`) for RBC/supervisor roles — aggregate counts only.
+5. **Seeded demo** — `/m/triage?demo=ml` → rules `treat_at_home`, synthetic ML score 0.42 escalates to `refer` (threshold unchanged at 0.35).
+6. **UI** — full ZeroMalaria logo text; voice aria-labels (Read aloud / Record / Repeat / Slow / Pause / Volume) in rw/en/fr; French locale pack + language picker.
 
-### Measured eval
-
-| Metric | Value |
-| --- | --- |
-| Agreement | **40/40 (100.0%)** |
-| Mean triage duration_ms | **147175.0** (from vignette timestamps) |
-
-### Gates
+### Gates (this sprint)
 
 | Check | Result |
 | --- | --- |
-| pytest | **93 passed** |
+| pytest | **101 passed** |
 | npm run build | **OK** |
-| npm run lint | **OK** (2 existing warnings) |
-| npm run i18n:check | **OK** (666 keys) |
-| audio:check | **0/53 mp3 present** (native recording pending) |
+| npm run lint | **OK** (2 warnings) |
+| npm run i18n:check | **OK** (725 keys) |
 
-### Assumptions
+### Known limits
 
-- No live Gemini/Groq calls without keys; local provider supplies advisory JSON.
-- Pre-recorded RW audio files not yet recorded (checklist generated).
-- Clinical cut-offs remain PLACEHOLDER pending clinician review.
+- Live Gemini/Groq still fall back to local without keys (empty in `.env.example`).
+- RW AI strings marked needs native review / draft in `_review.json`.
+- ML escalate demo uses `demo_scenario=ml_escalate` synthetic score (architecture demo); real model scores are often below threshold on uncomplicated cases.
+- French UI falls back to English for namespaces not fully translated beyond the en→fr clone + AI overlays.
+- Pre-recorded RW MP3 pack still missing (text fallback).

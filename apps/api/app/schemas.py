@@ -18,6 +18,8 @@ class TriageRequest(BaseModel):
     language: str = "en"
     use_ml: bool = True
     free_text: Optional[str] = None
+    # Architecture demo only: "ml_escalate" injects synthetic ML score >= 0.35
+    demo_scenario: Optional[str] = None
 
 
 class TriageResponse(BaseModel):
@@ -34,6 +36,11 @@ class TriageResponse(BaseModel):
     disclaimer: str
     synthetic_note: str
     extracted_from_text: Optional[dict[str, Any]] = None
+    public_decision: Optional[str] = None
+    ml_threshold_treat_to_refer: Optional[float] = 0.35
+    reason_details: list[dict[str, Any]] = []
+    missing_info: list[str] = []
+    protocol_reference: Optional[str] = None
 
 
 class ReferralCreate(BaseModel):

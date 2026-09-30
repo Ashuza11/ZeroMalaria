@@ -4,10 +4,20 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import {
+  AiConsultPanel,
+  AiInsightsCard,
+  AiModeToggle,
+  AskAiPanel,
+  MlEscalateBanner,
+  useVisitSummary,
+  type AiMode,
+} from '../components/result/AiResultPanels';
 import { ChwShell, WebShell } from '../components/shells';
 import { VoiceControls } from '../components/voice/VoiceControls';
 import { Badge, Button, Card, EmptyState, PageHeader, ProgressBar } from '../components/ui';
 import type { AiAdvisory, DecisionResult, TriageInput } from '../types';
+import { assertNoDowngrade } from '../lib/decisionGuard';
 import { cn } from '../lib/cn';
 import { useTheme } from '../theme/ThemeContext';
 import {
@@ -48,8 +58,10 @@ export function ResultPage() {
   const [confirmed, setConfirmed] = useState(false);
   const [advisory, setAdvisory] = useState<AiAdvisory | null>(null);
   const [chwFeedback, setChwFeedback] = useState<'followed' | 'overrode' | null>(null);
+  const [aiMode, setAiMode] = useState<AiMode>('rules_ai');
 
   const lang: VoiceLang = i18n.language.startsWith('rw') ? 'rw' : 'en';
+  const uiLang = i18n.language.startsWith('rw') ? 'rw' : i18n.language.startsWith('fr') ? 'fr' : 'en';
   const online = !offlineSim && (typeof navigator !== 'undefined' ? navigator.onLine : true);
   const isApp = location.pathname.startsWith('/app');
   const triagePath = isApp ? '/app/triage' : '/m/triage';
@@ -114,7 +126,23 @@ export function ResultPage() {
       });
   }, [saved, online, lang]);
 
-  if (!saved) {
+  const guardedResult = useMemo(() => {
+    if (!saved) return null;
+    const raw = saved.result;
+    return {
+      ...raw,
+      decision: assertNoDowngrade(raw.rules_decision || raw.decision, raw.decision) as DecisionResult['decision'],
+    };
+  }, [saved]);
+
+  const { summary: visitSummary, meta: summaryMeta } = useVisitSummary(
+    online && aiMode === 'rules_ai',
+    saved?.input ?? null,
+    guardedResult,
+    uiLang,
+  );
+
+  if (!saved || !guardedResult) {
     const empty = (
       <EmptyState
         icon={<CircleAlert className="h-8 w-8" />}
@@ -131,7 +159,8 @@ export function ResultPage() {
     );
   }
 
-  const { result, demo, ai_extract_used } = saved;
+  const { demo, ai_extract_used } = saved;
+  const result = guardedResult;
   const decision = result.decision;
   const conf =
     decision === 'urgent_refer'
@@ -218,7 +247,23 @@ export function ResultPage() {
         ) : null}
       </motion.div>
 
-      {advisory ? (
+      <MlEscalateBanner result={result} />
+      <AiModeToggle mode={aiMode} onChange={setAiMode} />
+      <AiInsightsCard
+        online={online}
+        result={result}
+        mode={aiMode}
+        summary={visitSummary}
+        summaryMeta={summaryMeta}
+      />
+      {aiMode === 'rules_ai' ? (
+        <>
+          <AskAiPanel online={online} input={saved.input} result={result} language={uiLang} />
+          <AiConsultPanel online={online} input={saved.input} result={result} language={uiLang} />
+        </>
+      ) : null}
+
+      {advisory && aiMode === 'rules_ai' ? (
         <Card className="mt-4 border-2 border-info/40" aria-label={t('result.aiSuggestion')}>
           <div className="flex flex-wrap items-center gap-2">
             <Sparkles className="h-5 w-5 text-info" strokeWidth={1.75} aria-hidden />

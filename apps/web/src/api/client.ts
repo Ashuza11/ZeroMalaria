@@ -297,6 +297,26 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
+  aiVisitSummary: (body: {
+    answers: Record<string, unknown>;
+    decision: string;
+    rules_decision?: string;
+    reasons?: string[];
+    triggered_rules?: string[];
+    shap_factors?: string[];
+    severe_risk?: number | null;
+    ml_escalated?: boolean;
+    language?: string;
+  }) => request<Record<string, unknown>>('/ai/visit-summary', { method: 'POST', body: JSON.stringify(body) }),
+  aiAsk: (body: { question: string; case: Record<string, unknown>; language?: string }) =>
+    request<Record<string, unknown>>('/ai/ask', { method: 'POST', body: JSON.stringify(body) }),
+  aiConsult: (body: {
+    case: Record<string, unknown>;
+    language?: string;
+    follow_up?: string;
+    session_id?: string;
+  }) => request<Record<string, unknown>>('/ai/consult', { method: 'POST', body: JSON.stringify(body) }),
+  aiActivity: () => request<Record<string, unknown>>('/ai/activity'),
   aiInsights: (body: { aggregated_stats: Record<string, unknown>; language?: string }) =>
     request<Record<string, unknown>>('/ai/insights', { method: 'POST', body: JSON.stringify(body) }),
   assistantChat: (body: { message: string; language?: string; decision?: string }) =>

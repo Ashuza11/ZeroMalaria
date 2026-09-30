@@ -273,9 +273,15 @@ def triage(body: TriageRequest) -> TriageResponse:
             elif key == "age_months" and value is not None:
                 case["age_months"] = int(value)
 
-    result = combine_decision(case, language=body.language, use_ml=body.use_ml)
+    result = combine_decision(
+        case,
+        language=body.language,
+        use_ml=body.use_ml,
+        demo_scenario=body.demo_scenario,
+    )
     payload = result.to_dict()
     payload["extracted_from_text"] = extracted
+    payload["ml_threshold_treat_to_refer"] = 0.35
     return TriageResponse(**payload)
 
 

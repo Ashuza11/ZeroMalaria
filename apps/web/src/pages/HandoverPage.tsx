@@ -35,12 +35,17 @@ export function HandoverPage() {
     if (!triage) return '';
     const { input, result } = triage;
     const aiSummary = result.ai_advisory?.handover_summary;
+    const visitSummary =
+      typeof (triage as { ai_visit_summary?: string }).ai_visit_summary === 'string'
+        ? (triage as { ai_visit_summary?: string }).ai_visit_summary
+        : null;
     const lines = [
       `ZeroMalaria REFERRAL (${result.decision.toUpperCase()})`,
       `Age: ${input.age_months} months | Sex: ${input.sex}`,
       `Temp: ${input.temperature_c}°C | Fever days: ${input.fever_days} | TDR: ${input.tdr_result}`,
       `Reasons: ${result.reasons.join('; ')}`,
       result.protocol_reference ? `Protocol: ${result.protocol_reference}` : '',
+      visitSummary ? `AI visit summary (verify): ${visitSummary}` : '',
       aiSummary ? `AI handover (advisory): ${aiSummary}` : '',
       result.ai_advisory?.chw_followed === true
         ? 'CHW noted AI suggestion'
@@ -49,7 +54,7 @@ export function HandoverPage() {
           : '',
       `Facility: ${DEMO_FACILITY.name} (${DEMO_FACILITY.facility_id})`,
       'Decision support tool. Not a replacement for clinical judgment.',
-      'Synthetic demo data',
+      'Synthetic demo data / AI-generated, verify before use',
     ];
     return lines.filter(Boolean).join('\n');
   }, [triage]);

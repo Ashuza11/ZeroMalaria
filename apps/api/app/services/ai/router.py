@@ -246,8 +246,25 @@ class LocalNlpProvider(AIProvider):
                 explanation=text, language=lang, needs_native_review=lang.startswith("rw")
             ).model_dump()
         if task == "summary":
+            seed = str(payload.get("summary_seed") or "")
+            decision = str(payload.get("decision") or "treat_at_home")
+            if lang.startswith("rw"):
+                summary = (
+                    f"Incamake y'isura: icyemezo={decision}. {seed} "
+                    "AI-generated, verify before use. [needs review]"
+                )
+            elif lang.startswith("fr"):
+                summary = (
+                    f"Résumé de visite: décision={decision}. {seed} "
+                    "AI-generated, verify before use."
+                )
+            else:
+                summary = (
+                    f"Visit summary: decision={decision}. {seed} "
+                    "AI-generated, verify before use."
+                )
             return SummaryResult(
-                summary=str(payload.get("summary_seed") or "Visit summary unavailable offline."),
+                summary=summary or "Visit summary unavailable offline.",
                 needs_native_review=lang.startswith("rw"),
             ).model_dump()
         if task == "insights":

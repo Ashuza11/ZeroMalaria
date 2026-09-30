@@ -28,6 +28,20 @@ export const DEMO_CASE_B: TriageInput = {
   tdr_result: 'positive',
 };
 
+/** Rules treat_at_home; API demo_scenario=ml_escalate raises to refer (synthetic ML score 0.42). */
+export const DEMO_CASE_ML: TriageInput = {
+  age_months: 36,
+  sex: 'female',
+  temperature_c: 38.8,
+  fever_days: 2,
+  convulsions: false,
+  unable_to_drink: false,
+  vomiting_everything: false,
+  lethargy: false,
+  severe_breathing_difficulty: false,
+  tdr_result: 'positive',
+};
+
 export const DEMO_FACILITY = {
   facility_id: 'HC-BUG-01',
   name: 'Nyamata Health Center',

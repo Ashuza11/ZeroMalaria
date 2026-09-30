@@ -33,6 +33,15 @@ ALLOWED_KEYS = frozenset(
         "protocol_excerpts",
         "answers",
         "aggregated_stats",
+        "shap_factors",
+        "top_factors",
+        "severe_risk",
+        "ml_score",
+        "ml_escalated",
+        "question",
+        "case",
+        "age_band",
+        "danger_signs",
     }
 )
 

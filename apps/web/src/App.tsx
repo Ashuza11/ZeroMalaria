@@ -33,6 +33,7 @@ import { NotAuthorizedPage } from './pages/NotAuthorizedPage';
 import { UsersPage } from './pages/UsersPage';
 import { PermissionsPage } from './pages/PermissionsPage';
 import { AuditLogPage } from './pages/AuditLogPage';
+import { AiActivityPage } from './pages/AiActivityPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { PasswordPromptModal } from './components/PasswordPromptModal';
 import { FacilitiesAdminPage } from './pages/FacilitiesAdminPage';
@@ -237,6 +238,16 @@ export default function App() {
                     <RequireAuth>
                       <RequireRole roles={[...BROAD_ROLES]}>
                         <AuditLogPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/ai-activity"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={[...BROAD_ROLES]}>
+                        <AiActivityPage />
                       </RequireRole>
                     </RequireAuth>
                   }

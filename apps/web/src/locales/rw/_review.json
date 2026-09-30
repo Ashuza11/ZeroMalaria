@@ -2057,6 +2057,18 @@
   "result.protocolRef": {
     "status": "draft",
     "note": "AI advisory UI"
-  }
+  },
+  "lang.french": { "status": "draft", "note": "French language option" },
+  "nav.aiActivity": { "status": "draft", "note": "AI activity nav" },
+  "voice.tooltipListen": { "status": "draft", "note": "Voice control labels" },
+  "voice.tooltipMic": { "status": "draft", "note": "Voice control labels" },
+  "voice.tooltipReplay": { "status": "draft", "note": "Voice control labels" },
+  "voice.tooltipSlower": { "status": "draft", "note": "Voice control labels" },
+  "voice.tooltipStop": { "status": "draft", "note": "Voice control labels" },
+  "voice.tooltipMute": { "status": "draft", "note": "Voice control labels" },
+  "ai.insightsTitle": { "status": "draft", "note": "AI visibility UI" },
+  "ai.askTitle": { "status": "draft", "note": "AI ask panel" },
+  "ai.consultButton": { "status": "draft", "note": "AI consult" },
+  "ai.activityTitle": { "status": "draft", "note": "AI activity page" }
 }
 

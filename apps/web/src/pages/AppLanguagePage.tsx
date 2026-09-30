@@ -2,14 +2,19 @@ import { Globe2, Languages } from 'lucide-react';
 import { DrawCheck, Orb } from '../components/liquid/alive';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setLanguage } from '../i18n';
+import { setLanguage, type AppLang } from '../i18n';
 import { WebShell } from '../components/shells';
 import { Button, Card } from '../components/ui';
 import { cn } from '../lib/cn';
 
 export function AppLanguagePage() {
   const { t, i18n } = useTranslation();
-  const [selected, setSelected] = useState<'rw' | 'en'>(i18n.language.startsWith('rw') ? 'rw' : 'en');
+  const initial: AppLang = i18n.language.startsWith('rw')
+    ? 'rw'
+    : i18n.language.startsWith('fr')
+      ? 'fr'
+      : 'en';
+  const [selected, setSelected] = useState<AppLang>(initial);
 
   return (
     <WebShell title={t('lang.title')} crumbs={[t('nav.settingsGroup'), t('nav.language')]}>
@@ -19,6 +24,7 @@ export function AppLanguagePage() {
           [
             { id: 'rw' as const, label: t('lang.kinyarwanda'), Icon: Languages },
             { id: 'en' as const, label: t('lang.english'), Icon: Globe2 },
+            { id: 'fr' as const, label: t('lang.french'), Icon: Globe2 },
           ]
         ).map((opt) => (
           <button
