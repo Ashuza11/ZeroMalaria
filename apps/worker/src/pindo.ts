@@ -17,17 +17,34 @@ function configuration(env: Env, service: 'tts' | 'stt') {
     endpoint: `${base}/ai/${service}/rw${authenticated ? '' : '/public'}`,
     base,
     headers,
+    authenticated,
   };
 }
 
 export async function speakWithPindo(env: Env, text: string, speechRate: number): Promise<string> {
-  const { endpoint, base, headers } = configuration(env, 'tts');
-  const response = await fetch(endpoint, {
+  const { endpoint, base, headers, authenticated } = configuration(env, 'tts');
+  const request = (url: string, requestHeaders: Record<string, string>) => fetch(url, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...headers },
+    headers: { 'content-type': 'application/json', ...requestHeaders },
     body: JSON.stringify({ text, lang: 'rw', speech_rate: speechRate }),
   });
-  if (!response.ok) throw new Error(`Pindo TTS failed (${response.status})`);
+  let response = await request(endpoint, headers);
+  if (authenticated && response.status === 409) {
+    const error = (await response.clone().json().catch(() => null)) as
+      | { error?: { details?: string; message?: string } }
+      | null;
+    const detail = `${error?.error?.details || ''} ${error?.error?.message || ''}`.toLowerCase();
+    if (detail.includes('insufficient balance')) {
+      response = await request(`${base}/ai/tts/rw/public`, {});
+    }
+  }
+  if (!response.ok) {
+    const error = (await response.json().catch(() => null)) as
+      | { error?: { details?: string; message?: string } }
+      | null;
+    const detail = error?.error?.details || error?.error?.message;
+    throw new Error(`Pindo TTS failed (${response.status}${detail ? `: ${detail}` : ''})`);
+  }
   const payload = (await response.json()) as { data?: { generated_audio_url?: string } };
   const path = payload.data?.generated_audio_url;
   if (!path) throw new Error('Pindo returned no audio URL');

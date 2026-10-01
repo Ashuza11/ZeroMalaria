@@ -26,7 +26,7 @@ import {
 } from './speak';
 import { parseVoiceIntents, type VoiceIntents } from './intents';
 
-export type VoiceMachineState = 'idle' | 'speaking' | 'listening' | 'confirming';
+export type VoiceMachineState = 'idle' | 'speaking' | 'listening' | 'transcribing' | 'confirming';
 
 export type { VoiceIntents };
 export { parseVoiceIntents };
@@ -51,6 +51,7 @@ type VoiceContextValue = {
   setMute: (mute: boolean) => void;
   toggleMute: () => void;
   listen: () => Promise<ListenResult | null>;
+  stopListening: () => void;
   confirmHeard: () => ListenResult | null;
   cancelHeard: () => void;
   capabilities: ReturnType<typeof getLanguageCapabilities>;
@@ -62,7 +63,10 @@ function voiceLangFromI18n(code: string): VoiceLang {
   return code.startsWith('rw') ? 'rw' : 'en';
 }
 
-async function recordAnswer(maxDurationMs = 12000): Promise<{ blob: Blob; filename: string }> {
+async function recordAnswer(
+  maxDurationMs = 12000,
+  onStopReady?: (stop: () => void) => void,
+): Promise<{ blob: Blob; filename: string }> {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const preferredTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
   const mimeType = preferredTypes.find((type) => MediaRecorder.isTypeSupported(type)) || '';
@@ -86,6 +90,9 @@ async function recordAnswer(maxDurationMs = 12000): Promise<{ blob: Blob; filena
         const extension = type.includes('ogg') ? 'ogg' : 'webm';
         resolve({ blob: new Blob(chunks, { type }), filename: `triage-answer.${extension}` });
       };
+      onStopReady?.(() => {
+        if (recorder.state === 'recording') recorder.stop();
+      });
       recorder.start(250);
     });
   } finally {
@@ -110,6 +117,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
 
   const lastIds = useRef<PhraseId[]>([]);
   const listenResolve = useRef<((value: ListenResult | null) => void) | null>(null);
+  const stopRecording = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     setCaps(getLanguageCapabilities(lang));
@@ -131,6 +139,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       if (!ids.length) return;
       lastIds.current = ids;
       stopSpeaking();
+      setPlaybackSource(null);
       setState('speaking');
       try {
         await speakSequence(
@@ -179,8 +188,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     return new Promise((resolve) => {
       listenResolve.current = resolve;
       setState('listening');
-      void recordAnswer()
-        .then(({ blob, filename }) => api.voiceTranscribe(blob, filename))
+      void recordAnswer(12000, (stopRecorder) => {
+        stopRecording.current = stopRecorder;
+      })
+        .then(({ blob, filename }) => {
+          stopRecording.current = null;
+          setState('transcribing');
+          return api.voiceTranscribe(blob, filename);
+        })
         .then((response) => {
           const transcript = response.transcript.trim();
           const intents = parseVoiceIntents(transcript, lang);
@@ -191,6 +206,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           listenResolve.current = null;
         })
         .catch(() => {
+          stopRecording.current = null;
           setState('idle');
           setRecordingError(true);
           resolve(null);
@@ -198,6 +214,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         });
     });
   }, [caps.sttPindo, lang, unlock]);
+
+  const stopListening = useCallback(() => {
+    stopRecording.current?.();
+  }, []);
 
   const confirmHeard = useCallback((): ListenResult | null => {
     if (!pendingTranscript) return null;
@@ -234,6 +254,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setMute,
       toggleMute,
       listen,
+      stopListening,
       confirmHeard,
       cancelHeard,
       capabilities: caps,
@@ -256,6 +277,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setMute,
       toggleMute,
       listen,
+      stopListening,
       confirmHeard,
       cancelHeard,
       caps,

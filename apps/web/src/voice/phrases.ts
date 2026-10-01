@@ -54,6 +54,37 @@ export const PHRASES = {
     'What is the malaria rapid test result: positive, negative, or invalid?',
     'Ikizamini cy\'uburozi cy\'umusaraba: cyiza, cyangwa nabi, cyangwa nticyemewe?',
   ),
+  weight: p('weight', 'What is the patient’s weight in kilograms?', 'Umurwayi apima ibiro bingahe?'),
+  pregnant_first_trimester: p(
+    'pregnant_first_trimester',
+    'Is the patient pregnant in the first three months, yes or no?',
+    'Umurwayi atwite inda iri munsi y’amezi atatu, yego cyangwa oya?',
+  ),
+  aspy_allergy: p(
+    'aspy_allergy',
+    'Has the patient had an allergy to ASPY, artesunate, or pyronaridine, yes or no?',
+    'Umurwayi yigeze agira allergie kuri ASPY, artesunate cyangwa pyronaridine, yego cyangwa oya?',
+  ),
+  severe_liver_disease: p(
+    'severe_liver_disease',
+    'Does the patient have severe liver disease or yellow eyes, yes or no?',
+    'Umurwayi afite indwara ikomeye y’umwijima cyangwa amaso y’umuhondo, yego cyangwa oya?',
+  ),
+  severe_renal_disease: p(
+    'severe_renal_disease',
+    'Does the patient have severe kidney disease, yes or no?',
+    'Umurwayi afite indwara ikomeye y’impyiko, yego cyangwa oya?',
+  ),
+  recent_malaria_treatment_failure: p(
+    'recent_malaria_treatment_failure',
+    'Did a recent malaria treatment fail, yes or no?',
+    'Umuti wa malaria aherutse gufata waranze, yego cyangwa oya?',
+  ),
+  aspy_in_stock: p(
+    'aspy_in_stock',
+    'Is the correct ASPY treatment pack available now, yes or no?',
+    'Agapaki ka ASPY gakwiye karahari ubu, yego cyangwa oya?',
+  ),
   other_symptoms: p(
     'other_symptoms',
     'Are there any other symptoms or important details? You can record or type them.',
@@ -64,6 +95,11 @@ export const PHRASES = {
     'result_treat_at_home',
     'Recommendation: treat at home with community follow-up.',
     'Icyifuzo: kuvura mu rugo hamwe no gukurikirana mu mudugudu.',
+  ),
+  result_no_antimalarial: p(
+    'result_no_antimalarial',
+    'Do not give malaria medicine. Assess other causes of fever and follow up.',
+    'Ntutange umuti wa malaria. Shakisha izindi mpamvu z’ubushyuhe kandi ukurikirane umurwayi.',
   ),
   result_refer: p(
     'result_refer',
@@ -127,11 +163,26 @@ export const PHRASES = {
     MALARIA_RULES.rules.find((r) => r.id === 'default_treat_at_home')!.reason_en,
     MALARIA_RULES.rules.find((r) => r.id === 'default_treat_at_home')!.reason_rw,
   ),
+  reason_negative_rdt_no_antimalarial: p(
+    'reason_negative_rdt_no_antimalarial',
+    'The malaria rapid test is negative.',
+    'Ikizamini cya malaria ni negative.',
+  ),
+  reason_confirmed_uncomplicated_malaria: p(
+    'reason_confirmed_uncomplicated_malaria',
+    'The malaria test is positive and no danger sign or treatment contraindication was recorded.',
+    'Ikizamini cya malaria ni positive kandi nta kimenyetso cy’akaga cyangwa ikibuza umuti cyanditswe.',
+  ),
 
   next_treat_at_home: p(
     'next_treat_at_home',
     'Give home care advice, schedule follow-up, and confirm the decision before closing.',
     'Tanga inama zo kwita mu rugo, teganya gukurikirana, wemeze icyemezo mbere yo gufunga.',
+  ),
+  next_no_antimalarial: p(
+    'next_no_antimalarial',
+    'Assess other causes, give appropriate supportive care, and tell the patient when to return.',
+    'Shakisha izindi mpamvu, utange ubufasha bukwiye, kandi ubwire umurwayi igihe cyo kugaruka.',
   ),
   next_refer: p(
     'next_refer',
@@ -247,6 +298,41 @@ export const PHRASES = {
     'Record the rapid diagnostic test result from the cassette. Invalid means the test failed, do not treat on that result alone.',
     'Andika igisubizo cy\'ikizamini cy\'umusaraba. Nticyemewe bisobanuye ko ikizamini cyanze, ntuvure ukurikije gusa icyo.',
   ),
+  help_weight: p(
+    'help_weight',
+    'Use a scale. The treatment dose is selected from the measured weight, never from age alone.',
+    'Koresha umunzani. Ingano y’umuti igenwa n’ibiro byapimwe, si imyaka yonyine.',
+  ),
+  help_pregnant_first_trimester: p(
+    'help_pregnant_first_trimester',
+    'ASPY is not used in the first trimester. Refer for an alternative treatment.',
+    'ASPY ntitangwa mu mezi atatu ya mbere y’inda. Ohereza umurwayi guhabwa undi muti.',
+  ),
+  help_aspy_allergy: p(
+    'help_aspy_allergy',
+    'A known allergy to ASPY, artesunate, or pyronaridine requires an alternative treatment.',
+    'Allergie kuri ASPY, artesunate cyangwa pyronaridine isaba undi muti.',
+  ),
+  help_severe_liver_disease: p(
+    'help_severe_liver_disease',
+    'Severe liver disease or signs of liver injury require facility assessment.',
+    'Indwara ikomeye y’umwijima cyangwa ibimenyetso byayo bisaba gusuzumwa ku kigo nderabuzima.',
+  ),
+  help_severe_renal_disease: p(
+    'help_severe_renal_disease',
+    'Severe kidney disease requires facility assessment before treatment.',
+    'Indwara ikomeye y’impyiko isaba gusuzumwa ku kigo nderabuzima mbere y’umuti.',
+  ),
+  help_recent_malaria_treatment_failure: p(
+    'help_recent_malaria_treatment_failure',
+    'Suspected treatment failure must be referred to a health facility.',
+    'Iyo ukeka ko umuti waranze, umurwayi agomba koherezwa ku kigo nderabuzima.',
+  ),
+  help_aspy_in_stock: p(
+    'help_aspy_in_stock',
+    'Only confirm yes after checking the medicine name, formulation, quantity, and expiry date.',
+    'Emeza yego ari uko ugenzuye izina ry’umuti, ubwoko bwawo, umubare n’itariki uzarangiriraho.',
+  ),
   help_freetext: p(
     'help_freetext',
     'Optional notes in Kinyarwanda or English. AI may suggest fields, you must verify before applying.',
@@ -285,7 +371,8 @@ export function reasonPhraseIdForRuleOrSign(ruleOrSignId: string): PhraseId | nu
 
 export function buildResultSequence(decision: Decision, triggered_rules: string[]): PhraseId[] {
   const seq: PhraseId[] = [];
-  if (decision === 'treat_at_home') seq.push('result_treat_at_home');
+  if (decision === 'no_antimalarial') seq.push('result_no_antimalarial');
+  else if (decision === 'treat_at_home') seq.push('result_treat_at_home');
   else if (decision === 'refer') seq.push('result_refer');
   else seq.push('result_urgent_refer');
 
@@ -294,7 +381,8 @@ export function buildResultSequence(decision: Decision, triggered_rules: string[
     if (reasonId) seq.push(reasonId);
   }
 
-  if (decision === 'treat_at_home') seq.push('next_treat_at_home');
+  if (decision === 'no_antimalarial') seq.push('next_no_antimalarial');
+  else if (decision === 'treat_at_home') seq.push('next_treat_at_home');
   else if (decision === 'refer') seq.push('next_refer');
   else seq.push('next_urgent_refer');
 

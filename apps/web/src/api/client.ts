@@ -308,6 +308,7 @@ export const api = {
     ml_escalated?: boolean;
     language?: string;
     free_text?: string;
+    treatment_plan?: Record<string, unknown> | null;
   }) => request<Record<string, unknown>>('/ai/visit-summary', { method: 'POST', body: JSON.stringify(body) }),
   aiAsk: (body: { question: string; case: Record<string, unknown>; language?: string }) =>
     request<Record<string, unknown>>('/ai/ask', { method: 'POST', body: JSON.stringify(body) }),
@@ -324,6 +325,39 @@ export const api = {
     request<Record<string, unknown>>('/assistant/chat', { method: 'POST', body: JSON.stringify(body) }),
   voiceSpeak: (body: { phrase_id: string; language: 'rw'; text: string; speech_rate: number }) =>
     request<Record<string, unknown>>('/voice/speak', { method: 'POST', body: JSON.stringify(body) }),
+  voiceSpeakAudio: async (body: { phrase_id: string; language: 'rw'; text: string; speech_rate: number }) => {
+    const cacheText = `${body.phrase_id}|${body.language}|${body.speech_rate}|${body.text}`;
+    let hash = 2166136261;
+    for (let i = 0; i < cacheText.length; i += 1) {
+      hash ^= cacheText.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    const cacheKey =
+      typeof window !== 'undefined'
+        ? new Request(`${window.location.origin}/__voice_cache__/${body.phrase_id}-${hash >>> 0}`)
+        : null;
+    const cache = cacheKey && typeof caches !== 'undefined' ? await caches.open('zm-pindo-tts-v1') : null;
+    const cached = cacheKey && cache ? await cache.match(cacheKey) : null;
+    if (cached) return cached.arrayBuffer();
+
+    const res = await fetch(`${API_BASE}/voice/speak-audio`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (res.status === 401) clearAuthSession(true);
+    if (!res.ok) throw new Error((await res.text()) || res.statusText);
+    const bytes = await res.arrayBuffer();
+    if (cacheKey && cache && bytes.byteLength) {
+      await cache.put(
+        cacheKey,
+        new Response(bytes.slice(0), {
+          headers: { 'content-type': res.headers.get('content-type') || 'audio/wav' },
+        }),
+      );
+    }
+    return bytes;
+  },
   voiceStatus: () =>
     request<{
       provider: string;

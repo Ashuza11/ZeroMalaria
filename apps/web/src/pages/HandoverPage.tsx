@@ -47,6 +47,7 @@ export function HandoverPage() {
   useEffect(() => {
     if (!triage || aiBrief) return;
     let cancelled = false;
+    const started = Date.now();
     setBriefLoading(true);
     void api
       .aiVisitSummary({
@@ -58,7 +59,9 @@ export function HandoverPage() {
         language: 'rw',
         free_text: triage.free_text,
       })
-      .then((response) => {
+      .then(async (response) => {
+        const remaining = Math.max(0, 1600 - (Date.now() - started));
+        if (remaining) await new Promise((resolve) => window.setTimeout(resolve, remaining));
         if (cancelled) return;
         const generated = (response.data as { summary?: string } | undefined)?.summary?.trim() || fallbackBrief;
         setAiBrief(generated);
@@ -106,7 +109,10 @@ export function HandoverPage() {
   }, [summary]);
 
   const send = async () => {
-    if (!triage || triage.result.decision === 'treat_at_home') return;
+    if (
+      !triage ||
+      (triage.result.decision !== 'refer' && triage.result.decision !== 'urgent_refer')
+    ) return;
     await enqueueReferral({
       client_uuid: uuid(),
       facility_id: DEMO_FACILITY.facility_id,
@@ -158,9 +164,8 @@ export function HandoverPage() {
           <h3 className="font-semibold">{t('result.nurseHandoffTitle')}</h3>
         </div>
         <p className="mt-3 whitespace-pre-wrap rounded-control bg-surface-muted p-3 text-sm leading-relaxed">
-          {briefLoading ? t('common.loading') : aiBrief || fallbackBrief}
+          {briefLoading ? t('result.aiProcessing') : aiBrief || fallbackBrief}
         </p>
-        <p className="mt-2 text-xs font-semibold text-warning">{t('result.aiVerify')}</p>
       </Card>
 
       <Card className="mt-3 flex flex-col items-center border-dashed">

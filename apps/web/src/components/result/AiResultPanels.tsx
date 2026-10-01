@@ -482,10 +482,17 @@ export function useVisitSummary(
 ) {
   const [summary, setSummary] = useState<string | null>(null);
   const [meta, setMeta] = useState<ProviderInfo | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!online || !input || !result) return;
+    if (!online || !input || !result) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
+    const started = Date.now();
+    setSummary(null);
+    setLoading(true);
     void api
       .aiVisitSummary({
         answers: input as unknown as Record<string, unknown>,
@@ -498,8 +505,11 @@ export function useVisitSummary(
         ml_escalated: result.ml_escalated,
         language,
         free_text: freeText,
+        treatment_plan: result.treatment_plan as unknown as Record<string, unknown> | null,
       })
-      .then((res) => {
+      .then(async (res) => {
+        const remaining = Math.max(0, 1600 - (Date.now() - started));
+        if (remaining) await new Promise((resolve) => window.setTimeout(resolve, remaining));
         if (cancelled) return;
         const data = (res.data || {}) as { summary?: string };
         setSummary(data.summary || null);
@@ -520,11 +530,14 @@ export function useVisitSummary(
       })
       .catch(() => {
         if (!cancelled) setSummary(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
     return () => {
       cancelled = true;
     };
   }, [online, input, result, language, freeText]);
 
-  return { summary, meta };
+  return { summary, meta, loading };
 }

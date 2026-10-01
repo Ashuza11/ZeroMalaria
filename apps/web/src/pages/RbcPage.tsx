@@ -362,7 +362,7 @@ export function RbcPage() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               {DISTRICTS.map((d) => {
-                const cases = (surge.by_district || {})[d.name] || 0;
+                const cases = ((surge.by_district || {}) as Record<string, number>)[d.name] || 0;
                 const hot = cases > 120 || (district ? d.name === district : false);
                 return (
                   <CircleMarker

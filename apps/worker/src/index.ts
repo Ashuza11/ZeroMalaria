@@ -427,6 +427,21 @@ async function route(request: Request, env: Env): Promise<Response> {
     const audioUrl = await speakWithPindo(env, body.text, Number(body.speech_rate || 1));
     return json({ ok: true, provider_used: 'pindo', phrase_id: body.phrase_id, language: 'rw', audio_url: audioUrl });
   }
+  if (path === '/voice/speak-audio' && request.method === 'POST') {
+    const body = await readJson<{ phrase_id?: string; language?: string; text?: string; speech_rate?: number }>(request);
+    if (body.language !== 'rw' || !body.text?.trim()) return apiError('Kinyarwanda text is required');
+    const audioUrl = await speakWithPindo(env, body.text, Number(body.speech_rate || 1));
+    const audio = await fetch(audioUrl);
+    if (!audio.ok || !audio.body) return apiError('Pindo audio could not be downloaded', 502);
+    return new Response(audio.body, {
+      status: 200,
+      headers: {
+        'content-type': audio.headers.get('content-type') || 'audio/wav',
+        'cache-control': 'no-store',
+        'x-voice-provider': 'pindo',
+      },
+    });
+  }
   if (path === '/voice/transcribe' && request.method === 'POST') {
     const form = await request.formData();
     const audio = form.get('audio');
@@ -445,6 +460,7 @@ async function route(request: Request, env: Env): Promise<Response> {
       triggered_rules?: string[];
       free_text?: string;
       language?: string;
+      treatment_plan?: Record<string, unknown> | null;
     }>(request);
     const decision = body.rules_decision || body.decision || 'refer';
     const brief = await generateClinicalBrief(env, {
@@ -454,6 +470,7 @@ async function route(request: Request, env: Env): Promise<Response> {
       triggeredRules: body.triggered_rules || [],
       freeText: body.free_text,
       language: body.language,
+      treatmentPlan: body.treatment_plan || null,
     });
     return json({
       ok: true,

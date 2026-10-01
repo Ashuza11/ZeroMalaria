@@ -289,7 +289,6 @@ export function FacilityPage() {
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
                     {selected.ai_brief || selected.summary}
                   </p>
-                  <p className="mt-2 text-xs font-semibold text-warning">{t('result.aiVerify')}</p>
                 </div>
                 <h3 className="mt-5 text-sm font-semibold">{t('facility.patientDetails')}</h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3">

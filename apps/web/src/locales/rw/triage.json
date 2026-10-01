@@ -13,6 +13,14 @@
   "lethargy": "Yacitse intege cyangwa ntabona?",
   "breathing": "Agorwa cyane n'uruhuhu?",
   "tdr": "Igisubizo cya TDR / RDT",
+  "weight": "Ibiro by'umurwayi",
+  "weightHint": "Pima umurwayi ku munzani. Ingano y'umuti ishingira ku biro.",
+  "pregnancy": "Atwite inda iri munsi y'amezi atatu?",
+  "aspyAllergy": "Yigeze agira allergie kuri ASPY, artesunate cyangwa pyronaridine?",
+  "liverDisease": "Afite indwara ikomeye y'umwijima cyangwa amaso y'umuhondo?",
+  "renalDisease": "Afite indwara ikomeye y'impyiko?",
+  "treatmentFailure": "Umuti wa malaria aherutse gufata waranze?",
+  "aspyStock": "Agapaki ka ASPY gakwiye karahari kandi ntikararenza igihe?",
   "positive": "Byiza (positive)",
   "negative": "Nabi (negative)",
   "invalid": "Ntabwo yemewe",
@@ -30,6 +38,7 @@
   "monthsToggle": "Amezi",
   "yearsToggle": "Imyaka",
   "monthsShort": "amezi",
+  "daysShort": "iminsi",
   "ageYearsMonths": "Imyaka {{years}} = amezi {{months}}",
   "tempInvalid": "Ubushyuhe bugomba kuba hagati ya 30 na 45 °C",
   "increase": "Ongera",
@@ -39,4 +48,3 @@
   "chipMonths": "Amezi {{n}}",
   "chipYears": "Imyaka {{n}}"
 }
-

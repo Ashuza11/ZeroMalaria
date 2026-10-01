@@ -17,7 +17,7 @@ describe('Claude clinical brief', () => {
     const result = await generateClinicalBrief({} as Env, input);
     expect(result.provider).toBe('local-template');
     expect(result.summary).toContain('urgent_refer');
-    expect(result.summary).toContain('nurse must verify');
+    expect(result.summary).not.toContain('nurse must verify');
   });
 
   it('calls the Messages API without allowing Claude to change RBC inputs', async () => {

@@ -62,6 +62,24 @@ export const MALARIA_RULES = {
   ],
   "rules": [
     {
+      "id": "negative_rdt_no_antimalarial",
+      "description": "A negative malaria RDT never authorizes antimalarial treatment.",
+      "protocol_section": "Rwanda Integrated Malaria Control Guidelines 2024 - parasitological confirmation",
+      "when": { "tdr_result": "negative", "no_referral_already": true },
+      "decision": "no_antimalarial",
+      "reason_en": "Negative RDT: do not give malaria medicine; assess other causes and follow up.",
+      "reason_rw": "TDR ni negative: ntutange umuti wa malaria; shakisha izindi mpamvu kandi ukurikirane umurwayi."
+    },
+    {
+      "id": "confirmed_uncomplicated_malaria",
+      "description": "A positive RDT may enter community treatment only after all treatment-safety checks are complete.",
+      "protocol_section": "Rwanda MFT Implementation Guide - community case management",
+      "when": { "tdr_result": "positive", "no_referral_already": true, "treatment_safety_complete": true },
+      "decision": "treat_at_home",
+      "reason_en": "Positive RDT with complete treatment safety checks.",
+      "reason_rw": "TDR ni positive kandi isuzuma ry'umutekano w'umuti ryuzuye."
+    },
+    {
       "id": "infant_age_referral",
       "description": "PLACEHOLDER: sick infants below infant_refer_months are referred urgently from community care (common iCCM convention). Not a Rwanda-validated cutoff.",
       "protocol_section": "iCCM young infant referral",
@@ -111,7 +129,7 @@ export const MALARIA_RULES = {
     },
     {
       "id": "default_treat_at_home",
-      "description": "Default when no referral rule fires and assessment is complete. Includes uncomplicated TDR-positive fever in this demo. Does NOT prescribe drugs or doses.",
+      "description": "Legacy compatibility identifier. New decisions use confirmed_uncomplicated_malaria; there is no default malaria treatment.",
       "protocol_section": "Uncomplicated malaria community care (PLACEHOLDER)",
       "when": {
         "no_referral_already": true,

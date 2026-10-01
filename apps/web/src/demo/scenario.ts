@@ -2,7 +2,18 @@
 
 import type { TriageInput } from '../types';
 
+const TREATMENT_SAFETY = {
+  weight_kg: 15,
+  pregnant_first_trimester: false,
+  aspy_allergy: false,
+  severe_liver_disease: false,
+  severe_renal_disease: false,
+  recent_malaria_treatment_failure: false,
+  aspy_in_stock: true,
+} as const;
+
 export const DEMO_CASE_A: TriageInput = {
+  ...TREATMENT_SAFETY,
   age_months: 36,
   sex: 'female',
   temperature_c: 38.6,
@@ -16,6 +27,7 @@ export const DEMO_CASE_A: TriageInput = {
 };
 
 export const DEMO_CASE_B: TriageInput = {
+  ...TREATMENT_SAFETY,
   age_months: 28,
   sex: 'male',
   temperature_c: 39.4,
@@ -30,6 +42,7 @@ export const DEMO_CASE_B: TriageInput = {
 
 /** Rules treat_at_home; API demo_scenario=ml_escalate raises to refer (synthetic ML score 0.42). */
 export const DEMO_CASE_ML: TriageInput = {
+  ...TREATMENT_SAFETY,
   age_months: 36,
   sex: 'female',
   temperature_c: 38.8,

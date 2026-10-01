@@ -1,6 +1,15 @@
 {
   "title": "Inama",
   "treat": "Uvure mu rugo",
+  "noAntimalarial": "Ntutange umuti wa malaria",
+  "treatmentPlan": "Gahunda y'umuti yagenwe n'amategeko ya RBC",
+  "measuredWeight": "Ibiro byapimwe",
+  "weightBand": "Icyiciro cy'ibiro",
+  "dose": "Ingano yo gutanga buri gihe",
+  "frequency": "Igihe cyo kuwutanga",
+  "onceDailyThreeDays": "Rimwe ku munsi, iminsi 3",
+  "totalQuantity": "Umubare wose",
+  "aiTreatmentBriefTitle": "Incamake ya AI y'uburyo bwo kuvura",
   "refer": "Ohereza",
   "urgent": "Kohereza byihutirwa",
   "why": "Impamvu y'iyi nama",
@@ -34,6 +43,7 @@
   "chwFeedbackLogged": "Igisubizo cyabitswe",
   "protocolRef": "Amabwiriza",
   "nurseHandoffTitle": "Incamake ya AI igenewe umuforomo",
+  "aiProcessing": "AI iri gutegura incamake y'umuforomo…",
   "handoffOffline": "Incamake ya AI ntiboneka nta interineti. Ibaruwa ya RBC irakomeza koherezwa.",
   "aiVerify": "Yakozwe na AI — umuforomo agomba kuyemeza"
 }

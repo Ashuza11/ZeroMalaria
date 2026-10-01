@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleAlert, Home, Mic, Siren, Sparkles } from 'lucide-react';
+import { CheckCircle2, CircleAlert, Home, Mic, Pill, ShieldCheck, Siren, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,7 +73,7 @@ export function ResultPage() {
     };
   }, [saved]);
 
-  const { summary: visitSummary } = useVisitSummary(
+  const { summary: visitSummary, loading: briefLoading } = useVisitSummary(
     online,
     saved?.input ?? null,
     guardedResult,
@@ -99,7 +99,9 @@ export function ResultPage() {
       ? { tone: 'danger', label: t('result.urgent'), Icon: Siren, ring: true }
       : decision === 'refer'
         ? { tone: 'warning', label: t('result.refer'), Icon: CircleAlert, ring: false }
-        : { tone: 'success', label: t('result.treat'), Icon: Home, ring: false };
+        : decision === 'treat_at_home'
+          ? { tone: 'success', label: t('result.treat'), Icon: Home, ring: false }
+          : { tone: 'warning', label: t('result.noAntimalarial'), Icon: ShieldCheck, ring: false };
 
   const banner =
     conf.tone === 'danger'
@@ -134,16 +136,65 @@ export function ResultPage() {
         ) : null}
       </motion.div>
 
-      {decision !== 'treat_at_home' ? (
+      {decision === 'treat_at_home' && result.treatment_plan ? (
+        <Card className="mt-4 border-2 border-success/40" aria-label={t('result.treatmentPlan')}>
+          <div className="flex items-center gap-2">
+            <Pill className="h-6 w-6 text-success" strokeWidth={1.75} aria-hidden />
+            <h3 className="text-lg font-semibold">{t('result.treatmentPlan')}</h3>
+          </div>
+          <p className="mt-3 text-lg font-bold">{result.treatment_plan.medicine}</p>
+          <dl className="mt-3 grid grid-cols-2 gap-3 rounded-control bg-success-soft p-4 text-sm">
+            <div>
+              <dt className="text-ink-muted">{t('result.measuredWeight')}</dt>
+              <dd className="font-semibold">{saved.input.weight_kg} kg</dd>
+            </div>
+            <div>
+              <dt className="text-ink-muted">{t('result.weightBand')}</dt>
+              <dd className="font-semibold">{result.treatment_plan.weight_band}</dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-ink-muted">{t('result.dose')}</dt>
+              <dd className="text-lg font-bold">{result.treatment_plan.dose_each_time}</dd>
+            </div>
+            <div>
+              <dt className="text-ink-muted">{t('result.frequency')}</dt>
+              <dd className="font-semibold">{t('result.onceDailyThreeDays')}</dd>
+            </div>
+            <div>
+              <dt className="text-ink-muted">{t('result.totalQuantity')}</dt>
+              <dd className="font-semibold">{result.treatment_plan.total_quantity}</dd>
+            </div>
+          </dl>
+          <ul className="mt-3 space-y-2 text-sm">
+            {(lang === 'rw'
+              ? result.treatment_plan.instructions_rw
+              : result.treatment_plan.instructions_en
+            ).map((instruction) => (
+              <li key={instruction} className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+                <span>{instruction}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs text-ink-muted">{result.treatment_plan.protocol_reference}</p>
+        </Card>
+      ) : null}
+
+      {decision !== 'no_antimalarial' ? (
         <Card className="mt-4 border-2 border-info/40" aria-label={t('result.nurseHandoffTitle')}>
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-info" strokeWidth={1.75} aria-hidden />
-            <h3 className="text-lg font-semibold">{t('result.nurseHandoffTitle')}</h3>
+            <h3 className="text-lg font-semibold">
+              {decision === 'treat_at_home' ? t('result.aiTreatmentBriefTitle') : t('result.nurseHandoffTitle')}
+            </h3>
           </div>
-          <p className="mt-3 rounded-control bg-surface-muted p-3 text-sm leading-relaxed">
-            {visitSummary || t('result.handoffOffline')}
-          </p>
-          <Badge tone="warning" className="mt-3">{t('result.aiVerify')}</Badge>
+          {briefLoading ? (
+            <AiBriefProcessing label={t('result.aiProcessing')} />
+          ) : (
+            <p className="mt-3 rounded-control bg-surface-muted p-3 text-sm leading-relaxed">
+              {visitSummary || t('result.handoffOffline')}
+            </p>
+          )}
         </Card>
       ) : null}
 
@@ -190,7 +241,7 @@ export function ResultPage() {
       </label>
 
       <div className="sticky bottom-4 mt-4 space-y-2 rounded-card border border-border bg-surface/95 p-3 shadow-lift backdrop-blur">
-        {decision === 'treat_at_home' ? (
+        {decision === 'treat_at_home' || decision === 'no_antimalarial' ? (
           <Button
             className="w-full"
             disabled={!confirmed}
@@ -216,4 +267,24 @@ export function ResultPage() {
   );
 
   return <ChwShell title={t('result.title')}>{body}</ChwShell>;
+}
+
+function AiBriefProcessing({ label }: { label: string }) {
+  const reduce = useReducedMotion();
+  return (
+    <div className="mt-3 flex min-h-24 flex-col items-center justify-center rounded-control bg-surface-muted p-4 text-center" role="status">
+      <Sparkles className="h-6 w-6 text-info" aria-hidden />
+      <p className="mt-2 text-sm font-semibold">{label}</p>
+      <div className="mt-3 flex h-3 items-center gap-1.5" aria-hidden>
+        {[0, 1, 2].map((index) => (
+          <motion.span
+            key={index}
+            className="h-2.5 w-2.5 rounded-full bg-info"
+            animate={reduce ? undefined : { y: [0, -5, 0], opacity: [0.35, 1, 0.35] }}
+            transition={{ duration: 0.8, repeat: Infinity, delay: index * 0.14 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }

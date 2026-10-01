@@ -348,7 +348,7 @@ export function DetailDrawer({
 }) {
   const { t } = useTranslation();
   const titleId = useId();
-  const panelRef = useRef<HTMLAsideElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!open) return;

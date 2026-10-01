@@ -16,6 +16,13 @@ export const triageSchema = z.object({
   lethargy: z.boolean(),
   severe_breathing_difficulty: z.boolean(),
   tdr_result: z.enum(['positive', 'negative', 'invalid']),
+  weight_kg: z.number().min(0).max(250),
+  pregnant_first_trimester: z.boolean(),
+  aspy_allergy: z.boolean(),
+  severe_liver_disease: z.boolean(),
+  severe_renal_disease: z.boolean(),
+  recent_malaria_treatment_failure: z.boolean(),
+  aspy_in_stock: z.boolean(),
   free_text: z.string().max(2000).optional(),
 });
 

@@ -30,11 +30,31 @@ describe('voice phrase catalog', () => {
       'help_lethargy',
       'help_severe_breathing_difficulty',
       'help_tdr',
+      'help_weight',
+      'help_pregnant_first_trimester',
+      'help_aspy_allergy',
+      'help_severe_liver_disease',
+      'help_severe_renal_disease',
+      'help_recent_malaria_treatment_failure',
+      'help_aspy_in_stock',
       'help_freetext',
     ] as PhraseId[];
     for (const id of helpIds) {
       expect(PHRASES[id]?.en?.trim()).toBeTruthy();
       expect(PHRASES[id]?.rw?.trim()).toBeTruthy();
     }
+  });
+
+  it('includes spoken Kinyarwanda prompts for every treatment-safety step', () => {
+    const ids = [
+      'weight',
+      'pregnant_first_trimester',
+      'aspy_allergy',
+      'severe_liver_disease',
+      'severe_renal_disease',
+      'recent_malaria_treatment_failure',
+      'aspy_in_stock',
+    ] as PhraseId[];
+    for (const id of ids) expect(PHRASES[id]?.rw?.trim()).toBeTruthy();
   });
 });

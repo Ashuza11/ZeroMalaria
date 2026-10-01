@@ -30,7 +30,11 @@
   "convGreeting": "Gutangira",
   "convAsking": "Ikibazo",
   "convListening": "Ndumva…",
+  "speaking": "Ijwi riravuga…",
+  "stopRecording": "Hagarika, wandike ijwi",
+  "transcribing": "Ijwi riri kwandikwa…",
   "recordError": "Ijwi ntiryafashwe. Reba uburenganzira bwa mikoro na interineti, wongere ugerageze.",
+  "ttsUnavailable": "Ijwi ntiriboneka ubu. Komeza usome ikibazo kuri ekrani, wongere ugerageze nyuma.",
   "convConfirming": "Emeza",
   "convResponding": "Igisubizo"
 }

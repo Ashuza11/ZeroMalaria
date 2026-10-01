@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { LocalReferral, SyncQueueItem, TriageInput } from '../types';
+import type { LocalReferral, SyncQueueItem, TriageInput } from './types';
 
 export type LocalCase = {
   id?: number;

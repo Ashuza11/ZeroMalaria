@@ -1,6 +1,15 @@
 {
   "title": "Recommendation",
   "treat": "Treat at home",
+  "noAntimalarial": "Do not give malaria medicine",
+  "treatmentPlan": "RBC rule-based treatment plan",
+  "measuredWeight": "Measured weight",
+  "weightBand": "Weight band",
+  "dose": "Dose each time",
+  "frequency": "Frequency",
+  "onceDailyThreeDays": "Once daily for 3 days",
+  "totalQuantity": "Total quantity",
+  "aiTreatmentBriefTitle": "AI treatment explanation",
   "refer": "Refer",
   "urgent": "URGENT referral",
   "why": "Why this recommendation",
@@ -34,6 +43,7 @@
   "chwFeedbackLogged": "Feedback saved",
   "protocolRef": "Protocol",
   "nurseHandoffTitle": "Résumé clinique généré pour l'infirmier",
+  "aiProcessing": "AI is preparing the nurse handoff…",
   "handoffOffline": "Le résumé IA est indisponible hors ligne. La référence RBC structurée sera quand même envoyée.",
   "aiVerify": "Généré par IA — à vérifier par l'infirmier"
 }

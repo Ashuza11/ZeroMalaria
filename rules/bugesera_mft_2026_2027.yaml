@@ -1,0 +1,37 @@
+# Deterministic treatment configuration for the Nyamata/Bugesera demonstration.
+# Source: Rwanda MFT Implementation Guide, Block A, Year 2.
+# Valid only from 2026-09-01 through 2027-08-31. A new RBC-approved configuration
+# must replace it for the next rotation.
+meta:
+  district: Bugesera
+  block: A
+  rotation_year: 2026-2027
+  valid_from: 2026-09-01
+  valid_until_exclusive: 2027-09-01
+  medicine: Artesunate-Pyronaridine (ASPY)
+  protocol_reference: Rwanda MFT Implementation Guide (2025), Figures 6 and 12
+
+eligibility:
+  rdt: positive
+  all_danger_signs_answered_no: true
+  minimum_weight_kg: 5
+  require_contraindication_check: true
+  require_treatment_failure_check: true
+  require_in_stock_confirmation: true
+
+dosing_once_daily_for_days: 3
+weight_bands:
+  - { min_kg: 5, max_kg_exclusive: 8, dose: "1 sachet (20 mg/60 mg)", total: "3 sachets" }
+  - { min_kg: 8, max_kg_exclusive: 15, dose: "2 sachets (20 mg/60 mg each)", total: "6 sachets" }
+  - { min_kg: 15, max_kg_exclusive: 20, dose: "3 sachets (20 mg/60 mg each)", total: "9 sachets" }
+  - { min_kg: 20, max_kg_exclusive: 24, dose: "1 tablet (60 mg/180 mg)", total: "3 tablets" }
+  - { min_kg: 24, max_kg_exclusive: 45, dose: "2 tablets (60 mg/180 mg each)", total: "6 tablets" }
+  - { min_kg: 45, max_kg_exclusive: 65, dose: "3 tablets (60 mg/180 mg each)", total: "9 tablets" }
+  - { min_kg: 65, max_kg_exclusive: null, dose: "4 tablets (60 mg/180 mg each)", total: "12 tablets" }
+
+contraindications_route_to_referral:
+  - first_trimester_pregnancy
+  - aspy_artesunate_or_pyronaridine_allergy
+  - severe_liver_disease_or_signs_of_liver_injury
+  - severe_renal_disease
+  - suspected_recent_treatment_failure

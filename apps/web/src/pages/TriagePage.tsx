@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check, Minus, Plus } from 'lucide-react';
 import { Orb } from '../components/liquid/alive';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -28,6 +28,13 @@ const displayDefaults: TriageInput = {
   lethargy: false,
   severe_breathing_difficulty: false,
   tdr_result: 'negative',
+  weight_kg: 25,
+  pregnant_first_trimester: false,
+  aspy_allergy: false,
+  severe_liver_disease: false,
+  severe_renal_disease: false,
+  recent_malaria_treatment_failure: false,
+  aspy_in_stock: true,
 };
 
 type Step =
@@ -41,9 +48,16 @@ type Step =
   | 'lethargy'
   | 'breathing'
   | 'tdr'
+  | 'weight'
+  | 'pregnancy'
+  | 'aspy_allergy'
+  | 'liver_disease'
+  | 'renal_disease'
+  | 'treatment_failure'
+  | 'aspy_stock'
   | 'freetext';
 
-const STEPS: Step[] = [
+const BASE_STEPS: Step[] = [
   'age',
   'sex',
   'temperature',
@@ -54,6 +68,26 @@ const STEPS: Step[] = [
   'lethargy',
   'breathing',
   'tdr',
+];
+
+const TREATMENT_STEPS: Step[] = [
+  'weight',
+  'aspy_allergy',
+  'liver_disease',
+  'renal_disease',
+  'treatment_failure',
+  'aspy_stock',
+];
+
+const ALL_STEPS: Step[] = [
+  ...BASE_STEPS,
+  'weight',
+  'pregnancy',
+  'aspy_allergy',
+  'liver_disease',
+  'renal_disease',
+  'treatment_failure',
+  'aspy_stock',
   'freetext',
 ];
 
@@ -65,9 +99,24 @@ const CHOICE_STEPS: Step[] = [
   'lethargy',
   'breathing',
   'tdr',
+  'pregnancy',
+  'aspy_allergy',
+  'liver_disease',
+  'renal_disease',
+  'treatment_failure',
+  'aspy_stock',
 ];
 
-const STEPPER_STEPS: Step[] = ['age', 'temperature', 'feverDays'];
+const STEPPER_STEPS: Step[] = ['age', 'temperature', 'feverDays', 'weight'];
+
+const SAFETY_STEP_FIELD = {
+  pregnancy: 'pregnant_first_trimester',
+  aspy_allergy: 'aspy_allergy',
+  liver_disease: 'severe_liver_disease',
+  renal_disease: 'severe_renal_disease',
+  treatment_failure: 'recent_malaria_treatment_failure',
+  aspy_stock: 'aspy_in_stock',
+} as const satisfies Record<string, keyof TriageInput>;
 
 const STEP_PHRASE: Partial<Record<Step, PhraseId>> = {
   age: 'age',
@@ -80,6 +129,13 @@ const STEP_PHRASE: Partial<Record<Step, PhraseId>> = {
   lethargy: 'lethargy',
   breathing: 'severe_breathing_difficulty',
   tdr: 'tdr',
+  weight: 'weight',
+  pregnancy: 'pregnant_first_trimester',
+  aspy_allergy: 'aspy_allergy',
+  liver_disease: 'severe_liver_disease',
+  renal_disease: 'severe_renal_disease',
+  treatment_failure: 'recent_malaria_treatment_failure',
+  aspy_stock: 'aspy_in_stock',
   freetext: 'other_symptoms',
 };
 
@@ -94,6 +150,13 @@ const STEP_HELP: Partial<Record<Step, PhraseId>> = {
   lethargy: 'help_lethargy',
   breathing: 'help_severe_breathing_difficulty',
   tdr: 'help_tdr',
+  weight: 'help_weight',
+  pregnancy: 'help_pregnant_first_trimester',
+  aspy_allergy: 'help_aspy_allergy',
+  liver_disease: 'help_severe_liver_disease',
+  renal_disease: 'help_severe_renal_disease',
+  treatment_failure: 'help_recent_malaria_treatment_failure',
+  aspy_stock: 'help_aspy_in_stock',
   freetext: 'help_freetext',
 };
 
@@ -112,6 +175,13 @@ function stepLabel(step: Step, t: (k: string) => string): string {
     lethargy: t('triage.lethargy'),
     breathing: t('triage.breathing'),
     tdr: t('triage.tdr'),
+    weight: t('triage.weight'),
+    pregnancy: t('triage.pregnancy'),
+    aspy_allergy: t('triage.aspyAllergy'),
+    liver_disease: t('triage.liverDisease'),
+    renal_disease: t('triage.renalDisease'),
+    treatment_failure: t('triage.treatmentFailure'),
+    aspy_stock: t('triage.aspyStock'),
     freetext: t('triage.freeText'),
   };
   return map[step];
@@ -141,8 +211,14 @@ export function TriagePage() {
   const [draftReady, setDraftReady] = useState(false);
 
   const lang: VoiceLang = i18n.language.startsWith('rw') ? 'rw' : 'en';
-  const step = STEPS[stepIndex];
-  const progress = ((stepIndex + 1) / STEPS.length) * 100;
+  const steps = useMemo(() => {
+    if (!answered.has('tdr') || form.tdr_result !== 'positive') return [...BASE_STEPS, 'freetext'] as Step[];
+    const safety = [...TREATMENT_STEPS];
+    if (form.sex === 'female' && form.age_months >= 120) safety.splice(1, 0, 'pregnancy');
+    return [...BASE_STEPS, ...safety, 'freetext'] as Step[];
+  }, [answered, form.age_months, form.sex, form.tdr_result]);
+  const step = steps[Math.min(stepIndex, steps.length - 1)];
+  const progress = ((stepIndex + 1) / steps.length) * 100;
   const resultPath = location.pathname.startsWith('/app') ? '/app/result' : '/m/result';
   const phraseId = STEP_PHRASE[step];
   const helpId = STEP_HELP[step];
@@ -156,9 +232,10 @@ export function TriagePage() {
       try {
         const draft = await loadTriageDraft();
         if (draft) {
-          setForm(draft.form);
+          // Merge defaults so drafts created before treatment-safety fields were added remain usable.
+          setForm({ ...displayDefaults, ...draft.form });
           setAnswered(new Set(draft.answered as Step[]));
-          setStepIndex(Math.min(Math.max(0, draft.stepIndex), STEPS.length - 1));
+          setStepIndex(Math.min(Math.max(0, draft.stepIndex), ALL_STEPS.length - 1));
           setAgeUnit(draft.ageUnit || 'months');
           setFreeText(draft.freeText || '');
           setStartedAt(draft.startedAt);
@@ -226,14 +303,14 @@ export function TriagePage() {
       const next = new Set(prev);
       next.add(s);
       // Invalidate later steps when an earlier answer changes
-      const idx = STEPS.indexOf(s);
-      for (let i = idx + 1; i < STEPS.length; i++) next.delete(STEPS[i]);
+      const idx = ALL_STEPS.indexOf(s);
+      for (let i = idx + 1; i < ALL_STEPS.length; i++) next.delete(ALL_STEPS[i]);
       return next;
     });
     setStepAnsweredAt((prev) => {
       const next = { ...prev, [s]: at };
-      const idx = STEPS.indexOf(s);
-      for (let i = idx + 1; i < STEPS.length; i++) delete next[STEPS[i]];
+      const idx = ALL_STEPS.indexOf(s);
+      for (let i = idx + 1; i < ALL_STEPS.length; i++) delete next[ALL_STEPS[i]];
       return next;
     });
     if (patch) setForm((f) => ({ ...f, ...patch }));
@@ -245,10 +322,10 @@ export function TriagePage() {
     // Stop any in-flight speech so it cannot re-render mid step swap.
     voice.stop();
     setStepIndex((i) => {
-      if (i < STEPS.length - 1) return i + 1;
+      if (i < steps.length - 1) return i + 1;
       return i;
     });
-  }, [voice]);
+  }, [steps.length, voice]);
 
   const selectChoice = useCallback(
     (s: Step, patch: Partial<TriageInput>, flashKey?: string) => {
@@ -262,7 +339,7 @@ export function TriagePage() {
       // Advance immediately for choice steps so sex/yes-no appear without waiting on audio.
       const delay = CHOICE_STEPS.includes(s) || s === 'age' ? 0 : ADVANCE_MS;
       advanceTimer.current = window.setTimeout(() => {
-        if (s === STEPS[STEPS.length - 1]) {
+        if (s === steps[steps.length - 1]) {
           setLocked(false);
           setFlash(null);
           return;
@@ -270,7 +347,7 @@ export function TriagePage() {
         goNext();
       }, delay);
     },
-    [goNext, locked, markAnswered, voice],
+    [goNext, locked, markAnswered, steps, voice],
   );
 
   const finish = useCallback(async () => {
@@ -280,6 +357,13 @@ export function TriagePage() {
       if (s === 'tdr') return ['tdr_result'];
       if (s === 'temperature') return ['temperature_c'];
       if (s === 'age') return ['age_months'];
+      if (s === 'weight') return ['weight_kg'];
+      if (s === 'pregnancy') return ['pregnant_first_trimester'];
+      if (s === 'aspy_allergy') return ['aspy_allergy'];
+      if (s === 'liver_disease') return ['severe_liver_disease'];
+      if (s === 'renal_disease') return ['severe_renal_disease'];
+      if (s === 'treatment_failure') return ['recent_malaria_treatment_failure'];
+      if (s === 'aspy_stock') return ['aspy_in_stock'];
       if (s === 'freetext') return [];
       return [s];
     });
@@ -317,6 +401,9 @@ export function TriagePage() {
       if (step === 'feverDays' && intents.number !== undefined) {
         selectChoice('feverDays', { fever_days: Math.max(0, Math.round(intents.number)) }, String(intents.number));
       }
+      if (step === 'weight' && intents.number !== undefined) {
+        selectChoice('weight', { weight_kg: Math.max(0, intents.number) }, String(intents.number));
+      }
       if (step === 'sex') {
         if (intents.yes && !intents.no) selectChoice('sex', { sex: 'female' }, 'female');
         if (intents.no && !intents.yes) selectChoice('sex', { sex: 'male' }, 'male');
@@ -329,6 +416,11 @@ export function TriagePage() {
       if (step === 'breathing') {
         if (intents.yes) selectChoice('breathing', { severe_breathing_difficulty: true }, 'yes');
         if (intents.no) selectChoice('breathing', { severe_breathing_difficulty: false }, 'no');
+      }
+      if (step in SAFETY_STEP_FIELD) {
+        const field = SAFETY_STEP_FIELD[step as keyof typeof SAFETY_STEP_FIELD];
+        if (intents.yes) selectChoice(step, { [field]: true }, 'yes');
+        if (intents.no) selectChoice(step, { [field]: false }, 'no');
       }
       if (step === 'tdr') {
         if (intents.positive) selectChoice('tdr', { tdr_result: 'positive' }, 'positive');
@@ -407,14 +499,14 @@ export function TriagePage() {
     if (STEPPER_STEPS.includes(step)) {
       markAnswered(step);
     }
-    if (stepIndex < STEPS.length - 1) {
+    if (stepIndex < steps.length - 1) {
       setLocked(true);
       goNext();
     } else {
       await finish();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finish, goNext, locked, markAnswered, step, stepIndex, form.temperature_c, t]);
+  }, [finish, goNext, locked, markAnswered, step, stepIndex, steps.length, form.temperature_c, t]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -454,7 +546,7 @@ export function TriagePage() {
         : s === 'tdr'
           ? 'teal'
           : 'ocean';
-    return <Orb size={52} tone={tone} delay={STEPS.indexOf(s)} />;
+    return <Orb size={52} tone={tone} delay={ALL_STEPS.indexOf(s)} />;
   };
 
   const selectionFlash = (
@@ -602,16 +694,17 @@ export function TriagePage() {
               {step === 'temperature' && (
                 <>
                   <label className="text-xl font-semibold">{t('triage.temperature')}</label>
-                  <Input
-                    type="number"
+                  <NumberStepper
+                    value={form.temperature_c}
                     min={30}
                     max={45}
                     step={0.1}
-                    inputMode="decimal"
-                    className="mt-4 min-h-16 text-center text-3xl font-bold"
-                    value={form.temperature_c}
+                    unit="°C"
+                    label={t('triage.temperature')}
                     disabled={locked}
-                    onChange={(e) => setForm((current) => ({ ...current, temperature_c: Number(e.target.value) }))}
+                    onChange={(value) => setForm((current) => ({ ...current, temperature_c: value }))}
+                    decreaseLabel={t('triage.decrease')}
+                    increaseLabel={t('triage.increase')}
                   />
                   {tempError ? <p className="mt-2 text-sm text-danger">{tempError}</p> : null}
                 </>
@@ -620,17 +713,36 @@ export function TriagePage() {
               {step === 'feverDays' && (
                 <>
                   <label className="text-xl font-semibold">{t('triage.feverDays')}</label>
-                  <Input
-                    type="number"
-                    min={0}
-                    inputMode="numeric"
-                    className="mt-4 min-h-16 text-center text-3xl font-bold"
+                  <NumberStepper
                     value={form.fever_days}
+                    min={0}
+                    max={60}
+                    step={1}
+                    unit={t('triage.daysShort')}
+                    label={t('triage.feverDays')}
                     disabled={locked}
-                    onChange={(e) => setForm((current) => ({
-                      ...current,
-                      fever_days: Math.max(0, Math.round(Number(e.target.value) || 0)),
-                    }))}
+                    onChange={(value) => setForm((current) => ({ ...current, fever_days: value }))}
+                    decreaseLabel={t('triage.decrease')}
+                    increaseLabel={t('triage.increase')}
+                  />
+                </>
+              )}
+
+              {step === 'weight' && (
+                <>
+                  <label className="text-xl font-semibold">{t('triage.weight')}</label>
+                  <p className="mt-1 text-sm text-ink-muted">{t('triage.weightHint')}</p>
+                  <NumberStepper
+                    value={form.weight_kg}
+                    min={0}
+                    max={250}
+                    step={0.5}
+                    unit="kg"
+                    label={t('triage.weight')}
+                    disabled={locked}
+                    onChange={(value) => setForm((current) => ({ ...current, weight_kg: value }))}
+                    decreaseLabel={t('triage.decrease')}
+                    increaseLabel={t('triage.increase')}
                   />
                 </>
               )}
@@ -668,6 +780,37 @@ export function TriagePage() {
                     onChange={(v) =>
                       selectChoice('breathing', { severe_breathing_difficulty: v === 'yes' }, v)
                     }
+                    yesLabel={t('triage.yes')}
+                    noLabel={t('triage.no')}
+                  />
+                </>
+              )}
+
+              {(
+                ['pregnancy', 'aspy_allergy', 'liver_disease', 'renal_disease', 'treatment_failure', 'aspy_stock'] as const
+              ).includes(step as 'pregnancy') && (
+                <>
+                  <p className="text-xl font-semibold">
+                    {step === 'pregnancy' && t('triage.pregnancy')}
+                    {step === 'aspy_allergy' && t('triage.aspyAllergy')}
+                    {step === 'liver_disease' && t('triage.liverDisease')}
+                    {step === 'renal_disease' && t('triage.renalDisease')}
+                    {step === 'treatment_failure' && t('triage.treatmentFailure')}
+                    {step === 'aspy_stock' && t('triage.aspyStock')}
+                  </p>
+                  <YesNoCards
+                    value={
+                      answered.has(step)
+                        ? form[SAFETY_STEP_FIELD[step as keyof typeof SAFETY_STEP_FIELD]]
+                          ? 'yes'
+                          : 'no'
+                        : null
+                    }
+                    disabled={locked}
+                    onChange={(value) => {
+                      const field = SAFETY_STEP_FIELD[step as keyof typeof SAFETY_STEP_FIELD];
+                      selectChoice(step, { [field]: value === 'yes' }, value);
+                    }}
                     yesLabel={t('triage.yes')}
                     noLabel={t('triage.no')}
                   />
@@ -735,7 +878,7 @@ export function TriagePage() {
             onClick={() => void onContinue()}
             disabled={locked}
           >
-            {stepIndex === STEPS.length - 1 ? t('common.confirm') : t('common.continue')}
+            {stepIndex === steps.length - 1 ? t('common.confirm') : t('common.continue')}
           </Button>
         ) : (
           <div className="flex-[2]" aria-hidden />
@@ -748,7 +891,7 @@ export function TriagePage() {
     <div className="mb-3">
       <ProgressBar
         value={progress}
-        label={t('triage.progress', { current: stepIndex + 1, total: STEPS.length })}
+        label={t('triage.progress', { current: stepIndex + 1, total: steps.length })}
       />
     </div>
   );
@@ -760,6 +903,71 @@ export function TriagePage() {
         {questionBody}
       </div>
     </ChwShell>
+  );
+}
+
+function NumberStepper({
+  value,
+  min,
+  max,
+  step,
+  unit,
+  label,
+  disabled,
+  onChange,
+  decreaseLabel,
+  increaseLabel,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  unit: string;
+  label: string;
+  disabled?: boolean;
+  onChange: (value: number) => void;
+  decreaseLabel: string;
+  increaseLabel: string;
+}) {
+  const decimals = step < 1 ? 1 : 0;
+  const normalize = (next: number) => Number(Math.min(max, Math.max(min, next)).toFixed(decimals));
+
+  return (
+    <div className="mt-5 grid grid-cols-[72px_1fr_72px] items-stretch gap-3">
+      <button
+        type="button"
+        aria-label={decreaseLabel}
+        disabled={disabled || value <= min}
+        className="flex min-h-20 items-center justify-center rounded-card border-2 border-border bg-surface text-primary shadow-sm transition active:scale-95 disabled:opacity-40"
+        onClick={() => onChange(normalize(value - step))}
+      >
+        <Minus aria-hidden className="h-9 w-9" strokeWidth={3} />
+      </button>
+      <div className="rounded-card border-2 border-primary bg-primary-soft px-2 py-2 text-center">
+        <Input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          inputMode={step < 1 ? 'decimal' : 'numeric'}
+          aria-label={label}
+          className="min-h-12 border-0 bg-transparent p-0 text-center text-4xl font-bold shadow-none focus:ring-0"
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(normalize(Number(event.target.value) || min))}
+        />
+        <span className="text-sm font-semibold text-ink-muted">{unit}</span>
+      </div>
+      <button
+        type="button"
+        aria-label={increaseLabel}
+        disabled={disabled || value >= max}
+        className="flex min-h-20 items-center justify-center rounded-card border-2 border-border bg-surface text-primary shadow-sm transition active:scale-95 disabled:opacity-40"
+        onClick={() => onChange(normalize(value + step))}
+      >
+        <Plus aria-hidden className="h-9 w-9" strokeWidth={3} />
+      </button>
+    </div>
   );
 }
 

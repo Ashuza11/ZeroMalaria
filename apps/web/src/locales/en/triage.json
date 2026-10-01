@@ -13,6 +13,14 @@
   "lethargy": "Lethargy or unconscious?",
   "breathing": "Severe breathing difficulty?",
   "tdr": "TDR / RDT result",
+  "weight": "Patient weight",
+  "weightHint": "Measure with a scale. The medicine dose is based on weight.",
+  "pregnancy": "Pregnant in the first three months?",
+  "aspyAllergy": "Known allergy to ASPY, artesunate, or pyronaridine?",
+  "liverDisease": "Severe liver disease or yellow eyes?",
+  "renalDisease": "Severe kidney disease?",
+  "treatmentFailure": "Did a recent malaria treatment fail?",
+  "aspyStock": "Is the correct, unexpired ASPY pack available?",
   "positive": "Positive",
   "negative": "Negative",
   "invalid": "Invalid",
@@ -30,6 +38,7 @@
   "monthsToggle": "Months",
   "yearsToggle": "Years",
   "monthsShort": "mo",
+  "daysShort": "days",
   "ageYearsMonths": "{{years}} years = {{months}} months",
   "tempInvalid": "Temperature must be between 30 and 45 °C",
   "increase": "Increase",
@@ -39,4 +48,3 @@
   "chipMonths": "{{n}} mo",
   "chipYears": "{{n}} y"
 }
-

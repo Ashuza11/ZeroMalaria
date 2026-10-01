@@ -30,6 +30,10 @@
   "convGreeting": "Starting",
   "convAsking": "Question",
   "convListening": "Listening",
+  "speaking": "Speaking…",
+  "stopRecording": "Stop and transcribe",
+  "transcribing": "Transcribing…",
+  "ttsUnavailable": "Voice is unavailable right now. Continue with the on-screen question and try again later.",
   "convConfirming": "Confirm",
   "convResponding": "Result"
 }

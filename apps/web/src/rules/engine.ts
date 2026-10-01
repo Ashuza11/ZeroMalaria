@@ -6,10 +6,16 @@ import type {
   RulesResult,
   TriageInput,
 } from '../types';
+import {
+  buildBugeseraTreatmentPlan,
+  hasTreatmentContraindication,
+  TREATMENT_SAFETY_FIELDS,
+} from './treatmentPlan';
 
 type Lang = 'en' | 'rw';
 
 const PUBLIC_DECISION: Record<Decision, PublicDecision> = {
+  no_antimalarial: 'monitor',
   treat_at_home: 'treat_locally',
   refer: 'monitor',
   urgent_refer: 'urgent_referral',
@@ -35,6 +41,7 @@ function reasonOf(
 }
 
 export function decisionRank(decision: Decision): number {
+  if (decision === 'no_antimalarial') return 0;
   return MALARIA_RULES.decision_rank[decision];
 }
 
@@ -57,7 +64,7 @@ export function evaluateRules(
   const triggered: string[] = [];
   const reason_details: ReasonDetail[] = [];
   const missing: string[] = [];
-  let decision: Decision = 'treat_at_home';
+  let decision: Decision = 'no_antimalarial';
   const answered = answeredFields ? new Set(answeredFields) : null;
 
   const isAnswered = (name: string) => {
@@ -156,7 +163,7 @@ export function evaluateRules(
   }
 
   const missingDanger = DANGER_FIELDS.some((f) => missing.includes(f));
-  if (!urgent && missingDanger && decision === 'treat_at_home') {
+  if (!urgent && missingDanger && decision === 'no_antimalarial') {
     decision = 'refer';
     triggered.push('incomplete_assessment');
     const rule = cfg.rules.find((r) => r.id === 'incomplete_assessment');
@@ -173,24 +180,94 @@ export function evaluateRules(
     });
   }
 
-  if (decision === 'treat_at_home' && reasons.length === 0 && !missingDanger) {
-    triggered.push('default_treat_at_home');
-    const rule = cfg.rules.find((r) => r.id === 'default_treat_at_home');
-    if (rule) {
-      const text = reasonOf(rule, language, cfg);
-      reasons.push(text);
-      reason_details.push({
-        rule_id: 'default_treat_at_home',
-        field: null,
-        answer: null,
-        text,
-        protocol_section: 'protocol_section' in rule ? String((rule as { protocol_section?: string }).protocol_section || '') : null,
-      });
+  const addReason = (ruleId: string, field: string | null, answer: unknown, en: string, rw: string) => {
+    const text = language === 'rw' ? rw : en;
+    triggered.push(ruleId);
+    reasons.push(text);
+    reason_details.push({ rule_id: ruleId, field, answer, text, protocol_section: cfg.meta.protocol_reference });
+  };
+
+  if (!urgent && decision !== 'refer' && isAnswered('tdr_result')) {
+    if (input.tdr_result === 'negative') {
+      decision = 'no_antimalarial';
+      addReason(
+        'negative_rdt_no_antimalarial',
+        'tdr_result',
+        'negative',
+        'Negative RDT: do not give malaria medicine; assess other causes and follow up.',
+        'TDR ni negative: ntutange umuti wa malaria; shakisha izindi mpamvu kandi ukurikirane umurwayi.',
+      );
+    } else if (input.tdr_result === 'positive') {
+      const pregnancyRequired = input.sex === 'female' && input.age_months >= 120;
+      const safetyFields = [
+        ...TREATMENT_SAFETY_FIELDS,
+        ...(pregnancyRequired ? (['pregnant_first_trimester'] as const) : []),
+      ];
+      const missingSafety = safetyFields.filter((field) => !isAnswered(field));
+      if (missingSafety.length) {
+        missing.push(...missingSafety);
+        decision = 'refer';
+        addReason(
+          'incomplete_treatment_safety_check',
+          null,
+          missingSafety,
+          'Treatment safety check is incomplete; do not give an antimalarial dose.',
+          'Isuzuma ry’umutekano w’umuti ntiryuzuye; ntutange umuti wa malaria.',
+        );
+      } else if (input.weight_kg < 5) {
+        decision = 'refer';
+        addReason(
+          'weight_below_aspy_chw_band',
+          'weight_kg',
+          input.weight_kg,
+          'Weight is below the supported ASPY community-treatment band; refer for assessment.',
+          'Ibiro biri munsi y’urugero rwa ASPY rutangirwa mu mudugudu; ohereza umurwayi gusuzumwa.',
+        );
+      } else if (hasTreatmentContraindication(input)) {
+        decision = 'refer';
+        addReason(
+          'aspy_contraindication_or_treatment_failure',
+          null,
+          true,
+          'ASPY contraindication or possible treatment failure: refer for an alternative regimen.',
+          'Hari impamvu ibuza ASPY cyangwa umuti ushobora kuba waranze: ohereza umurwayi guhabwa undi muti.',
+        );
+      } else if (!input.aspy_in_stock) {
+        decision = 'refer';
+        addReason(
+          'aspy_stock_unavailable',
+          'aspy_in_stock',
+          false,
+          'The correct ASPY treatment pack is unavailable; refer for treatment.',
+          'Agapaki ka ASPY gakwiye ntikaboneka; ohereza umurwayi guhabwa umuti.',
+        );
+      } else {
+        decision = 'treat_at_home';
+        addReason(
+          'confirmed_uncomplicated_malaria',
+          'tdr_result',
+          'positive',
+          'Positive RDT, complete danger-sign check, and no recorded ASPY contraindication.',
+          'TDR ni positive, ibimenyetso by’akaga byasuzumwe byose, kandi nta kibuza ASPY cyanditswe.',
+        );
+      }
     }
   }
 
   const protocol_reference =
     'protocol_reference' in cfg.meta ? String((cfg.meta as { protocol_reference?: string }).protocol_reference || '') : '';
+
+  const treatmentPlan = decision === 'treat_at_home' ? buildBugeseraTreatmentPlan(input) : null;
+  if (decision === 'treat_at_home' && !treatmentPlan) {
+    decision = 'refer';
+    addReason(
+      'treatment_plan_unavailable',
+      null,
+      null,
+      'A verified treatment plan could not be generated; refer instead of guessing a dose.',
+      'Gahunda y’umuti yemewe ntiyabonetse; ohereza umurwayi aho gukeka ingano y’umuti.',
+    );
+  }
 
   return {
     decision,
@@ -200,6 +277,7 @@ export function evaluateRules(
     reason_details,
     missing_info: [...new Set(missing)].sort(),
     protocol_reference,
+    treatment_plan: treatmentPlan,
   };
 }
 

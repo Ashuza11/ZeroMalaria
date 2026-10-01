@@ -1,4 +1,4 @@
-export type Decision = 'treat_at_home' | 'refer' | 'urgent_refer';
+export type Decision = 'no_antimalarial' | 'treat_at_home' | 'refer' | 'urgent_refer';
 /** Public labels for UI / eval (maps from Decision). */
 export type PublicDecision = 'treat_locally' | 'monitor' | 'urgent_referral';
 
@@ -13,6 +13,29 @@ export type TriageInput = {
   lethargy: boolean;
   severe_breathing_difficulty: boolean;
   tdr_result: 'positive' | 'negative' | 'invalid';
+  weight_kg: number;
+  pregnant_first_trimester: boolean;
+  aspy_allergy: boolean;
+  severe_liver_disease: boolean;
+  severe_renal_disease: boolean;
+  recent_malaria_treatment_failure: boolean;
+  aspy_in_stock: boolean;
+};
+
+export type TreatmentPlan = {
+  source: 'deterministic_rbc_mft';
+  district: string;
+  mft_block: 'A';
+  rotation_year: '2026-2027';
+  medicine: 'Artesunate–Pyronaridine (ASPY)';
+  weight_band: string;
+  dose_each_time: string;
+  frequency: 'once_daily';
+  duration_days: 3;
+  total_quantity: string;
+  instructions_en: string[];
+  instructions_rw: string[];
+  protocol_reference: string;
 };
 
 export type ReasonDetail = {
@@ -31,6 +54,7 @@ export type RulesResult = {
   reason_details: ReasonDetail[];
   missing_info: string[];
   protocol_reference: string;
+  treatment_plan: TreatmentPlan | null;
 };
 
 export type DecisionResult = RulesResult & {

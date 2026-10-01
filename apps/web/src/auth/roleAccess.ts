@@ -142,7 +142,7 @@ export function mapPathAcrossShells(pathname: string, toMobile: boolean, role: U
   return map[path] || webHomePath(r);
 }
 
-export function canAccess(path: string, role: UserRole | null | undefined): boolean {
+export function canAccess(path: string, role: UserRole | string | null | undefined): boolean {
   if (!role) return path === '/login' || path.startsWith('/lang');
   const r = normalizeRole(role);
   const normalized = path.split('?')[0];

@@ -30,7 +30,11 @@
   "convGreeting": "Starting",
   "convAsking": "Question",
   "convListening": "Listening…",
+  "speaking": "Speaking…",
+  "stopRecording": "Stop and transcribe",
+  "transcribing": "Transcribing…",
   "recordError": "Voice could not be recorded. Check microphone permission and internet, then try again.",
+  "ttsUnavailable": "Voice is unavailable right now. Continue with the on-screen question and try again later.",
   "convConfirming": "Confirm",
   "convResponding": "Result"
 }

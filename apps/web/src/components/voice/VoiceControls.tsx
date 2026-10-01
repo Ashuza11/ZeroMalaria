@@ -1,8 +1,10 @@
 import {
   HelpCircle,
   Mic,
+  Square,
   Volume2,
 } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton } from '../ui';
 import { cn } from '../../lib/cn';
@@ -46,6 +48,10 @@ export function VoiceControls({
   };
 
   const onMic = () => {
+    if (state === 'listening') {
+      voice.stopListening();
+      return;
+    }
     void voice.listen();
   };
 
@@ -81,11 +87,15 @@ export function VoiceControls({
             className="min-h-14 flex-1 text-base"
             size="lg"
             variant="secondary"
-            leftIcon={<Mic className="h-5 w-5" aria-hidden />}
+            leftIcon={state === 'listening' ? <Square className="h-5 w-5" aria-hidden /> : <Mic className="h-5 w-5" aria-hidden />}
             onClick={onMic}
-            disabled={state === 'listening'}
+            disabled={state === 'transcribing'}
           >
-            {state === 'listening' ? t('voice.convListening') : t('voice.mic')}
+            {state === 'listening'
+              ? t('voice.stopRecording')
+              : state === 'transcribing'
+                ? t('voice.transcribing')
+                : t('voice.mic')}
           </Button>
         ) : null}
         {helpPhraseId ? (
@@ -94,6 +104,9 @@ export function VoiceControls({
           </IconButton>
         ) : null}
       </div>
+      {allowMic && (state === 'listening' || state === 'transcribing') ? (
+        <VoiceActivity state={state} />
+      ) : null}
       {voice.pendingTranscript && voice.state === 'confirming' ? (
         <div className="rounded-control border border-border bg-surface-muted p-3 text-sm">
           <p className="font-semibold">{t('voice.heard')}</p>
@@ -119,6 +132,57 @@ export function VoiceControls({
           {t('voice.recordError')}
         </p>
       ) : null}
+      {lang === 'rw' && !voice.mute && voice.playbackSource === 'text' && state === 'idle' ? (
+        <p className="rounded-control border border-warning/30 bg-warning-soft p-3 text-sm font-medium text-warning" role="status">
+          {t('voice.ttsUnavailable')}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function VoiceActivity({ state }: { state: 'listening' | 'transcribing' }) {
+  const { t } = useTranslation();
+  const reduce = useReducedMotion();
+  const listening = state === 'listening';
+  const label = listening
+    ? t('voice.convListening')
+      : t('voice.transcribing');
+
+  return (
+    <div
+      className={cn(
+        'flex min-h-20 items-center gap-4 rounded-card border-2 px-4 py-3',
+        listening ? 'border-success/40 bg-success-soft' : 'border-warning/40 bg-warning-soft',
+      )}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+        {listening && !reduce ? (
+          <motion.span
+            className="absolute inset-0 rounded-full bg-success/25"
+            animate={{ scale: [0.8, 1.35], opacity: [0.8, 0] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
+          />
+        ) : null}
+        <span className={cn('relative flex h-11 w-11 items-center justify-center rounded-full text-white', listening ? 'bg-success' : 'bg-warning')}>
+          <Mic className="h-5 w-5" aria-hidden />
+        </span>
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-ink">{label}</p>
+        <div className="mt-2 flex h-5 items-center gap-1" aria-hidden>
+          {[0, 1, 2, 3, 4].map((index) => (
+            <motion.span
+              key={index}
+              className={cn('w-1.5 rounded-full', listening ? 'bg-success' : 'bg-warning')}
+              animate={reduce ? { height: 8 } : { height: [6, 18 - Math.abs(2 - index) * 2, 6] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: index * 0.1, ease: 'easeInOut' }}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

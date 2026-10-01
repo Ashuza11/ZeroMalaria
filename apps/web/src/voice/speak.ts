@@ -5,10 +5,11 @@ const MUTE_KEY = 'zm_voice_mute';
 const SPEED_KEY = 'zm_voice_speed';
 
 export type VoiceSpeed = 0.8 | 1 | 1.2;
-export type PlaybackSource = 'pindo' | 'text';
+export type PlaybackSource = 'pindo' | 'audio-pack' | 'text';
 
 let audioUnlocked = false;
-let currentAudio: HTMLAudioElement | null = null;
+let audioContext: AudioContext | null = null;
+let currentSource: AudioBufferSourceNode | null = null;
 let sequenceToken = 0;
 let gestureHookInstalled = false;
 const CLOUD_TTS_MS = 12000;
@@ -45,13 +46,21 @@ export function isAudioUnlocked(): boolean {
   return audioUnlocked;
 }
 
+function resumeAudioContext(): void {
+  if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') return;
+  audioContext ||= new window.AudioContext();
+  if (audioContext.state === 'suspended') void audioContext.resume();
+}
+
 /** Call on first user gesture so mobile browsers allow playback. */
 export function unlockAudio(): void {
   audioUnlocked = true;
+  resumeAudioContext();
   if (gestureHookInstalled || typeof window === 'undefined') return;
   gestureHookInstalled = true;
   const unlock = () => {
     audioUnlocked = true;
+    resumeAudioContext();
     window.removeEventListener('pointerdown', unlock);
     window.removeEventListener('keydown', unlock);
   };
@@ -61,9 +70,13 @@ export function unlockAudio(): void {
 
 export function stopSpeaking(): void {
   sequenceToken += 1;
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
+  if (currentSource) {
+    try {
+      currentSource.stop();
+    } catch {
+      /* already stopped */
+    }
+    currentSource = null;
   }
 }
 
@@ -71,7 +84,7 @@ function pindoSttAvailable(): boolean {
   return Boolean(
     typeof window !== 'undefined' &&
       typeof navigator !== 'undefined' &&
-      navigator.mediaDevices?.getUserMedia &&
+      typeof navigator.mediaDevices?.getUserMedia === 'function' &&
       typeof MediaRecorder !== 'undefined',
   );
 }
@@ -87,7 +100,7 @@ export function getLanguageCapabilities(lang: VoiceLang): {
       lang === 'rw' &&
       (typeof navigator === 'undefined' || navigator.onLine) &&
       pindoSttAvailable(),
-    audioPack: false,
+    audioPack: lang === 'rw',
   };
 }
 
@@ -112,39 +125,55 @@ async function tryPindoTts(
   lang: VoiceLang,
   text: string,
   speed: VoiceSpeed,
-): Promise<string | null> {
+): Promise<ArrayBuffer | null> {
   if (lang !== 'rw') return null;
   try {
-    const res = await withTimeout(
-      api.voiceSpeak({ phrase_id: id, language: lang, text, speech_rate: speed }),
+    return await withTimeout(
+      api.voiceSpeakAudio({ phrase_id: id, language: lang, text, speech_rate: speed }),
       CLOUD_TTS_MS,
-      { audio_url: null } as Record<string, unknown>,
+      null,
     );
-    const url = typeof res.audio_url === 'string' ? res.audio_url : null;
-    return url;
   } catch {
     return null;
   }
 }
 
-async function tryPindoAudio(url: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const audio = new Audio(url);
-    currentAudio = audio;
-    const t = window.setTimeout(() => resolve(false), 8000);
-    audio.onended = () => {
-      window.clearTimeout(t);
-      resolve(true);
-    };
-    audio.onerror = () => {
-      window.clearTimeout(t);
-      resolve(false);
-    };
-    void audio.play().catch(() => {
-      window.clearTimeout(t);
-      resolve(false);
+async function tryPindoAudio(bytes: ArrayBuffer, speed: VoiceSpeed): Promise<boolean> {
+  const context = audioContext;
+  if (!context) return false;
+  try {
+    if (context.state === 'suspended') await context.resume();
+    const buffer = await context.decodeAudioData(bytes.slice(0));
+    return await new Promise((resolve) => {
+      const source = context.createBufferSource();
+      currentSource = source;
+      source.buffer = buffer;
+      source.playbackRate.value = speed;
+      source.connect(context.destination);
+      const timeout = window.setTimeout(() => {
+        if (currentSource === source) currentSource = null;
+        resolve(false);
+      }, Math.max(12_000, buffer.duration * 2000));
+      source.onended = () => {
+        window.clearTimeout(timeout);
+        if (currentSource === source) currentSource = null;
+        resolve(true);
+      };
+      source.start();
     });
-  });
+  } catch {
+    return false;
+  }
+}
+
+async function tryBundledPindoAudio(id: PhraseId, speed: VoiceSpeed): Promise<boolean> {
+  try {
+    const response = await fetch(`/audio/rw/${encodeURIComponent(id)}.mp3`, { cache: 'force-cache' });
+    if (!response.ok) return false;
+    return tryPindoAudio(await response.arrayBuffer(), speed);
+  } catch {
+    return false;
+  }
 }
 
 async function silentHighlight(): Promise<void> {
@@ -172,9 +201,14 @@ export async function speakPhrase(
     return { source: 'text' };
   }
 
-  const pindoUrl = await tryPindoTts(id, lang, text, speed);
-  if (pindoUrl && audioUnlocked && (await tryPindoAudio(pindoUrl))) {
+  const pindoAudio = await tryPindoTts(id, lang, text, speed);
+  if (pindoAudio && audioUnlocked && (await tryPindoAudio(pindoAudio, speed))) {
     return { source: 'pindo' };
+  }
+
+  // Previously generated Pindo audio; never browser speech synthesis.
+  if (audioUnlocked && (await tryBundledPindoAudio(id, speed))) {
+    return { source: 'audio-pack' };
   }
 
   await silentHighlight();
