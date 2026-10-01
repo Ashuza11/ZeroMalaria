@@ -7,13 +7,15 @@
     "directory": "../web/dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "zeromalaria",
-      "database_id": "replace-after-running-wrangler-d1-create",
+      "database_id": "6729fb0e-66fc-4ad7-9f7d-bdabbccb27b1",
       "migrations_dir": "migrations"
     }
   ],
