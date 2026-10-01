@@ -19,8 +19,8 @@ rw.time = {
   daysAgo: 'hashize iminsi {{count}}',
 };
 
-en.common.tagline = 'Malaria triage';
-rw.common.tagline = 'Gusuzuma malaria';
+en.common.tagline = 'Community health';
+rw.common.tagline = "Ubuzima bw'umuryango";
 en.common.syntheticShort = 'Synthetic demo data';
 rw.common.syntheticShort = "Amakuru y'ikigereranyo";
 

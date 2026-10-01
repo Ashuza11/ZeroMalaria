@@ -10,7 +10,6 @@ import {
   getSpeed,
   isMuted,
   probeCloudReachable,
-  probePreRecordedAudio,
   setMuted,
   setSpeed,
   type VoiceSpeed,
@@ -28,14 +27,12 @@ export function VoiceSettingsPage() {
 
   const [mute, setMuteState] = useState(isMuted);
   const [speed, setSpeedState] = useState<VoiceSpeed>(getSpeed());
-  const [audioPack, setAudioPack] = useState<boolean | null>(null);
   const [cloudOk, setCloudOk] = useState<boolean | null>(null);
 
   const caps = getLanguageCapabilities(lang);
-  const ttsAvailable = lang === 'rw' && (Boolean(audioPack) || Boolean(cloudOk));
+  const ttsAvailable = lang === 'rw' && Boolean(cloudOk);
 
   useEffect(() => {
-    void probePreRecordedAudio(lang).then(setAudioPack);
     void probeCloudReachable().then(setCloudOk);
   }, [lang]);
 
@@ -64,18 +61,8 @@ export function VoiceSettingsPage() {
           </li>
           <li className="flex items-center justify-between gap-2">
             <span>{t('voiceSettings.speechRecognition')}</span>
-            <Badge tone={caps.sttBrowser ? 'success' : 'warning'}>
-              {caps.sttBrowser ? t('voiceSettings.available') : t('voiceSettings.unavailable')}
-            </Badge>
-          </li>
-          <li className="flex items-center justify-between gap-2">
-            <span>{t('voiceSettings.audioFiles', { lang })}</span>
-            <Badge tone={audioPack ? 'success' : audioPack === false ? 'neutral' : 'info'}>
-              {audioPack === null
-                ? t('common.loading')
-                : audioPack
-                  ? t('voiceSettings.available')
-                  : t('voiceSettings.notInstalled')}
+            <Badge tone={caps.sttPindo ? 'success' : 'warning'}>
+              {caps.sttPindo ? t('voiceSettings.available') : t('voiceSettings.unavailable')}
             </Badge>
           </li>
           <li className="flex items-center justify-between gap-2">
@@ -91,7 +78,7 @@ export function VoiceSettingsPage() {
         </ul>
         {lang !== 'rw' ? (
           <p className="mt-3 text-xs text-ink-muted">{t('voiceSettings.rwHonestHint')}</p>
-        ) : !cloudOk && !audioPack ? (
+        ) : !cloudOk ? (
           <p className="mt-3 text-xs text-ink-muted">{t('voiceSettings.rwHonestHint')}</p>
         ) : null}
       </Card>

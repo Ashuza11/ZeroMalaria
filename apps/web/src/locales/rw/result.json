@@ -32,5 +32,8 @@
   "chwFollowAi": "Komeza n'igitekerezo cya AI",
   "chwOverrideAi": "Komeza n'icyemezo cy'amategeko gusa",
   "chwFeedbackLogged": "Igisubizo cyabitswe",
-  "protocolRef": "Amabwiriza"
+  "protocolRef": "Amabwiriza",
+  "nurseHandoffTitle": "Incamake ya AI igenewe umuforomo",
+  "handoffOffline": "Incamake ya AI ntiboneka nta interineti. Ibaruwa ya RBC irakomeza koherezwa.",
+  "aiVerify": "Yakozwe na AI — umuforomo agomba kuyemeza"
 }

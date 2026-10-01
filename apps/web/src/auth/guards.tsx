@@ -4,7 +4,7 @@ import { useAuth, type UserRole } from './AuthContext';
 
 import { canAccess, homePath, normalizeRole } from './roleAccess';
 
-import { Skeleton } from '../components/ui';
+import { AppLoadingScreen } from '../components/AppLoadingScreen';
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -12,11 +12,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-app p-6">
-        <Skeleton className="h-12 w-64" />
-      </div>
-    );
+    return <AppLoadingScreen />;
   }
 
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;

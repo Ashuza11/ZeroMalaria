@@ -26,18 +26,27 @@ import { setLanguage } from '../../i18n';
 /* ---------------------------------------------------------------
    Logo: the favicon mark (ring + amber smile), drawn on mount
 ---------------------------------------------------------------- */
-export function LogoMark({ size = 36, className, animated = true }: { size?: number; className?: string; animated?: boolean }) {
+export function LogoMark({
+  size = 36,
+  className,
+  animated = true,
+}: {
+  size?: number;
+  className?: string;
+  animated?: boolean;
+}) {
   const reduce = useReducedMotion();
   const draw = animated && !reduce;
+  const gradientId = useId().replace(/:/g, '');
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className} aria-hidden>
       <defs>
-        <linearGradient id="zm-logo-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
           <stop stopColor="#125278" />
           <stop offset="1" stopColor="#06243a" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="18" fill="url(#zm-logo-bg)" />
+      <rect width="64" height="64" rx="18" fill={`url(#${gradientId})`} />
       <rect x="0.5" y="0.5" width="63" height="63" rx="17.5" stroke="white" strokeOpacity="0.18" />
       <motion.circle
         cx="32"

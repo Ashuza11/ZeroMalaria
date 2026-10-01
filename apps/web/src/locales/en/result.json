@@ -32,5 +32,8 @@
   "chwFollowAi": "Continue with AI suggestion noted",
   "chwOverrideAi": "Continue with rules decision only",
   "chwFeedbackLogged": "Feedback saved",
-  "protocolRef": "Protocol"
+  "protocolRef": "Protocol",
+  "nurseHandoffTitle": "Generated nurse clinical handoff brief",
+  "handoffOffline": "AI brief is unavailable offline. The structured RBC referral will still be sent.",
+  "aiVerify": "AI-generated — nurse must verify"
 }

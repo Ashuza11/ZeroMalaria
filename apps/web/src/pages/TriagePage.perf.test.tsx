@@ -71,7 +71,7 @@ vi.mock('../voice/speak', async () => {
     isAudioUnlocked: () => true,
     getLanguageCapabilities: () => ({
       ttsBrowser: false,
-      sttBrowser: false,
+      sttPindo: false,
       audioPack: false,
       cloudReachable: false,
     }),
@@ -169,16 +169,14 @@ describe('TriagePage step performance', () => {
     const ageStep = container.querySelector('[data-testid="triage-step-age"]');
     expect(ageStep, `age step should render; html=${container.innerHTML.slice(0, 400)}`).toBeTruthy();
 
-    const ageChip = Array.from(container.querySelectorAll('button')).find((b) =>
-      /6/.test(b.textContent || ''),
+    const continueButton = Array.from(container.querySelectorAll('button')).find((button) =>
+      /Komeza|Continue/i.test(button.textContent || ''),
     );
-    expect(ageChip, 'age chip containing 6 should be present').toBeTruthy();
+    expect(continueButton, 'continue button should be present').toBeTruthy();
 
     const t0 = performance.now();
     await act(async () => {
-      ageChip!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      // flush setTimeout(0) advance used by selectChoice
-      await new Promise((r) => setTimeout(r, 0));
+      continueButton!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await new Promise((r) => setTimeout(r, 0));
     });
 

@@ -11,7 +11,7 @@ function p(id: string, en: string, rw: string): PhraseEntry {
 
 /** Fixed read-aloud catalog  -  not LLM-generated. */
 export const PHRASES = {
-  age: p('age', 'How old is the patient, in months?', 'Umurwayi afite imyaka ingahe, mu mezi?'),
+  age: p('age', 'How old is the patient?', 'Umurwayi afite imyaka ingahe?'),
   sex: p('sex', 'Is the patient female or male?', 'Umurwayi ni umugore cyangwa umugabo?'),
   fever: p('fever', 'Does the patient have fever?', 'Umurwayi afite ubushyuhe?'),
   fever_days: p(
@@ -53,6 +53,11 @@ export const PHRASES = {
     'tdr',
     'What is the malaria rapid test result: positive, negative, or invalid?',
     'Ikizamini cy\'uburozi cy\'umusaraba: cyiza, cyangwa nabi, cyangwa nticyemewe?',
+  ),
+  other_symptoms: p(
+    'other_symptoms',
+    'Are there any other symptoms or important details? You can record or type them.',
+    'Hari ibindi bimenyetso cyangwa amakuru y\'ingenzi? Ushobora kubivuga cyangwa kubyandika.',
   ),
 
   result_treat_at_home: p(

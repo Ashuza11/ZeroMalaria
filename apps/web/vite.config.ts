@@ -30,7 +30,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2,json,mp3}'],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api') || url.port === '8000',
+            urlPattern: ({ url }) => url.pathname.startsWith('/api') || url.port === '8787',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -60,9 +60,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://127.0.0.1:8787',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
@@ -70,9 +69,8 @@ export default defineConfig({
     port: 4173,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://127.0.0.1:8787',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
@@ -81,4 +79,3 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/e2e/**', '**/dist/**'],
   },
 });
-

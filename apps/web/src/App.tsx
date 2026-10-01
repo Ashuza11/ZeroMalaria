@@ -18,7 +18,7 @@ import { ThemeProvider } from './theme/ThemeContext';
 import { ConversationProvider } from './voice/ConversationContext';
 import { VoiceProvider } from './voice/VoiceContext';
 import { ToastProvider } from './components/ToastProvider';
-import { Skeleton } from './components/ui';
+import { AppLoadingScreen } from './components/AppLoadingScreen';
 import { LoginPage } from './pages/LoginPage';
 import { AuthLayout } from './pages/auth/AuthLayout';
 import { HomePage } from './pages/HomePage';
@@ -45,7 +45,6 @@ import { SuppliesPage } from './pages/SuppliesPage';
 import { PreventionPage } from './pages/PreventionPage';
 import { VoiceSettingsPage } from './pages/VoiceSettingsPage';
 import { LanguagePage } from './pages/LanguagePage';
-import { ChwWebHome } from './pages/ChwWebHome';
 import { VoiceReviewPage } from './pages/VoiceReviewPage';
 import { TranslationReviewPage } from './pages/TranslationReviewPage';
 import { DevTranslationsPage } from './pages/DevTranslationsPage';
@@ -56,16 +55,7 @@ const LandingPage = lazy(() =>
 );
 
 function DashFallback() {
-  return (
-    <div className="min-h-screen bg-app p-6">
-      <Skeleton className="mb-4 h-12 w-64" />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-28" />
-        ))}
-      </div>
-    </div>
-  );
+  return <AppLoadingScreen />;
 }
 
 /** Public marketing home. Authed users go to role home. */
@@ -83,7 +73,7 @@ function PublicLanding() {
 function AppHome() {
   const { user } = useAuth();
   const role = user ? normalizeRole(user.role) : undefined;
-  if (role === 'CHW') return <ChwWebHome />;
+  if (role === 'CHW') return <HomePage />;
   if (role === 'HEALTH_CENTER') return <Navigate to="/app/referrals" replace />;
   if (role && BROAD_ROLES.includes(role)) {
     return (
@@ -352,6 +342,16 @@ export default function App() {
                     <RequireAuth>
                       <RequireRole roles={['CHW']}>
                         <ResultPage />
+                      </RequireRole>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/app/handover"
+                  element={
+                    <RequireAuth>
+                      <RequireRole roles={['CHW']}>
+                        <HandoverPage />
                       </RequireRole>
                     </RequireAuth>
                   }

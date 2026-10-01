@@ -478,6 +478,7 @@ export function useVisitSummary(
   input: TriageInput | null,
   result: DecisionResult | null,
   language: string,
+  freeText = '',
 ) {
   const [summary, setSummary] = useState<string | null>(null);
   const [meta, setMeta] = useState<ProviderInfo | null>(null);
@@ -496,6 +497,7 @@ export function useVisitSummary(
         severe_risk: result.severe_risk,
         ml_escalated: result.ml_escalated,
         language,
+        free_text: freeText,
       })
       .then((res) => {
         if (cancelled) return;
@@ -522,7 +524,7 @@ export function useVisitSummary(
     return () => {
       cancelled = true;
     };
-  }, [online, input, result, language]);
+  }, [online, input, result, language, freeText]);
 
   return { summary, meta };
 }

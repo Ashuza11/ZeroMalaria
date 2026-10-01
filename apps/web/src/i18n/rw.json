@@ -215,7 +215,7 @@
     "clearFilters": "Siba akayunguruzo",
     "export": "Kuramo",
     "forecastNote": "Iteganywa rya baseline rikoresha icyiciro cy'ibihe. Ni ikigereranyo gusa.",
-    "tagline": "Gusuzuma malaria",
+    "tagline": "Ubuzima bw'umuryango",
     "syntheticShort": "Amakuru y'ikigereranyo",
     "yes": "Yego",
     "no": "Oya",
@@ -256,7 +256,13 @@
     "urgentCount": "Byihutirwa",
     "selectPrompt": "Hitamo ibaruwa kugira ngo usuzume kandi uhindure uko bimeze.",
     "updated": "Byahinduwe",
-    "updateStatus": "Hindura uko bimeze"
+    "updateStatus": "Hindura uko bimeze",
+    "confirmArrival": "Emeza ko umurwayi yahageze",
+    "arrivalConfirmed": "Byemejwe ko umurwayi yahageze",
+    "clinicalBrief": "Incamake y'umurwayi yakorewe umuforomo",
+    "patientDetails": "Amakuru yo gusuzuma",
+    "otherSymptoms": "Ibindi bimenyetso",
+    "rbcRules": "Amategeko ya RBC yakoreshejwe"
   },
   "format": {
     "ageMonths": "amezi {{count}}",
@@ -602,7 +608,10 @@
     "chwFollowAi": "Komeza n'igitekerezo cya AI",
     "chwOverrideAi": "Komeza n'icyemezo cy'amategeko gusa",
     "chwFeedbackLogged": "Igisubizo cyabitswe",
-    "protocolRef": "Amabwiriza"
+    "protocolRef": "Amabwiriza",
+    "nurseHandoffTitle": "Incamake ya AI igenewe umuforomo",
+    "handoffOffline": "Incamake ya AI ntiboneka nta interineti. Ibaruwa ya RBC irakomeza koherezwa.",
+    "aiVerify": "Yakozwe na AI — umuforomo agomba kuyemeza"
   },
   "status": {
     "urgent": "BYIHUTIRWA",
@@ -725,9 +734,9 @@
   },
   "voice": {
     "listen": "Soma ijwi",
-    "mic": "Fata ijwi",
-    "micExperimental": "Fata ijwi (igerageza)",
-    "micExperimentalHint": "Kumenya ijwi mu Kinyarwanda ntibishoboka neza kuri browser. Gerageza gusa.",
+    "mic": "Vuga igisubizo",
+    "micExperimental": "Vuga igisubizo",
+    "micExperimentalHint": "Igisubizo cyawe cy'Ikinyarwanda kirandikwa. Banza wemeze amagambo.",
     "help": "Ubufasha",
     "replay": "Subiramo",
     "slower": "Buhoro",
@@ -744,7 +753,7 @@
     "heard": "Nbyumvise:",
     "confirmHeard": "Koresha ibi",
     "sourceAudioPack": "Pack y'amajwi",
-    "sourceCloud": "Cloud",
+    "sourceCloud": "Ijwi ryo kuri interineti",
     "sourceBrowser": "Browser",
     "sourceText": "Inyandiko",
     "startGuidedTriage": "Tangira isuzuma ryo mu majwi",
@@ -753,7 +762,8 @@
     "convIdle": "Tegereje",
     "convGreeting": "Gutangira",
     "convAsking": "Ikibazo",
-    "convListening": "Bumva",
+    "convListening": "Ndumva…",
+    "recordError": "Ijwi ntiryafashwe. Reba uburenganzira bwa mikoro na interineti, wongere ugerageze.",
     "convConfirming": "Emeza",
     "convResponding": "Igisubizo"
   },
@@ -768,10 +778,10 @@
   },
   "voiceSettings": {
     "title": "Igenamiterere ry'ijwi",
-    "body": "Tunganya Pindo kugira ngo isome inyandiko mu Kinyarwanda.",
+    "body": "Tunganya uburyo bw'ijwi ry'Ikinyarwanda.",
     "capabilities": "Ibishoboka kuri iki gikoresho",
-    "speechSynthesis": "Pindo TTS (Ikinyarwanda)",
-    "speechRecognition": "Kumenya ijwi",
+    "speechSynthesis": "Ijwi ry'Ikinyarwanda",
+    "speechRecognition": "Kwandika ijwi ry'Ikinyarwanda",
     "audioFiles": "Amajwi yanditswe ({{lang}})",
     "available": "Biboneka",
     "unavailable": "Ntibiboneka",
@@ -779,13 +789,13 @@
     "ttsLangEn": "Amajwi y'Icyongereza",
     "ttsLangRw": "Amajwi y'Ikinyarwanda",
     "playback": "Gukina",
-    "playbackHint": "Ijwi ry'Ikinyarwanda rikoresha Pindo TTS, rigasubira kuri pack y'amajwi cyangwa inyandiko.",
+    "playbackHint": "Ibibazo bisomwa mu Kinyarwanda kuri interineti, cyangwa bigakoresha amajwi abitse n'inyandiko.",
     "speed": "Umuvuduko wo kuvuga",
     "mute": "Hagarika ijwi",
     "unmute": "Ongera ijwi",
-    "cloudTts": "Pindo TTS rusange",
+    "cloudTts": "Ijwi ryo kuri interineti",
     "testVoice": "Gerageza ijwi",
     "ttsBrowserDetail": "Ijwi rya browser rihura n'ururimi",
-    "rwHonestHint": "Pindo TTS rusange ikenera interineti kandi ifite umubare ntarengwa w'ibisabwa. Ijwi ry'Icyongereza ryahagaritswe."
+    "rwHonestHint": "Ijwi ry'Ikinyarwanda rikenera interineti. Ijwi ry'Icyongereza ntirikoreshwa."
   }
 }

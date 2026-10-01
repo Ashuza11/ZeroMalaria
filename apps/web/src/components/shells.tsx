@@ -1,9 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Activity,
   AlertTriangle,
-  BarChart3,
   Bell,
   ChevronLeft,
   ChevronRight,
@@ -13,16 +11,12 @@ import {
   LogOut,
   Monitor,
   Moon,
-  Package,
   PanelLeft,
   Plus,
   Search,
   Settings,
   Stethoscope,
   Sun,
-  User,
-  UserCog,
-  Users,
 } from 'lucide-react';
 import {
   useCallback,
@@ -38,7 +32,7 @@ import { useSync } from '../sync/SyncContext';
 import { useTheme } from '../theme/ThemeContext';
 import { setLanguage } from '../i18n';
 import { db } from '../db';
-import { Badge, Button, Disclaimer, IconButton, StatusPill, SyntheticBadge } from './ui';
+import { Badge, Disclaimer, IconButton, StatusPill } from './ui';
 import { PresenterMenu } from './PresenterMenu';
 import { cn } from '../lib/cn';
 import { easeOut, pageVariants } from '../lib/motion';
@@ -46,13 +40,13 @@ import { useAuth, type UserRole } from '../auth/AuthContext';
 import {
   ALL_ROLES,
   BROAD_ROLES,
-  DESKTOP_MIN_WIDTH,
   normalizeRole,
   roleI18nKey,
   setPreferredView,
   webHomePath,
 } from '../auth/roleAccess';
 import { api } from '../api/client';
+import { LogoMark as ZeroMalariaMark } from './liquid';
 
 const SIDEBAR_KEY = 'zm_sidebar_collapsed';
 const APP_VERSION = '0.2.0';
@@ -65,18 +59,12 @@ function LogoMark({ compact }: { compact?: boolean }) {
   const { t } = useTranslation();
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-foreground">
-        <Activity className="h-5 w-5" strokeWidth={1.75} />
-      </div>
+      <ZeroMalariaMark size={40} animated={false} className="shrink-0" />
       {!compact ? (
-        <div className="min-w-0">
-          <p className="text-sm font-bold leading-tight text-ink whitespace-normal break-words">
-            {t('common.appName')}
-          </p>
-          <p className="mt-0.5 line-clamp-1 text-[10px] leading-tight text-ink-muted" title={t('common.tagline')}>
-            {t('common.tagline')}
-          </p>
-        </div>
+        <p className="min-w-0 text-base font-bold leading-tight whitespace-normal break-words" aria-label={t('common.appName')}>
+          <span className="text-[#125278]">Zero</span>
+          <span className="text-[#14807a]">Malaria</span>
+        </p>
       ) : null}
     </div>
   );
@@ -95,21 +83,10 @@ function SyncPill() {
 
 export function ChwShell({ children, title }: { children: ReactNode; title?: string }) {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
   const reduce = useReducedMotion();
   const [alertCount, setAlertCount] = useState(0);
   const [refCount, setRefCount] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth >= DESKTOP_MIN_WIDTH,
-  );
-
-  useEffect(() => {
-    const onResize = () => setIsDesktop(window.innerWidth >= DESKTOP_MIN_WIDTH);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
   useEffect(() => {
     void (async () => {
       const refs = await db.referrals.toArray();
@@ -130,31 +107,18 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
     location.pathname.endsWith('/triage') ||
     location.pathname.endsWith('/result') ||
     location.pathname.endsWith('/handover');
+  const appPath = location.pathname.startsWith('/app');
+  const homePath = appPath ? '/app/home' : '/m/home';
+  const triagePath = appPath ? '/app/triage' : '/m/triage';
+  const referralsPath = appPath ? '/app/my-referrals' : '/m/referrals';
+  const alertsPath = appPath ? '/app/alerts' : '/m/alerts';
 
   return (
     <div className="min-h-screen bg-app">
-      {isDesktop ? (
-        <div
-          className="flex flex-wrap items-center justify-between gap-2 border-b border-primary/20 bg-primary-soft px-4 py-2 text-sm"
-          data-testid="open-web-banner"
-        >
-          <p className="min-w-0 text-ink">{t('common.openWebVersionHint')}</p>
-          <Button
-            size="sm"
-            onClick={() => {
-              setPreferredView('web');
-              navigate('/app/home');
-            }}
-          >
-            {t('common.openWebVersion')}
-          </Button>
-        </div>
-      ) : null}
-      <div className="mx-auto flex min-h-screen max-w-chw flex-col border-x border-border/60 bg-app shadow-card sm:min-h-[calc(100vh-0px)] md:my-4 md:min-h-[calc(100vh-2rem)] md:overflow-hidden md:rounded-[36px] md:border md:border-white/70 md:bg-app/60 md:shadow-lift dark:md:border-white/10">
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col bg-app sm:min-h-[calc(100vh-0px)] md:my-4 md:min-h-[calc(100vh-2rem)] md:overflow-hidden md:rounded-[36px] md:border md:border-white/70 md:bg-app/60 md:shadow-lift dark:md:border-white/10">
         <header className="zm-glass zm-glass-strong sticky top-0 z-30 flex items-center justify-between gap-2 !border-x-0 !border-t-0 px-4 py-3 !shadow-none">
           <LogoMark />
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <SyntheticBadge label={t('common.synthetic')} />
             <SyncPill />
             <IconButton
               label={i18n.language.startsWith('rw') ? 'RW' : 'EN'}
@@ -163,7 +127,6 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
             >
               <Languages className="h-3.5 w-3.5" strokeWidth={1.75} />
             </IconButton>
-            <PresenterMenu />
           </div>
         </header>
 
@@ -189,31 +152,30 @@ export function ChwShell({ children, title }: { children: ReactNode; title?: str
           {children}
           <div className="mt-6">
             <Disclaimer text={t('common.disclaimer')} />
-            <p className="mt-2 text-xs text-ink-muted">{t('common.synthetic')}</p>
           </div>
         </motion.main>
 
         {!hideTabs ? (
           <nav
-            className="fixed bottom-0 left-1/2 z-30 w-full max-w-chw -translate-x-1/2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
+            className="fixed bottom-0 left-1/2 z-30 w-full max-w-5xl -translate-x-1/2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
             data-testid="mobile-tab-bar"
           >
-            <div className="zm-glass zm-glass-strong mx-auto grid max-w-chw grid-cols-4 gap-1 rounded-[30px] p-1.5">
-              <Tab to="/m/home" icon={<Home className="h-5 w-5" strokeWidth={1.75} />} label={t('nav.home')} />
+            <div className="zm-glass zm-glass-strong mx-auto grid w-full grid-cols-4 gap-1 rounded-[30px] p-1.5">
+              <Tab to={homePath} icon={<Home className="h-5 w-5" strokeWidth={1.75} />} label={t('nav.home')} />
               <Tab
-                to="/m/triage"
+                to={triagePath}
                 icon={<Plus className="h-5 w-5" strokeWidth={1.75} />}
                 label={t('nav.new')}
                 emphasize
               />
               <Tab
-                to="/m/referrals"
+                to={referralsPath}
                 icon={<Stethoscope className="h-5 w-5" strokeWidth={1.75} />}
                 label={t('nav.referrals')}
                 badge={refCount || undefined}
               />
               <Tab
-                to="/m/alerts"
+                to={alertsPath}
                 icon={<AlertTriangle className="h-5 w-5" strokeWidth={1.75} />}
                 label={t('nav.alerts')}
                 dot={alertCount > 0}
@@ -359,7 +321,6 @@ export function WebShell({
     () => [
       { to: '/app/home', label: t('nav.home'), icon: Home, roles: ['CHW'] },
       { to: '/m/triage', label: t('nav.newTriage'), icon: Plus, roles: ['CHW'] },
-      { to: '/app/my-patients', label: t('nav.myPatients'), icon: Users, roles: ['CHW'] },
       {
         to: '/app/my-referrals',
         label: t('nav.myReferrals'),
@@ -370,49 +331,11 @@ export function WebShell({
       { to: '/app/alerts', label: t('nav.alerts'), icon: AlertTriangle, roles: ['CHW'] },
       { to: '/app/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, roles: [...BROAD_ROLES] },
       {
-        to: '/app/patients',
-        label: t('nav.patients'),
-        icon: Users,
-        roles: ['HEALTH_CENTER', ...BROAD_ROLES],
-      },
-      {
         to: '/app/referrals',
         label: t('nav.referralsInbox'),
         icon: Stethoscope,
         roles: ['HEALTH_CENTER', ...BROAD_ROLES],
         badge: overdueAlerts.length || undefined,
-      },
-      { to: '/app/analytics', label: t('nav.analytics'), icon: BarChart3, roles: [...BROAD_ROLES] },
-      { to: '/app/ai-activity', label: t('nav.aiActivity'), icon: Activity, roles: [...BROAD_ROLES] },
-      { to: '/app/supplies', label: t('nav.supplies'), icon: Package, roles: [...BROAD_ROLES] },
-      { to: '/app/users', label: t('nav.users'), icon: User, roles: [...BROAD_ROLES], group: 'settings' },
-      {
-        to: '/app/facilities',
-        label: t('common.facilities'),
-        icon: Stethoscope,
-        roles: [...BROAD_ROLES],
-        group: 'settings',
-      },
-      {
-        to: '/app/permissions',
-        label: t('common.permissions'),
-        icon: UserCog,
-        roles: ['SUPER_ADMIN'],
-        group: 'settings',
-      },
-      {
-        to: '/app/audit',
-        label: t('common.auditLog'),
-        icon: UserCog,
-        roles: [...BROAD_ROLES],
-        group: 'settings',
-      },
-      {
-        to: '/app/config',
-        label: t('nav.settings'),
-        icon: Settings,
-        roles: ['SUPER_ADMIN', 'RBC_ADMIN'],
-        group: 'settings',
       },
       {
         to: '/app/change-password',
@@ -598,10 +521,7 @@ export function WebShell({
       </nav>
       <div className="shrink-0 space-y-2 border-t border-border p-4 text-xs text-ink-muted">
         <SyncPill />
-        <p className="flex flex-wrap items-center gap-2">
-          <span>v{APP_VERSION}</span>
-          <SyntheticBadge label={t('common.synthetic')} />
-        </p>
+        <p>v{APP_VERSION}</p>
         {user && !slim ? (
           <p className="truncate font-medium text-ink">
             {user.display_name} · {roleLabel(user.role, t)}
@@ -671,9 +591,6 @@ export function WebShell({
               </div>
             </div>
             <div className="flex shrink-0 flex-nowrap items-center gap-1">
-              <span className="hidden xl:inline-flex">
-                <SyntheticBadge label={t('common.syntheticShort')} />
-              </span>
               <IconButton
                 label={t('nav.commandPalette')}
                 showLabel={false}

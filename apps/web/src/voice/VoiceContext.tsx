@@ -9,13 +9,13 @@ import {
   type ReactNode,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { api } from '../api/client';
 import { getPhrase, type PhraseId, type VoiceLang } from './phrases';
 import {
   getLanguageCapabilities,
   getSpeed,
   isAudioUnlocked,
   isMuted,
-  probePreRecordedAudio,
   setMuted,
   setSpeed,
   speakSequence,
@@ -42,6 +42,7 @@ type VoiceContextValue = {
   playbackSource: PlaybackSource | null;
   pendingTranscript: string | null;
   pendingIntents: VoiceIntents | null;
+  recordingError: boolean;
   unlock: () => void;
   play: (ids: PhraseId[]) => Promise<void>;
   stop: () => void;
@@ -61,6 +62,37 @@ function voiceLangFromI18n(code: string): VoiceLang {
   return code.startsWith('rw') ? 'rw' : 'en';
 }
 
+async function recordAnswer(maxDurationMs = 12000): Promise<{ blob: Blob; filename: string }> {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const preferredTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+  const mimeType = preferredTypes.find((type) => MediaRecorder.isTypeSupported(type)) || '';
+  const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+  const chunks: BlobPart[] = [];
+  try {
+    return await new Promise((resolve, reject) => {
+      const timer = window.setTimeout(() => {
+        if (recorder.state === 'recording') recorder.stop();
+      }, maxDurationMs);
+      recorder.ondataavailable = (event) => {
+        if (event.data.size) chunks.push(event.data);
+      };
+      recorder.onerror = () => {
+        window.clearTimeout(timer);
+        reject(new Error('Audio recording failed'));
+      };
+      recorder.onstop = () => {
+        window.clearTimeout(timer);
+        const type = recorder.mimeType || 'audio/webm';
+        const extension = type.includes('ogg') ? 'ogg' : 'webm';
+        resolve({ blob: new Blob(chunks, { type }), filename: `triage-answer.${extension}` });
+      };
+      recorder.start(250);
+    });
+  } finally {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+}
+
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation();
   const lang = voiceLangFromI18n(i18n.language);
@@ -73,15 +105,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   const [playbackSource, setPlaybackSource] = useState<PlaybackSource | null>(null);
   const [pendingTranscript, setPendingTranscript] = useState<string | null>(null);
   const [pendingIntents, setPendingIntents] = useState<VoiceIntents | null>(null);
+  const [recordingError, setRecordingError] = useState(false);
   const [caps, setCaps] = useState(() => getLanguageCapabilities(lang));
 
   const lastIds = useRef<PhraseId[]>([]);
   const listenResolve = useRef<((value: ListenResult | null) => void) | null>(null);
 
   useEffect(() => {
-    void probePreRecordedAudio(lang).then((ok) => {
-      setCaps((c) => ({ ...c, audioPack: ok }));
-    });
+    setCaps(getLanguageCapabilities(lang));
   }, [lang]);
 
   const unlock = useCallback(() => {
@@ -139,53 +170,41 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const listen = useCallback((): Promise<ListenResult | null> => {
-    const SR =
-      (window as unknown as { SpeechRecognition?: new () => SpeechRecognition }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
-    if (!SR || !caps.sttBrowser) return Promise.resolve(null);
+    if (!caps.sttPindo || lang !== 'rw' || !navigator.onLine) return Promise.resolve(null);
 
     unlock();
     stopSpeaking();
+    setRecordingError(false);
 
     return new Promise((resolve) => {
       listenResolve.current = resolve;
       setState('listening');
-      const rec = new SR();
-      rec.lang = lang === 'rw' ? 'rw-RW' : 'en-US';
-      rec.interimResults = false;
-      rec.maxAlternatives = 1;
-      rec.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = event.results?.[0]?.[0]?.transcript?.trim() || '';
-        const intents = parseVoiceIntents(transcript, lang);
-        setPendingTranscript(transcript);
-        setPendingIntents(intents);
-        setState('confirming');
-        resolve({ transcript, intents });
-        listenResolve.current = null;
-      };
-      rec.onerror = () => {
-        setState('idle');
-        resolve(null);
-        listenResolve.current = null;
-      };
-      rec.onend = () => {
-        setState((s) => (s === 'listening' ? 'idle' : s));
-      };
-      try {
-        rec.start();
-      } catch {
-        setState('idle');
-        resolve(null);
-        listenResolve.current = null;
-      }
+      void recordAnswer()
+        .then(({ blob, filename }) => api.voiceTranscribe(blob, filename))
+        .then((response) => {
+          const transcript = response.transcript.trim();
+          const intents = parseVoiceIntents(transcript, lang);
+          setPendingTranscript(transcript);
+          setPendingIntents(intents);
+          setState('confirming');
+          resolve({ transcript, intents });
+          listenResolve.current = null;
+        })
+        .catch(() => {
+          setState('idle');
+          setRecordingError(true);
+          resolve(null);
+          listenResolve.current = null;
+        });
     });
-  }, [caps.sttBrowser, lang, unlock]);
+  }, [caps.sttPindo, lang, unlock]);
 
   const confirmHeard = useCallback((): ListenResult | null => {
     if (!pendingTranscript) return null;
     const out = { transcript: pendingTranscript, intents: pendingIntents || {} };
     setPendingTranscript(null);
     setPendingIntents(null);
+    setRecordingError(false);
     setState('idle');
     return out;
   }, [pendingIntents, pendingTranscript]);
@@ -206,6 +225,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       playbackSource,
       pendingTranscript,
       pendingIntents,
+      recordingError,
       unlock,
       play,
       stop,
@@ -227,6 +247,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       playbackSource,
       pendingTranscript,
       pendingIntents,
+      recordingError,
       unlock,
       play,
       stop,

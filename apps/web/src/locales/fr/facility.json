@@ -9,5 +9,11 @@
   "urgentCount": "Urgent",
   "selectPrompt": "Select a referral to review the handover and update status.",
   "updated": "Status updated",
-  "updateStatus": "Update status"
+  "updateStatus": "Update status",
+  "confirmArrival": "Confirm patient arrived",
+  "arrivalConfirmed": "Patient arrival confirmed",
+  "clinicalBrief": "Generated nurse clinical handoff brief",
+  "patientDetails": "Triage details",
+  "otherSymptoms": "Other symptoms",
+  "rbcRules": "Triggered RBC rules"
 }

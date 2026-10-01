@@ -3,7 +3,7 @@
 #
 # ZeroMalaria clinical rules - SINGLE SOURCE OF TRUTH for engines.
 # Thresholds are duplicated in clinical_config.yaml for review; keep values in sync.
-# Ported to Python (apps/api/engine/rules.py) and TypeScript (apps/web).
+# Implemented by the deterministic TypeScript engine in apps/web/src/rules.
 # Do NOT invent temperature, respiratory-rate, hemoglobin, or dose thresholds.
 
 meta:
@@ -16,7 +16,7 @@ meta:
   protocol_reference: "WHO iCCM / Rwanda national malaria community care (PLACEHOLDER)"
   clinical_config: "rules/clinical_config.yaml"
 
-# Decision ranking (higher = more urgent). ML may escalate, never downgrade.
+# Decision ranking (higher = more urgent).
 # Public aliases (UI/eval): treat_at_home->treat_locally, refer->monitor, urgent_refer->urgent_referral
 decision_rank:
   treat_at_home: 0
@@ -119,26 +119,3 @@ rules:
     decision: treat_at_home
     reason_en: "No placeholder danger sign or referral rule triggered"
     reason_rw: "Nta ikimenyetso cy'akaga cyangwa itegeko ryo kohereza ryabonetse" # TODO_REVIEW_RW
-
-# ML escalation (Layer 2) - may only raise decision_rank, never lower it.
-# TODO_CLINICAL_REVIEW: demo thresholds only.
-ml_escalation:
-  severe_case:
-    escalate_treat_to_refer_threshold: 0.35
-    escalate_refer_to_urgent_threshold: 0.55
-  referral_not_completed:
-    high_risk_threshold: 0.45
-
-feature_labels_en:
-  age_months: "Age (months)"
-  temperature_c: "Temperature"
-  fever_days: "Days of fever"
-  convulsions: "Convulsions"
-  unable_to_drink: "Unable to drink or feed"
-  vomiting_everything: "Vomiting everything"
-  lethargy: "Lethargy"
-  severe_breathing_difficulty: "Severe breathing difficulty"
-  tdr_positive: "TDR positive"
-  tdr_negative: "TDR negative"
-  tdr_invalid: "TDR invalid"
-  sex_female: "Sex female"

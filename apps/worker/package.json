@@ -1,0 +1,20 @@
+{
+  "name": "zeromalaria-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --port 8787",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:local": "wrangler d1 migrations apply zeromalaria --local",
+    "db:seed:local": "wrangler d1 execute zeromalaria --local --file=./seed.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260930.2",
+    "typescript": "~5.6.2",
+    "vitest": "^2.1.8",
+    "wrangler": "^4.145.0"
+  }
+}

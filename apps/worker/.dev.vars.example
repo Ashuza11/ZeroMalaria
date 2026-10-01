@@ -1,0 +1,7 @@
+AUTH_SECRET=replace-with-a-long-random-value
+PINDO_API_TOKEN=your-pindo-token
+# Optional: force public or authenticated. Without this, a real token selects authenticated mode.
+# PINDO_ACCESS_MODE=authenticated
+CLAUDE_API_KEY=your-claude-api-key
+# Optional model override. The default is a fast, cost-effective Claude Haiku model.
+# CLAUDE_MODEL=claude-haiku-4-5-20251001

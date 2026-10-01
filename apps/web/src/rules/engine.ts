@@ -46,7 +46,7 @@ export function toPublicDecision(decision: Decision): PublicDecision {
   return PUBLIC_DECISION[decision];
 }
 
-/** Offline Layer 1 - same YAML as the API. Never invents thresholds. */
+/** Offline deterministic rules. Never invents thresholds. */
 export function evaluateRules(
   input: TriageInput,
   language: Lang = 'en',

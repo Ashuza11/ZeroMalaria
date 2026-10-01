@@ -17,7 +17,7 @@ Legacy `SUPERVISOR` / `RBC_OFFICER` (and lowercase `supervisor` / `rbc`) are **m
 ## Permission format
 
 `resource:action` with actions `read | create | update | delete | export | assign`.  
-Default matrix: `apps/api/app/rbac_matrix.py`. SUPER_ADMIN = all codes; RBC_ADMIN = all except roles/permissions mutate.
+Default role checks are implemented in `apps/worker/src/auth.ts`. SUPER_ADMIN has all permissions; RBC_ADMIN receives national operational read access.
 
 ## Scope
 

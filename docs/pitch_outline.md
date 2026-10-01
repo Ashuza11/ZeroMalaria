@@ -31,7 +31,7 @@ ZeroMalaria is three modules on one offline-first architecture:
 2. **Health center inbox** — urgency-sorted referrals, one-tap Received / Arrived / Treated.
 3. **RBC dashboard** — KPIs, district map, baseline forecast band, referral funnel, stock pressure.
 
-**Safety:** Layer 1 rules can force urgent referral and cannot be downgraded by ML. Layer 2 may only escalate. Layer 3 NLP fills forms and explains. The CHW always confirms. Every recommendation shows why.
+**Safety:** Deterministic RBC rules produce the decision locally. Voice and the handoff generator cannot change it. The CHW always confirms and every recommendation shows why.
 
 ## 6. Impact (30s)
 Impact is the closed loop: standardized danger-sign checks, digital handover, follow-up when a patient never arrives, and earlier visibility of surge and stockouts. We will not invent a percent of deaths averted from synthetic data.

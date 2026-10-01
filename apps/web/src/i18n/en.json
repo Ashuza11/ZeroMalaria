@@ -215,7 +215,7 @@
     "clearFilters": "Clear filters",
     "export": "Export",
     "forecastNote": "Baseline forecast uses a simple seasonal average of recent weeks. Architecture demo only.",
-    "tagline": "Malaria triage",
+    "tagline": "Community health",
     "syntheticShort": "Synthetic demo data",
     "yes": "Yes",
     "no": "No",
@@ -256,7 +256,13 @@
     "urgentCount": "Urgent",
     "selectPrompt": "Select a referral to review the handover and update status.",
     "updated": "Status updated",
-    "updateStatus": "Update status"
+    "updateStatus": "Update status",
+    "confirmArrival": "Confirm patient arrived",
+    "arrivalConfirmed": "Patient arrival confirmed",
+    "clinicalBrief": "Generated nurse clinical handoff brief",
+    "patientDetails": "Triage details",
+    "otherSymptoms": "Other symptoms",
+    "rbcRules": "Triggered RBC rules"
   },
   "format": {
     "ageMonths": "{{count}} mo",
@@ -602,7 +608,10 @@
     "chwFollowAi": "Continue with AI suggestion noted",
     "chwOverrideAi": "Continue with rules decision only",
     "chwFeedbackLogged": "Feedback saved",
-    "protocolRef": "Protocol"
+    "protocolRef": "Protocol",
+    "nurseHandoffTitle": "Generated nurse clinical handoff brief",
+    "handoffOffline": "AI brief is unavailable offline. The structured RBC referral will still be sent.",
+    "aiVerify": "AI-generated — nurse must verify"
   },
   "status": {
     "urgent": "URGENT",
@@ -725,9 +734,9 @@
   },
   "voice": {
     "listen": "Read aloud",
-    "mic": "Record",
-    "micExperimental": "Record (experimental)",
-    "micExperimentalHint": "Browser speech recognition rarely supports Kinyarwanda. Experimental only.",
+    "mic": "Record answer",
+    "micExperimental": "Speak answer",
+    "micExperimentalHint": "Your Kinyarwanda answer is transcribed. Confirm it before use.",
     "help": "Help",
     "replay": "Repeat",
     "slower": "Slow",
@@ -744,7 +753,7 @@
     "heard": "I heard:",
     "confirmHeard": "Use this",
     "sourceAudioPack": "Audio pack",
-    "sourceCloud": "Cloud",
+    "sourceCloud": "Online voice",
     "sourceBrowser": "Browser",
     "sourceText": "Text",
     "startGuidedTriage": "Start voice guided triage",
@@ -753,7 +762,8 @@
     "convIdle": "Ready",
     "convGreeting": "Starting",
     "convAsking": "Question",
-    "convListening": "Listening",
+    "convListening": "Listening…",
+    "recordError": "Voice could not be recorded. Check microphone permission and internet, then try again.",
     "convConfirming": "Confirm",
     "convResponding": "Result"
   },
@@ -768,10 +778,10 @@
   },
   "voiceSettings": {
     "title": "Voice settings",
-    "body": "Configure Pindo text-to-speech for Kinyarwanda.",
+    "body": "Configure Kinyarwanda voice guidance.",
     "capabilities": "Device capabilities",
-    "speechSynthesis": "Pindo TTS (Kinyarwanda)",
-    "speechRecognition": "Speech recognition (browser)",
+    "speechSynthesis": "Kinyarwanda voice",
+    "speechRecognition": "Kinyarwanda voice input",
     "audioFiles": "Pre-recorded audio ({{lang}})",
     "available": "Available",
     "unavailable": "Not available",
@@ -779,13 +789,13 @@
     "ttsLangEn": "English voice pack",
     "ttsLangRw": "Kinyarwanda voice pack",
     "playback": "Playback",
-    "playbackHint": "Kinyarwanda read-aloud uses Pindo TTS, with an offline audio pack and on-screen text as fallbacks.",
+    "playbackHint": "Kinyarwanda questions are read aloud online, with offline audio and on-screen text as fallbacks.",
     "speed": "Speaking speed",
     "mute": "Mute read-aloud",
     "unmute": "Unmute read-aloud",
-    "cloudTts": "Pindo public TTS",
+    "cloudTts": "Online voice",
     "testVoice": "Test voice",
     "ttsBrowserDetail": "Browser voice matches language",
-    "rwHonestHint": "Pindo public TTS requires internet access and is subject to per-IP rate limits. English playback is disabled."
+    "rwHonestHint": "Kinyarwanda online voice requires internet access. English playback is disabled."
   }
 }

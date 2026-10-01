@@ -83,6 +83,13 @@ export async function enqueueReferral(referral: LocalReferral) {
       decision: referral.decision,
       reasons: referral.reasons,
       summary: referral.summary,
+      temperature_c: referral.temperature_c,
+      fever_days: referral.fever_days,
+      tdr_result: referral.tdr_result,
+      other_symptoms: referral.other_symptoms,
+      triggered_rules: referral.triggered_rules,
+      protocol_reference: referral.protocol_reference,
+      ai_brief: referral.ai_brief,
     },
     created_at: new Date().toISOString(),
   });

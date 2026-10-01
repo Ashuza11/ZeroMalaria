@@ -1,28 +1,13 @@
 import {
   HelpCircle,
   Mic,
-  Pause,
-  RotateCcw,
-  Snail,
   Volume2,
-  VolumeX,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Button, IconButton } from '../ui';
+import { Button, IconButton } from '../ui';
 import { cn } from '../../lib/cn';
 import { useVoice, type VoiceIntents } from '../../voice/VoiceContext';
 import type { PhraseId } from '../../voice/phrases';
-import type { PlaybackSource } from '../../voice/speak';
-
-function sourceLabel(t: (k: string) => string, source: PlaybackSource | null): string | null {
-  if (!source) return null;
-  const map: Record<PlaybackSource, string> = {
-    audio_pack: t('voice.sourceAudioPack'),
-    pindo: t('voice.sourcePindo'),
-    text: t('voice.sourceText'),
-  };
-  return map[source];
-}
 
 export function VoiceControls({
   phraseIds,
@@ -32,6 +17,7 @@ export function VoiceControls({
   compact = false,
   onTranscriptConfirmed,
   language,
+  allowMic = true,
 }: {
   phraseIds: PhraseId[];
   helpPhraseId?: PhraseId;
@@ -39,14 +25,14 @@ export function VoiceControls({
   showLabels?: boolean;
   compact?: boolean;
   onTranscriptConfirmed?: (payload: { transcript: string; intents: VoiceIntents }) => void;
-  /** When rw, mic is experimental (browser STT rarely supports Kinyarwanda). */
+  /** Pindo voice input is available only for Kinyarwanda. */
   language?: 'rw' | 'en';
+  allowMic?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const voice = useVoice();
-  const { capabilities, playbackSource, unlocked, mute, state } = voice;
+  const { capabilities, unlocked, state } = voice;
   const lang = language || (i18n.language.startsWith('rw') ? 'rw' : 'en');
-  const micExperimental = lang === 'rw';
 
   const onListen = () => {
     voice.unlock();
@@ -78,66 +64,36 @@ export function VoiceControls({
     );
   }
 
-  const badge = sourceLabel(t, playbackSource);
-
   return (
     <div className={cn('space-y-2', className)}>
-      <div className={cn('flex flex-wrap items-center gap-2', compact && 'gap-1')}>
-        <IconButton
-          label={t('voice.tooltipListen')}
-          showLabel={showLabels}
+      <div className={cn('flex items-center gap-3', compact && 'gap-2')}>
+        <Button
+          className="min-h-14 flex-1 text-base"
+          size="lg"
+          leftIcon={<Volume2 className="h-5 w-5" aria-hidden />}
           onClick={onListen}
           disabled={state === 'speaking'}
         >
-          <Volume2 className="h-4 w-4" aria-hidden />
-        </IconButton>
-        {capabilities.sttBrowser && !micExperimental ? (
-          <IconButton
-            label={t('voice.tooltipMic')}
-            showLabel={showLabels}
+          {t('voice.listen')}
+        </Button>
+        {allowMic && capabilities.sttPindo && lang === 'rw' ? (
+          <Button
+            className="min-h-14 flex-1 text-base"
+            size="lg"
+            variant="secondary"
+            leftIcon={<Mic className="h-5 w-5" aria-hidden />}
             onClick={onMic}
             disabled={state === 'listening'}
           >
-            <Mic className="h-4 w-4" aria-hidden />
-          </IconButton>
-        ) : null}
-        {capabilities.sttBrowser && micExperimental ? (
-          <IconButton
-            label={`${t('voice.micExperimental')}. ${t('voice.micExperimentalHint')}`}
-            showLabel={showLabels}
-            onClick={onMic}
-            disabled={state === 'listening'}
-          >
-            <Mic className="h-4 w-4 opacity-70" aria-hidden />
-          </IconButton>
+            {state === 'listening' ? t('voice.convListening') : t('voice.mic')}
+          </Button>
         ) : null}
         {helpPhraseId ? (
           <IconButton label={t('voice.help')} showLabel={showLabels} onClick={onHelp}>
-            <HelpCircle className="h-4 w-4" aria-hidden />
+            <HelpCircle className="h-5 w-5" aria-hidden />
           </IconButton>
         ) : null}
-        <IconButton label={t('voice.tooltipReplay')} showLabel={showLabels} onClick={() => void voice.replay()}>
-          <RotateCcw className="h-4 w-4" aria-hidden />
-        </IconButton>
-        <IconButton label={t('voice.tooltipSlower')} showLabel={showLabels} onClick={() => voice.setSlower()}>
-          <Snail className="h-4 w-4" aria-hidden />
-        </IconButton>
-        <IconButton label={t('voice.tooltipStop')} showLabel={showLabels} onClick={() => voice.stop()}>
-          <Pause className="h-4 w-4" aria-hidden />
-        </IconButton>
-        <IconButton
-          label={t('voice.tooltipMute')}
-          showLabel={showLabels}
-          onClick={() => voice.toggleMute()}
-        >
-          {mute ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
-        </IconButton>
       </div>
-      {badge ? (
-        <Badge tone="neutral" className="text-[11px]">
-          {badge}
-        </Badge>
-      ) : null}
       {voice.pendingTranscript && voice.state === 'confirming' ? (
         <div className="rounded-control border border-border bg-surface-muted p-3 text-sm">
           <p className="font-semibold">{t('voice.heard')}</p>
@@ -157,6 +113,11 @@ export function VoiceControls({
             </Button>
           </div>
         </div>
+      ) : null}
+      {voice.recordingError ? (
+        <p className="rounded-control border border-danger/30 bg-danger-soft p-3 text-sm font-medium text-danger" role="alert">
+          {t('voice.recordError')}
+        </p>
       ) : null}
     </div>
   );

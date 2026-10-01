@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Inbox, Siren } from 'lucide-react';
+import { Inbox, Siren, Sparkles, UserCheck } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
@@ -13,7 +13,6 @@ import {
   SegmentedControl,
   Skeleton,
   StatusPill,
-  SyntheticBadge,
   Tabs,
   Button,
 } from '../components/ui';
@@ -37,6 +36,10 @@ type Referral = {
   temperature_c?: number;
   fever_days?: number;
   tdr_result?: string;
+  other_symptoms?: string;
+  triggered_rules?: string[];
+  protocol_reference?: string;
+  ai_brief?: string;
 };
 
 export function FacilityPage() {
@@ -154,7 +157,6 @@ export function FacilityPage() {
       <PageHeader
         title={t('facility.title')}
         subtitle={t('facility.selectPrompt')}
-        badge={<SyntheticBadge label={t('common.synthetic')} />}
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <Card className="p-4">
@@ -245,7 +247,7 @@ export function FacilityPage() {
                     <h2 className="text-xl font-semibold">
                       {formatPatientLine(selected.age_months, selected.sex, t)}
                     </h2>
-                    <p className="mt-1 text-sm text-ink-muted">{selected.summary}</p>
+                    <p className="mt-1 text-sm text-ink-muted">{relativeTime(selected.created_at)}</p>
                   </div>
                   <StatusPill status={selected.decision as any} />
                 </div>
@@ -265,12 +267,62 @@ export function FacilityPage() {
                     </p>
                   </div>
                 </div>
+                {selected.status !== 'arrived' && selected.status !== 'treated' ? (
+                  <Button
+                    className="mt-4 min-h-14 w-full text-base"
+                    leftIcon={<UserCheck className="h-5 w-5" aria-hidden />}
+                    onClick={() => void patch(selected.id, 'arrived')}
+                  >
+                    {t('facility.confirmArrival')}
+                  </Button>
+                ) : (
+                  <div className="mt-4 flex items-center gap-2 rounded-control bg-success-soft p-3 font-semibold text-success">
+                    <UserCheck className="h-5 w-5" aria-hidden />
+                    {t('facility.arrivalConfirmed')}
+                  </div>
+                )}
+                <div className="mt-5 rounded-card border-2 border-info/40 bg-info-soft/30 p-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-info" aria-hidden />
+                    <h3 className="font-semibold">{t('facility.clinicalBrief')}</h3>
+                  </div>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
+                    {selected.ai_brief || selected.summary}
+                  </p>
+                  <p className="mt-2 text-xs font-semibold text-warning">{t('result.aiVerify')}</p>
+                </div>
+                <h3 className="mt-5 text-sm font-semibold">{t('facility.patientDetails')}</h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  <div className="rounded-control bg-surface-muted p-3 text-sm">
+                    <p className="text-ink-muted">{t('triage.temperature')}</p>
+                    <p className="font-semibold">{selected.temperature_c == null ? '—' : `${selected.temperature_c}°C`}</p>
+                  </div>
+                  <div className="rounded-control bg-surface-muted p-3 text-sm">
+                    <p className="text-ink-muted">{t('triage.feverDays')}</p>
+                    <p className="font-semibold">{selected.fever_days ?? '—'}</p>
+                  </div>
+                  <div className="rounded-control bg-surface-muted p-3 text-sm">
+                    <p className="text-ink-muted">{t('triage.tdr')}</p>
+                    <p className="font-semibold capitalize">{selected.tdr_result || '—'}</p>
+                  </div>
+                </div>
+                {selected.other_symptoms ? (
+                  <div className="mt-2 rounded-control bg-surface-muted p-3 text-sm">
+                    <p className="text-ink-muted">{t('facility.otherSymptoms')}</p>
+                    <p className="mt-1 font-medium">{selected.other_symptoms}</p>
+                  </div>
+                ) : null}
                 <h3 className="mt-5 text-sm font-semibold">{t('result.why')}</h3>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink">
                   {selected.reasons?.map((r) => (
                     <li key={r}>{r}</li>
                   ))}
                 </ul>
+                {selected.triggered_rules?.length ? (
+                  <p className="mt-3 text-xs text-ink-muted">
+                    {t('facility.rbcRules')}: {selected.triggered_rules.join(', ')}
+                  </p>
+                ) : null}
                 <div className="mt-6 border-t border-border pt-5">
                   <h3 className="text-sm font-semibold">{t('messages.threadTitle')}</h3>
                   <p className="mt-1 text-xs text-ink-muted">{t('messages.threadHint')}</p>

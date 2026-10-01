@@ -18,6 +18,13 @@ describe('parseVoiceIntents', () => {
     expect(parseVoiceIntents('39.4', 'en').number).toBe(39.4);
   });
 
+  it('recognizes spoken age units', () => {
+    expect(parseVoiceIntents('8 months', 'en').ageUnit).toBe('months');
+    expect(parseVoiceIntents('amezi 8', 'rw').ageUnit).toBe('months');
+    expect(parseVoiceIntents('8 years', 'en').ageUnit).toBe('years');
+    expect(parseVoiceIntents('imyaka 8', 'rw').ageUnit).toBe('years');
+  });
+
   it('parses TDR and sex intents', () => {
     expect(parseVoiceIntents('positive', 'en').positive).toBe(true);
     expect(parseVoiceIntents('invalid', 'en').invalid).toBe(true);

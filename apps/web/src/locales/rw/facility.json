@@ -9,5 +9,11 @@
   "urgentCount": "Byihutirwa",
   "selectPrompt": "Hitamo ibaruwa kugira ngo usuzume kandi uhindure uko bimeze.",
   "updated": "Byahinduwe",
-  "updateStatus": "Hindura uko bimeze"
+  "updateStatus": "Hindura uko bimeze",
+  "confirmArrival": "Emeza ko umurwayi yahageze",
+  "arrivalConfirmed": "Byemejwe ko umurwayi yahageze",
+  "clinicalBrief": "Incamake y'umurwayi yakorewe umuforomo",
+  "patientDetails": "Amakuru yo gusuzuma",
+  "otherSymptoms": "Ibindi bimenyetso",
+  "rbcRules": "Amategeko ya RBC yakoreshejwe"
 }

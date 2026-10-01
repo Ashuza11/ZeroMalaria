@@ -1,0 +1,24 @@
+{
+  "name": "zeromalaria",
+  "private": true,
+  "version": "0.3.0",
+  "workspaces": [
+    "apps/web",
+    "apps/worker"
+  ],
+  "devDependencies": {
+    "jsdom": "^30.1.1"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "npm --workspace zeromalaria-web run dev",
+    "dev:worker": "npm --workspace zeromalaria-worker run dev",
+    "build": "npm --workspace zeromalaria-web run build && npm --workspace zeromalaria-worker run typecheck",
+    "test": "npm --workspace zeromalaria-web test && npm --workspace zeromalaria-worker test",
+    "lint": "npm --workspace zeromalaria-web run lint",
+    "i18n:check": "npm --workspace zeromalaria-web run i18n:check",
+    "db:local": "npm --workspace zeromalaria-worker run db:local",
+    "db:seed:local": "npm --workspace zeromalaria-worker run db:seed:local",
+    "deploy": "npm run build && npm --workspace zeromalaria-worker run deploy"
+  }
+}

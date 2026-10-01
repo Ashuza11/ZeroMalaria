@@ -70,6 +70,13 @@ export type LocalReferral = {
   decision: 'refer' | 'urgent_refer';
   reasons: string[];
   summary: string;
+  temperature_c?: number;
+  fever_days?: number;
+  tdr_result?: string;
+  other_symptoms?: string;
+  triggered_rules?: string[];
+  protocol_reference?: string;
+  ai_brief?: string;
   status: ReferralStatus;
   created_at: string;
   received_at?: string;

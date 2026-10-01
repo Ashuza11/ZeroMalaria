@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Clapperboard, MonitorSmartphone } from 'lucide-react';
 import { api } from '../api/client';
 import { WebShell } from '../components/shells';
-import { Button, Card, PageHeader, SyntheticBadge } from '../components/ui';
+import { Button, Card, PageHeader } from '../components/ui';
 import { useToast } from '../components/ToastProvider';
 
 const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
@@ -56,7 +56,6 @@ export function LiveDemoBoard() {
       <PageHeader
         title={t('liveDemo.title')}
         subtitle={t('liveDemo.subtitle')}
-        badge={<SyntheticBadge label={t('common.synthetic')} />}
         actions={
           <Button onClick={() => void runLoop()} disabled={running}>
             <Clapperboard className="mr-2 h-4 w-4" />

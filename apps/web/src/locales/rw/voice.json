@@ -1,8 +1,8 @@
 {
   "listen": "Soma ijwi",
-  "mic": "Fata ijwi",
-  "micExperimental": "Fata ijwi (igerageza)",
-  "micExperimentalHint": "Kumenya ijwi mu Kinyarwanda ntibishoboka neza kuri browser. Gerageza gusa.",
+  "mic": "Vuga igisubizo",
+  "micExperimental": "Vuga igisubizo",
+  "micExperimentalHint": "Igisubizo cyawe cy'Ikinyarwanda kirandikwa. Banza wemeze amagambo.",
   "help": "Ubufasha",
   "replay": "Subiramo",
   "slower": "Buhoro",
@@ -20,7 +20,7 @@
   "heard": "Nbyumvise:",
   "confirmHeard": "Koresha ibi",
   "sourceAudioPack": "Pack y'amajwi",
-  "sourceCloud": "Cloud",
+  "sourceCloud": "Ijwi ryo kuri interineti",
   "sourceBrowser": "Browser",
   "sourceText": "Inyandiko",
   "startGuidedTriage": "Tangira isuzuma ryo mu majwi",
@@ -29,7 +29,8 @@
   "convIdle": "Tegereje",
   "convGreeting": "Gutangira",
   "convAsking": "Ikibazo",
-  "convListening": "Bumva",
+  "convListening": "Ndumva…",
+  "recordError": "Ijwi ntiryafashwe. Reba uburenganzira bwa mikoro na interineti, wongere ugerageze.",
   "convConfirming": "Emeza",
   "convResponding": "Igisubizo"
 }

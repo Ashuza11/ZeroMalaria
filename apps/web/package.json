@@ -4,7 +4,6 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "rules": "python scripts/generate_rules_ts.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -15,7 +14,6 @@
     "i18n:merge": "node scripts/merge-locales.mjs",
     "i18n:glossary": "node scripts/apply-phase1-glossary.mjs",
     "i18n:clean": "node scripts/i18n-clean.mjs",
-    "gen:types": "node scripts/gen-types.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "audio:manifest": "node scripts/gen-audio-manifest.mjs",
     "audio:check": "node scripts/check-audio.mjs"

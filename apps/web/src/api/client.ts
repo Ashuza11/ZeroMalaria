@@ -307,6 +307,7 @@ export const api = {
     severe_risk?: number | null;
     ml_escalated?: boolean;
     language?: string;
+    free_text?: string;
   }) => request<Record<string, unknown>>('/ai/visit-summary', { method: 'POST', body: JSON.stringify(body) }),
   aiAsk: (body: { question: string; case: Record<string, unknown>; language?: string }) =>
     request<Record<string, unknown>>('/ai/ask', { method: 'POST', body: JSON.stringify(body) }),
@@ -330,4 +331,21 @@ export const api = {
       access_mode: 'public' | 'authenticated';
       supported_languages: string[];
     }>('/voice/status'),
+  voiceTranscribe: async (audio: Blob, filename = 'triage-answer.webm') => {
+    const form = new FormData();
+    form.append('audio', audio, filename);
+    const res = await fetch(`${API_BASE}/voice/transcribe`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: form,
+    });
+    if (res.status === 401) clearAuthSession(true);
+    if (!res.ok) throw new Error((await res.text()) || res.statusText);
+    return res.json() as Promise<{
+      ok: boolean;
+      provider_used: 'pindo';
+      language: 'rw';
+      transcript: string;
+    }>;
+  },
 };

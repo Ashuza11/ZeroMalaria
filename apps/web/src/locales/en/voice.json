@@ -1,8 +1,8 @@
 {
   "listen": "Read aloud",
-  "mic": "Record",
-  "micExperimental": "Record (experimental)",
-  "micExperimentalHint": "Browser speech recognition rarely supports Kinyarwanda. Experimental only.",
+  "mic": "Record answer",
+  "micExperimental": "Speak answer",
+  "micExperimentalHint": "Your Kinyarwanda answer is transcribed. Confirm it before use.",
   "help": "Help",
   "replay": "Repeat",
   "slower": "Slow",
@@ -20,7 +20,7 @@
   "heard": "I heard:",
   "confirmHeard": "Use this",
   "sourceAudioPack": "Audio pack",
-  "sourceCloud": "Cloud",
+  "sourceCloud": "Online voice",
   "sourceBrowser": "Browser",
   "sourceText": "Text",
   "startGuidedTriage": "Start voice guided triage",
@@ -29,7 +29,8 @@
   "convIdle": "Ready",
   "convGreeting": "Starting",
   "convAsking": "Question",
-  "convListening": "Listening",
+  "convListening": "Listening…",
+  "recordError": "Voice could not be recorded. Check microphone permission and internet, then try again.",
   "convConfirming": "Confirm",
   "convResponding": "Result"
 }

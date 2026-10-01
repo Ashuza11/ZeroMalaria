@@ -13,11 +13,30 @@
   </head>
   <body class="bg-app text-ink">
     <div id="root">
-      <div style="min-height:100vh;display:flex;align-items:center;justify-center;font-family:Inter,system-ui,sans-serif;color:#0B3C5D;background:#F6F8FB">
-        <div style="text-align:center">
-          <div style="width:48px;height:48px;border-radius:10px;background:#0B3C5D;margin:0 auto 12px"></div>
-          <strong>ZeroMalaria</strong>
-          <div style="margin-top:8px;font-size:13px;color:#64748B">Birimo gutunganywa…</div>
+      <style>
+        @keyframes zm-boot-dot {
+          0%, 100% { opacity: .35; transform: translateY(0) scale(.85); }
+          50% { opacity: 1; transform: translateY(-7px) scale(1.1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .zm-boot-dot { animation: none !important; opacity: .65; }
+        }
+      </style>
+      <div role="status" aria-label="Birimo gutunganywa" style="position:fixed;inset:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:Inter,system-ui,sans-serif;background:#F6F8FB">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;transform:translateY(-16px)">
+          <svg width="88" height="88" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;filter:drop-shadow(0 14px 24px rgba(6,36,58,.18))">
+            <defs><linearGradient id="boot-logo-gradient" x1="0" y1="0" x2="64" y2="64"><stop stop-color="#125278"/><stop offset="1" stop-color="#06243a"/></linearGradient></defs>
+            <rect width="64" height="64" rx="18" fill="url(#boot-logo-gradient)"/>
+            <rect x=".5" y=".5" width="63" height="63" rx="17.5" stroke="white" stroke-opacity=".18"/>
+            <circle cx="32" cy="32" r="17" stroke="#2bb3a6" stroke-width="4.5"/>
+            <path d="M21 34.5c6 8 16 8 22 0" stroke="#f5a524" stroke-width="4.5" stroke-linecap="round"/>
+          </svg>
+          <strong style="display:block;margin-top:16px;font-size:24px;line-height:1.2;letter-spacing:-.03em"><span style="color:#125278">Zero</span><span style="color:#14807a">Malaria</span></strong>
+          <div aria-hidden="true" style="height:20px;margin-top:24px;display:flex;align-items:center;justify-content:center;gap:8px">
+            <span class="zm-boot-dot" style="width:10px;height:10px;border-radius:999px;background:#14807a;animation:zm-boot-dot .9s ease-in-out infinite"></span>
+            <span class="zm-boot-dot" style="width:10px;height:10px;border-radius:999px;background:#14807a;animation:zm-boot-dot .9s ease-in-out .14s infinite"></span>
+            <span class="zm-boot-dot" style="width:10px;height:10px;border-radius:999px;background:#14807a;animation:zm-boot-dot .9s ease-in-out .28s infinite"></span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Check, Copy, QrCode, Send } from 'lucide-react';
+import { Check, Copy, QrCode, Send, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import QRCode from 'qrcode';
 import { useEffect, useMemo, useState } from 'react';
@@ -11,6 +11,7 @@ import { enqueueReferral } from '../db';
 import { useSync } from '../sync/SyncContext';
 import { useToast } from '../components/ToastProvider';
 import type { DecisionResult, TriageInput } from '../types';
+import { api } from '../api/client';
 
 function uuid() {
   return crypto.randomUUID();
@@ -28,24 +29,65 @@ export function HandoverPage() {
   const triage = useMemo(() => {
     const raw = sessionStorage.getItem('zm_last_triage');
     if (!raw) return null;
-    return JSON.parse(raw) as { input: TriageInput; result: DecisionResult };
+    return JSON.parse(raw) as {
+      input: TriageInput;
+      result: DecisionResult;
+      free_text?: string;
+      ai_visit_summary?: string;
+    };
   }, []);
+
+  const fallbackBrief = useMemo(() => {
+    if (!triage) return '';
+    return `RBC decision: ${triage.result.rules_decision || triage.result.decision}. Patient: ${triage.input.age_months} months, ${triage.input.sex}; temperature ${triage.input.temperature_c}°C; fever ${triage.input.fever_days} day(s); RDT ${triage.input.tdr_result}. Reasons: ${triage.result.reasons.join('; ')}. AI-generated brief; nurse must verify.`;
+  }, [triage]);
+  const [aiBrief, setAiBrief] = useState(() => triage?.ai_visit_summary || '');
+  const [briefLoading, setBriefLoading] = useState(() => Boolean(triage && !triage.ai_visit_summary));
+
+  useEffect(() => {
+    if (!triage || aiBrief) return;
+    let cancelled = false;
+    setBriefLoading(true);
+    void api
+      .aiVisitSummary({
+        answers: triage.input as unknown as Record<string, unknown>,
+        decision: triage.result.decision,
+        rules_decision: triage.result.rules_decision,
+        reasons: triage.result.reasons,
+        triggered_rules: triage.result.triggered_rules,
+        language: 'rw',
+        free_text: triage.free_text,
+      })
+      .then((response) => {
+        if (cancelled) return;
+        const generated = (response.data as { summary?: string } | undefined)?.summary?.trim() || fallbackBrief;
+        setAiBrief(generated);
+        sessionStorage.setItem('zm_last_triage', JSON.stringify({ ...triage, ai_visit_summary: generated }));
+      })
+      .catch(() => {
+        if (!cancelled) setAiBrief(fallbackBrief);
+      })
+      .finally(() => {
+        if (!cancelled) setBriefLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [aiBrief, fallbackBrief, triage]);
 
   const summary = useMemo(() => {
     if (!triage) return '';
     const { input, result } = triage;
     const aiSummary = result.ai_advisory?.handover_summary;
-    const visitSummary =
-      typeof (triage as { ai_visit_summary?: string }).ai_visit_summary === 'string'
-        ? (triage as { ai_visit_summary?: string }).ai_visit_summary
-        : null;
     const lines = [
       `ZeroMalaria REFERRAL (${result.decision.toUpperCase()})`,
       `Age: ${input.age_months} months | Sex: ${input.sex}`,
       `Temp: ${input.temperature_c}°C | Fever days: ${input.fever_days} | TDR: ${input.tdr_result}`,
       `Reasons: ${result.reasons.join('; ')}`,
+      triage.free_text ? `Other symptoms: ${triage.free_text}` : '',
+      `Triggered RBC rules: ${result.triggered_rules.join(', ') || 'none'}`,
       result.protocol_reference ? `Protocol: ${result.protocol_reference}` : '',
-      visitSummary ? `AI visit summary (verify): ${visitSummary}` : '',
+      aiBrief ? `Generated nurse clinical handoff brief (verify): ${aiBrief}` : '',
       aiSummary ? `AI handover (advisory): ${aiSummary}` : '',
       result.ai_advisory?.chw_followed === true
         ? 'CHW noted AI suggestion'
@@ -54,10 +96,9 @@ export function HandoverPage() {
           : '',
       `Facility: ${DEMO_FACILITY.name} (${DEMO_FACILITY.facility_id})`,
       'Decision support tool. Not a replacement for clinical judgment.',
-      'Synthetic demo data / AI-generated, verify before use',
     ];
     return lines.filter(Boolean).join('\n');
-  }, [triage]);
+  }, [aiBrief, triage]);
 
   useEffect(() => {
     if (!summary) return;
@@ -77,13 +118,20 @@ export function HandoverPage() {
       decision: triage.result.decision,
       reasons: triage.result.reasons,
       summary,
+      temperature_c: triage.input.temperature_c,
+      fever_days: triage.input.fever_days,
+      tdr_result: triage.input.tdr_result,
+      other_symptoms: triage.free_text || '',
+      triggered_rules: triage.result.triggered_rules,
+      protocol_reference: triage.result.protocol_reference,
+      ai_brief: aiBrief || fallbackBrief,
       status: 'sent',
       created_at: new Date().toISOString(),
       synced: false,
     });
     setSaved(true);
     await refreshPending();
-    void syncNow();
+    await syncNow();
     push(t('handover.sent'), 'success');
   };
 
@@ -102,6 +150,17 @@ export function HandoverPage() {
         <pre className="mt-3 whitespace-pre-wrap rounded-control bg-surface-muted p-3 text-xs leading-5 text-ink">
           {summary}
         </pre>
+      </Card>
+
+      <Card className="mt-3 border-2 border-info/40">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-info" aria-hidden />
+          <h3 className="font-semibold">{t('result.nurseHandoffTitle')}</h3>
+        </div>
+        <p className="mt-3 whitespace-pre-wrap rounded-control bg-surface-muted p-3 text-sm leading-relaxed">
+          {briefLoading ? t('common.loading') : aiBrief || fallbackBrief}
+        </p>
+        <p className="mt-2 text-xs font-semibold text-warning">{t('result.aiVerify')}</p>
       </Card>
 
       <Card className="mt-3 flex flex-col items-center border-dashed">
@@ -145,7 +204,7 @@ export function HandoverPage() {
           {t('common.shareSms')}
         </Button>
         {!saved ? (
-          <Button className="w-full" variant="danger" onClick={() => void send()}>
+          <Button className="w-full" variant="danger" disabled={briefLoading} onClick={() => void send()}>
             {t('result.createHandover')}
           </Button>
         ) : (
@@ -159,8 +218,8 @@ export function HandoverPage() {
           </motion.div>
         )}
         {saved ? (
-          <Button className="w-full" onClick={() => navigate('/facility')}>
-            {t('home.facility')}
+          <Button className="w-full" onClick={() => navigate('/app/home')}>
+            {t('result.done')}
           </Button>
         ) : null}
       </div>

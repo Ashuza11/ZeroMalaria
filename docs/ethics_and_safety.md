@@ -19,7 +19,7 @@
 - All clinical content lives in `rules/malaria_rules.yaml`.
 - Banner in that file: PLACEHOLDER — TO BE VALIDATED against the Rwanda national malaria treatment guidelines and WHO iCCM guidance by a clinician.
 - No invented temperature/Hb/dose thresholds. No dosing calculator.
-- Layered decisions: rules lock urgent referral; ML may escalate only; NLP never decides.
+- Deterministic RBC rules are the only source of the triage decision; voice and AI never decide.
 - CHW confirmation is mandatory for every recommendation.
 
 ## Human in the loop
@@ -27,11 +27,11 @@
 - The nurse updates referral status.
 - RBC views aggregates; it does not remotely override a CHW encounter.
 
-## Layered decision and AI sanitizer
-- **Layer 1 — Rules:** `rules/malaria_rules.yaml`; urgent referral is locked (`max_rank` with ML).
-- **Layer 2 — ML:** escalation only; unit tests in `test_decision.py`.
-- **Layer 3 — LLM/NLP:** extract and explain only; never sets `decision`.
-- **Sanitizer:** `app/services/ai/sanitize.py` strips any field not on the allowlist before payloads reach Gemini/Groq. Tests: `test_sanitizer_strips_disallowed_keys`.
+## Decision and handoff boundary
+- **Rules:** `apps/web/src/rules`; urgent referral is deterministic and tested in Vitest.
+- **Voice:** Pindo handles Kinyarwanda speech only; the CHW confirms transcripts.
+- **Handoff:** the Worker sends only structured clinical fields and the locked rules result to any future AI provider.
+- **Secrets:** provider credentials remain in Worker secrets and never enter the PWA bundle.
 - **Hotspots / analytics:** language is *potential increase (statistical signal)*; not outbreak confirmation.
 
 ## Data governance under RBC
@@ -44,6 +44,6 @@
 1. Clinician review and sign-off of `malaria_rules.yaml`.
 2. Concordance study: CHW + tool vs supervisor assessment on vignettes, then supervised live cases.
 3. Process metrics: % encounters with complete danger-sign checklist; % referrals received; % arrived; time to arrival; alert response.
-4. Model monitoring only after rules validation; never allow ML to downgrade urgent referral.
+4. Monitor handoff quality only after rules validation; never allow AI to alter urgency.
 5. Recalibrate synthetic generator weights using DHIS2/HMIS, MIS/DHS, Malaria Atlas Project, and eLMIS before public incidence claims.
 6. Accessibility check on low-end Android with Kinyarwanda speakers.

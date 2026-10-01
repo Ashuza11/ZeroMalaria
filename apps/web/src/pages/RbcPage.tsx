@@ -31,7 +31,6 @@ import {
   PageHeader,
   Select,
   Skeleton,
-  SyntheticBadge,
 } from '../components/ui';
 import { cn } from '../lib/cn';
 import 'leaflet/dist/leaflet.css';
@@ -218,7 +217,6 @@ export function RbcPage() {
       <PageHeader
         title={t('rbc.title')}
         subtitle={t('common.disclaimer')}
-        badge={<SyntheticBadge label={t('common.synthetic')} />}
       />
       <div className="sticky top-[65px] z-10 -mx-4 mb-4 border-b border-border bg-app/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6">
         <div className="flex flex-wrap items-end gap-3">

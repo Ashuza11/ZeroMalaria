@@ -32,5 +32,8 @@
   "chwFollowAi": "Continue with AI suggestion noted",
   "chwOverrideAi": "Continue with rules decision only",
   "chwFeedbackLogged": "Feedback saved",
-  "protocolRef": "Protocol"
+  "protocolRef": "Protocol",
+  "nurseHandoffTitle": "Résumé clinique généré pour l'infirmier",
+  "handoffOffline": "Le résumé IA est indisponible hors ligne. La référence RBC structurée sera quand même envoyée.",
+  "aiVerify": "Généré par IA — à vérifier par l'infirmier"
 }

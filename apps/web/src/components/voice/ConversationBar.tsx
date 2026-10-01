@@ -1,4 +1,4 @@
-import { Mic, MicOff, Square, Volume2 } from 'lucide-react';
+import { Mic, Square } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useConversation, type ConversationMachineState } from '../../voice/ConversationContext';
 import { useVoice, useVoicePhraseText } from '../../voice/VoiceContext';
@@ -40,9 +40,8 @@ export function ConversationBar({
       aria-label={t('voice.guidedTriage')}
     >
       {!showBar && onStart ? (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-ink-muted">{t('voice.guidedTriageHint')}</p>
-          <Button size="sm" leftIcon={<Mic className="h-4 w-4" />} onClick={onStart}>
+        <div>
+          <Button className="min-h-14 w-full text-base" size="lg" leftIcon={<Mic className="h-5 w-5" />} onClick={onStart}>
             {startLabel || t('voice.startGuidedTriage')}
           </Button>
         </div>
@@ -73,15 +72,6 @@ export function ConversationBar({
                 </Button>
               </>
             ) : null}
-            <IconButton label={t('voice.slower')} onClick={() => voice.setSlower()}>
-              <Volume2 className="h-4 w-4" />
-            </IconButton>
-            <IconButton
-              label={voice.mute ? t('voice.unmute') : t('voice.mute')}
-              onClick={() => voice.toggleMute()}
-            >
-              {voice.mute ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-            </IconButton>
             <IconButton label={t('voice.stop')} onClick={() => conv.stopConversation()}>
               <Square className="h-4 w-4" />
             </IconButton>

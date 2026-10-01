@@ -1,9 +1,9 @@
 {
   "title": "Voice settings",
-  "body": "Configure TTS language and phrase packs. Demo uses browser speech when available.",
+  "body": "Configure Kinyarwanda voice guidance.",
   "capabilities": "Device capabilities",
-  "speechSynthesis": "Text-to-speech (browser)",
-  "speechRecognition": "Speech recognition (browser)",
+  "speechSynthesis": "Kinyarwanda voice",
+  "speechRecognition": "Kinyarwanda voice input",
   "audioFiles": "Pre-recorded audio ({{lang}})",
   "available": "Available",
   "unavailable": "Not available",
@@ -11,12 +11,12 @@
   "ttsLangEn": "English voice pack",
   "ttsLangRw": "Kinyarwanda voice pack",
   "playback": "Playback",
-  "playbackHint": "Read-aloud uses recorded MP3s when present, then browser speech, with on-screen highlighting as fallback.",
+  "playbackHint": "Kinyarwanda questions are read aloud online, with offline audio and on-screen text as fallbacks.",
   "speed": "Speaking speed",
   "mute": "Mute read-aloud",
   "unmute": "Unmute read-aloud",
-  "cloudTts": "Cloud voice service",
+  "cloudTts": "Online voice",
   "testVoice": "Test voice",
   "ttsBrowserDetail": "Browser voice matches language",
-  "rwHonestHint": "Kinyarwanda read-aloud needs a matching browser voice, audio pack, or cloud service. English voices will never be used for Kinyarwanda phrases."
+  "rwHonestHint": "Kinyarwanda online voice requires internet access. English playback is disabled."
 }

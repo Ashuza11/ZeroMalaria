@@ -1,5 +1,7 @@
 .env
+.dev.vars
 .venv/
+.wrangler/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -7,16 +9,7 @@ __pycache__/
 .DS_Store
 node_modules/
 apps/web/dist/
-apps/api/zeromalaria.db
-ml/artifacts/
+apps/web/test-results/
 *.log
-.DS_Store
-
-.env
-.venv/
-__pycache__/
-node_modules/
-
 *.db.bak*
 zeromalaria.db.bak*
-apps/web/test-results/

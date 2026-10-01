@@ -7,6 +7,7 @@ export type VoiceIntents = {
   negative?: boolean;
   invalid?: boolean;
   number?: number;
+  ageUnit?: 'months' | 'years';
   female?: boolean;
   male?: boolean;
 };
@@ -16,6 +17,9 @@ export function parseVoiceIntents(transcript: string, lang: VoiceLang): VoiceInt
   const intents: VoiceIntents = {};
   const num = Number(t.replace(/[^\d.]/g, ''));
   if (!Number.isNaN(num) && t.match(/\d/)) intents.number = num;
+
+  if (/\b(month|months|mo)\b|\bamezi\b/.test(t)) intents.ageUnit = 'months';
+  if (/\b(year|years|yr|yrs)\b|\bimyaka\b/.test(t)) intents.ageUnit = 'years';
 
   if (lang === 'rw') {
     if (/\byego\b|yes|yeah|\by\b/.test(t)) intents.yes = true;

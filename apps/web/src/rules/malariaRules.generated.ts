@@ -1,6 +1,4 @@
-/* eslint-disable */
-/* AUTO-GENERATED from rules/malaria_rules.yaml — do not edit by hand.
- * Run: python apps/web/scripts/generate_rules_ts.py
+/* Reviewed TypeScript representation of rules/malaria_rules.yaml.
  * PLACEHOLDER - TO BE VALIDATED against Rwanda national malaria treatment guidelines
  * and WHO iCCM guidance by a clinician.
  */
@@ -123,30 +121,7 @@ export const MALARIA_RULES = {
       "reason_en": "No placeholder danger sign or referral rule triggered",
       "reason_rw": "Nta ikimenyetso cy'akaga cyangwa itegeko ryo kohereza ryabonetse"
     }
-  ],
-  "ml_escalation": {
-    "severe_case": {
-      "escalate_treat_to_refer_threshold": 0.35,
-      "escalate_refer_to_urgent_threshold": 0.55
-    },
-    "referral_not_completed": {
-      "high_risk_threshold": 0.45
-    }
-  },
-  "feature_labels_en": {
-    "age_months": "Age (months)",
-    "temperature_c": "Temperature",
-    "fever_days": "Days of fever",
-    "convulsions": "Convulsions",
-    "unable_to_drink": "Unable to drink or feed",
-    "vomiting_everything": "Vomiting everything",
-    "lethargy": "Lethargy",
-    "severe_breathing_difficulty": "Severe breathing difficulty",
-    "tdr_positive": "TDR positive",
-    "tdr_negative": "TDR negative",
-    "tdr_invalid": "TDR invalid",
-    "sex_female": "Sex female"
-  }
+  ]
 } as const;
 
 export type MalariaRules = typeof MALARIA_RULES;
