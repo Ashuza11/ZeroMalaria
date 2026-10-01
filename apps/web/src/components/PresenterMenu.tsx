@@ -36,9 +36,9 @@ export function PresenterMenu() {
     demoModeEnabled &&
       user &&
       (user.username.endsWith('.demo') ||
-        user.username === 'health.center' ||
+        user.username === 'vanessaingabire' ||
         user.username === 'super.admin' ||
-        user.username === 'rbc.admin'),
+        user.username === 'augustinshema'),
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 {
   "greeting": "Murakaza neza",
-  "chwLabel": "CHW · Nyamata",
+  "chwLabel": "Umujyanama w'ubuzima",
   "village": "Bugesera",
   "subtitle": "Uyobore gusuzuma malaria, wohereze ibaruwa, ukurikirane abo wohereje.",
   "newPatient": "Tangira isuzuma",
@@ -9,7 +9,7 @@
   "facility": "Ibaruwa zo ku kigo nderabuzima",
   "rbc": "Ikibaho cya RBC",
   "todayPatients": "Uyu munsi",
-  "pendingReferrals": "Bitegereje",
-  "openAlerts": "Imenyesha",
+  "pendingReferrals": "Aboherejwe bataragera",
+  "openAlerts": "Ibisaba gukurikiranwa",
   "recent": "Abo baherutse"
 }

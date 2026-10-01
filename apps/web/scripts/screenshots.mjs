@@ -30,7 +30,7 @@ async function login(page, username) {
 
 async function shootDesktop() {
   const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome' });
-  for (const username of ['chw.demo', 'nurse.demo', 'supervisor.demo', 'rbc.demo']) {
+  for (const username of ['clarencemutesi', 'vanessaingabire', 'augustinshema']) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await context.newPage();
     await login(page, username);
@@ -49,7 +49,7 @@ async function shootMobile() {
   const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome' });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
-  await login(page, 'chw.demo');
+  await login(page, 'clarencemutesi');
   await page.goto(`${base}/`, { waitUntil: 'networkidle', timeout: 60000 });
   await page.waitForTimeout(800);
   const file = join(outDir, 'shell-mobile-chw-home.png');

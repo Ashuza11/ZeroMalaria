@@ -11,9 +11,9 @@ const API = process.env.ZM_API || 'http://127.0.0.1:8000';
 const PASSWORD = process.env.ZM_DEMO_PASSWORD || 'demo1234';
 
 const ROLES = [
-  { role: 'CHW', username: 'chw.demo' },
-  { role: 'HEALTH_CENTER', username: 'health.center' },
-  { role: 'RBC_ADMIN', username: 'rbc.admin' },
+  { role: 'CHW', username: 'clarencemutesi' },
+  { role: 'HEALTH_CENTER', username: 'vanessaingabire' },
+  { role: 'RBC_ADMIN', username: 'augustinshema' },
   { role: 'SUPER_ADMIN', username: 'super.admin' },
 ] as const;
 
@@ -57,7 +57,7 @@ test.describe('Mobile shell @ 390x844', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test('CHW / lands on /m/home with tab bar', async ({ page }) => {
-    await loginViaApi(page, 'chw.demo');
+    await loginViaApi(page, 'clarencemutesi');
     await page.goto('/');
     await page.waitForURL(/\/m\/home/, { timeout: 15000 });
     await expect(page.getByTestId('mobile-tab-bar')).toBeVisible();

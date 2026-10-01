@@ -149,13 +149,13 @@ async function demoLogin(request: Request, env: Env): Promise<Response> {
   if (env.DEMO_MODE !== 'true') return apiError('Demo login is disabled', 404);
   const body = await readJson<{ role?: string }>(request);
   const username: Record<string, string> = {
-    CHW: 'chw.demo',
-    HEALTH_CENTER: 'health.center',
-    RBC_ADMIN: 'rbc.admin',
+    CHW: 'clarencemutesi',
+    HEALTH_CENTER: 'vanessaingabire',
+    RBC_ADMIN: 'augustinshema',
     SUPER_ADMIN: 'super.admin',
   };
   const user = await env.DB.prepare('SELECT * FROM users WHERE username = ? AND active = 1')
-    .bind(username[body.role || 'CHW'] || 'chw.demo')
+    .bind(username[body.role || 'CHW'] || 'clarencemutesi')
     .first<DbUser>();
   if (!user) return apiError('Demo account is not seeded', 404);
   return json({

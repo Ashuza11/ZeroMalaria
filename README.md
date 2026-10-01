@@ -52,9 +52,9 @@ Demo accounts use password `demo1234`:
 
 | Username | Role |
 | --- | --- |
-| `chw.demo` | CHW triage and referrals |
-| `health.center` | Facility referral inbox |
-| `rbc.admin` | RBC dashboard |
+| `clarencemutesi` | CHW triage and referrals |
+| `vanessaingabire` | Facility referral inbox |
+| `augustinshema` | RBC dashboard |
 
 ## Commands
 

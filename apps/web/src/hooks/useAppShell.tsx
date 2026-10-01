@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
 import { ChwShell, WebShell } from '../components/shells';
 
 /** Prefer WebShell for any /app/* route (desktop workspace). */
@@ -19,8 +18,7 @@ export function AppOrChwShell({
   children: ReactNode;
 }) {
   const isApp = useIsAppRoute();
-  const { user } = useAuth();
-  if (isApp && user?.role !== 'CHW') {
+  if (isApp) {
     return (
       <WebShell title={title} crumbs={crumbs || [title]}>
         {children}

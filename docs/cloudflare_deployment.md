@@ -29,9 +29,9 @@ Local addresses:
 
 The seeded accounts all use `demo1234`:
 
-- `chw.demo`
-- `health.center`
-- `rbc.admin`
+- `clarencemutesi`
+- `vanessaingabire`
+- `augustinshema`
 
 Public Pindo mode needs no token. For authenticated Pindo, set these only in
 `apps/worker/.dev.vars`:

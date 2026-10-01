@@ -279,7 +279,7 @@
   },
   "home": {
     "greeting": "Good day",
-    "chwLabel": "CHW · Nyamata",
+    "chwLabel": "Community health worker",
     "village": "Bugesera",
     "subtitle": "Guide malaria triage, send a handover, and track referrals.",
     "newPatient": "Start new triage",
@@ -288,8 +288,8 @@
     "facility": "Health center inbox",
     "rbc": "RBC dashboard",
     "todayPatients": "Today",
-    "pendingReferrals": "Pending",
-    "openAlerts": "Alerts",
+    "pendingReferrals": "Referrals awaiting arrival",
+    "openAlerts": "Needs follow-up",
     "recent": "Recent patients"
   },
   "landing": {

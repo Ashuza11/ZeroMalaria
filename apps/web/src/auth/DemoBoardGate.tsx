@@ -11,9 +11,9 @@ export function DemoBoardGate() {
     isDemoModeEnabled ||
     BROAD_ROLES.includes(role) ||
     user.username.endsWith('.demo') ||
-    user.username === 'health.center' ||
+    user.username === 'vanessaingabire' ||
     user.username === 'super.admin' ||
-    user.username === 'rbc.admin';
+    user.username === 'augustinshema';
   if (!allowed) return <Navigate to="/app/not-authorized" replace />;
   return <LiveDemoBoard />;
 }

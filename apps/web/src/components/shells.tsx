@@ -78,6 +78,7 @@ function SyncPill() {
   if (pending > 0 && effective !== 'offline') {
     return <Badge tone="info">{t('common.pending', { count: pending })}</Badge>;
   }
+  if (effective === 'online') return null;
   return <StatusPill status={effective} />;
 }
 
@@ -320,7 +321,7 @@ export function WebShell({
   const navItems: NavItem[] = useMemo(
     () => [
       { to: '/app/home', label: t('nav.home'), icon: Home, roles: ['CHW'] },
-      { to: '/m/triage', label: t('nav.newTriage'), icon: Plus, roles: ['CHW'] },
+      { to: '/app/triage', label: t('nav.newTriage'), icon: Plus, roles: ['CHW'] },
       {
         to: '/app/my-referrals',
         label: t('nav.myReferrals'),
@@ -649,9 +650,11 @@ export function WebShell({
                   </div>
                 ) : null}
               </div>
-              <span className="hidden md:inline-flex">
-                <StatusPill status={connectionStatus} />
-              </span>
+              {connectionStatus === 'offline' ? (
+                <span className="hidden md:inline-flex">
+                  <StatusPill status={connectionStatus} />
+                </span>
+              ) : null}
               <span className="hidden sm:inline-flex">
                 <PresenterMenu />
               </span>

@@ -16,7 +16,7 @@ test.describe('Login page — no role selection', () => {
     await page.goto('/login');
     const submit = page.locator('button[type="submit"]');
     const before = await submit.boundingBox();
-    await page.fill('#login-user', 'chw.demo');
+    await page.fill('#login-user', 'clarencemutesi');
     await page.fill('#login-pass', 'wrong-password-xx');
     await submit.click();
     await expect(page.getByText(/Izina cyangwa ijambo|Invalid username/i)).toBeVisible({ timeout: 10000 });
@@ -29,7 +29,7 @@ test.describe('Login page — no role selection', () => {
 
   test('CHW login lands on home', async ({ page }) => {
     await page.goto('/login');
-    await page.fill('#login-user', 'chw.demo');
+    await page.fill('#login-user', 'clarencemutesi');
     await page.fill('#login-pass', PASSWORD);
     await page.locator('button[type="submit"]').click();
     await page.waitForURL(/\/(app\/home|m\/home)/, { timeout: 15000 });

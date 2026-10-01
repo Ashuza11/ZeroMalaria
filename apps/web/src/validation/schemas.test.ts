@@ -4,7 +4,7 @@ import { loginSchema } from './schemas';
 describe('loginSchema', () => {
   it('accepts valid credentials', () => {
     const result = loginSchema.safeParse({
-      username: 'chw.demo',
+      username: 'clarencemutesi',
       password: 'password1',
     });
     expect(result.success).toBe(true);
@@ -20,7 +20,7 @@ describe('loginSchema', () => {
 
   it('rejects short password', () => {
     const result = loginSchema.safeParse({
-      username: 'chw.demo',
+      username: 'clarencemutesi',
       password: 'short',
     });
     expect(result.success).toBe(false);

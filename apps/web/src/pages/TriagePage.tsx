@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { ChwShell } from '../components/shells';
+import { ChwShell, WebShell } from '../components/shells';
 import { VoiceControls } from '../components/voice/VoiceControls';
 import { Button, Card, Input, ProgressBar, SegmentedControl } from '../components/ui';
 import { type PhraseId, type VoiceLang } from '../voice/phrases';
@@ -223,6 +223,7 @@ export function TriagePage() {
   const phraseId = STEP_PHRASE[step];
   const helpId = STEP_HELP[step];
   const showContinue = STEPPER_STEPS.includes(step) || step === 'freetext';
+  const isAppRoute = location.pathname.startsWith('/app');
 
   // Hydrate an unfinished assessment once.
   useEffect(() => {
@@ -579,11 +580,11 @@ export function TriagePage() {
         className="relative mt-4"
         style={{ filter: 'none' }}
       >
-          <Card className="relative min-h-[300px] p-5">
+          <Card className="relative min-h-[300px] p-5 md:min-h-[430px] md:p-8 lg:p-10">
             <div
               ref={cardRef}
               tabIndex={-1}
-              className="outline-none"
+              className="mx-auto max-w-3xl outline-none"
               role="group"
               aria-label={stepLabel(step, t)}
               data-testid={`triage-step-${step}`}
@@ -859,10 +860,10 @@ export function TriagePage() {
           </Card>
         </motion.div>
 
-      <div className="mt-4 flex gap-3">
+      <div className="mt-4 flex gap-3 md:justify-end">
         <Button
           variant="secondary"
-          className="flex-1"
+          className="flex-1 md:max-w-44"
           disabled={locked}
           onClick={() =>
             stepIndex === 0
@@ -874,21 +875,21 @@ export function TriagePage() {
         </Button>
         {showContinue ? (
           <Button
-            className="flex-[2]"
+            className="flex-[2] md:max-w-64"
             onClick={() => void onContinue()}
             disabled={locked}
           >
             {stepIndex === steps.length - 1 ? t('common.confirm') : t('common.continue')}
           </Button>
         ) : (
-          <div className="flex-[2]" aria-hidden />
+          <div className="flex-[2] md:max-w-64" aria-hidden />
         )}
       </div>
     </>
   );
 
   const progressBar = (
-    <div className="mb-3">
+    <div>
       <ProgressBar
         value={progress}
         label={t('triage.progress', { current: stepIndex + 1, total: steps.length })}
@@ -896,14 +897,80 @@ export function TriagePage() {
     </div>
   );
 
-  return (
-    <ChwShell>
-      <div className="relative mx-auto w-full max-w-2xl pb-4">
-        {progressBar}
-        {questionBody}
+  const assessmentRail = isAppRoute ? (
+    <aside className="hidden lg:block" aria-label={t('triage.progress', { current: stepIndex + 1, total: steps.length })}>
+      <Card className="sticky top-4 overflow-hidden p-0">
+        <div className="border-b border-border bg-gradient-to-br from-primary-soft via-surface to-surface p-5">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{t('triage.title')}</p>
+          <h2 className="mt-2 text-xl font-semibold text-ink">{t('triage.liveSummary')}</h2>
+          <div className="mt-4">{progressBar}</div>
+        </div>
+
+        <ol className="max-h-[calc(100vh-18rem)] space-y-1 overflow-y-auto p-3">
+          {steps.map((item, index) => {
+            const complete = answered.has(item);
+            const current = item === step;
+            return (
+              <li
+                key={item}
+                aria-current={current ? 'step' : undefined}
+                className={cn(
+                  'flex min-h-11 items-center gap-3 rounded-control px-3 py-2 text-sm transition-colors',
+                  current && 'bg-primary-soft font-semibold text-primary ring-1 ring-primary/20',
+                  !current && complete && 'text-ink',
+                  !current && !complete && 'text-ink-muted',
+                )}
+              >
+                <span
+                  className={cn(
+                    'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold',
+                    complete && 'border-success bg-success text-white',
+                    current && !complete && 'border-primary bg-primary text-white',
+                    !current && !complete && 'border-border bg-surface-muted text-ink-muted',
+                  )}
+                >
+                  {complete ? <Check className="h-4 w-4" strokeWidth={2.5} /> : index + 1}
+                </span>
+                <span className="min-w-0 flex-1 leading-tight">{stepLabel(item, t)}</span>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
+    </aside>
+  ) : null;
+
+  const triageWorkspace = (
+      <div className="relative mx-auto w-full max-w-[1240px] pb-4">
+        <section className="mb-5 overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-r from-[#0d5578] via-[#126f82] to-[#138578] px-5 py-5 text-white shadow-card sm:px-7 lg:px-8 lg:py-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">ZeroMalaria</p>
+              <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">{t('triage.title')}</h1>
+              <p className="mt-1 text-sm text-white/75">{stepLabel(step, t)}</p>
+            </div>
+            <div className="w-full rounded-2xl bg-white/10 p-3 text-white backdrop-blur-sm [&_.text-ink-muted]:text-white/80 md:w-80">
+              {progressBar}
+            </div>
+          </div>
+        </section>
+
+        <div className="grid items-start gap-5 lg:grid-cols-[290px_minmax(0,1fr)] lg:gap-6">
+          {assessmentRail}
+          <main className="min-w-0">{questionBody}</main>
+        </div>
       </div>
-    </ChwShell>
   );
+
+  if (isAppRoute) {
+    return (
+      <WebShell title={t('triage.title')} crumbs={['ZeroMalaria', t('nav.new'), t('triage.title')]}>
+        {triageWorkspace}
+      </WebShell>
+    );
+  }
+
+  return <ChwShell>{triageWorkspace}</ChwShell>;
 }
 
 function NumberStepper({

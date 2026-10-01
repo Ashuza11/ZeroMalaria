@@ -196,7 +196,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const switchRole = useCallback(
     async (role: UserRole) => {
-      const isDemo = user?.username?.endsWith('.demo') || user?.username === 'health.center' || user?.username === 'super.admin' || user?.username === 'rbc.admin';
+      const isDemo =
+        user?.username === 'clarencemutesi' ||
+        user?.username === 'vanessaingabire' ||
+        user?.username === 'augustinshema' ||
+        user?.username === 'super.admin';
       if (!isDemo || !isDemoModeEnabled) {
         throw new Error('Role switch is only available for demo presenter sessions');
       }

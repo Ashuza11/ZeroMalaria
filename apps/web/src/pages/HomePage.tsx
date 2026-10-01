@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, Bell, ClipboardList, Stethoscope } from 'lucide-react';
-import { ChwShell } from '../components/shells';
 import { Button, Card } from '../components/ui';
 import { db } from '../db';
 import { useAuth } from '../auth/AuthContext';
 import { useVoice } from '../voice/VoiceContext';
+import { AppOrChwShell } from '../hooks/useAppShell';
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -38,20 +38,36 @@ export function HomePage() {
   }, []);
 
   return (
-    <ChwShell>
-      <div className="mx-auto w-full max-w-4xl">
-      <div className="mb-6 min-w-0">
-        <p className="text-sm font-semibold text-primary">{t('home.chwLabel')}</p>
-        <h2 className="mt-1 text-2xl font-bold leading-tight tracking-[-0.03em] text-ink">
-          {user?.display_name || t('home.greeting')}
-        </h2>
-        <p className="mt-1 truncate text-sm text-ink-muted">
-          {user?.village || t('home.village')}{user?.district ? ` · ${user.district}` : ''}
-        </p>
-      </div>
+    <AppOrChwShell title={t('nav.home')} crumbs={[t('nav.home')]}>
+      <div className="mx-auto w-full max-w-[1180px]">
+      <section className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#0d5578] via-[#126f82] to-[#138578] p-6 text-white shadow-card sm:p-8">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">{t('home.chwLabel')}</p>
+            <h2 className="mt-2 text-3xl font-bold leading-tight tracking-[-0.03em] sm:text-4xl">
+              {user?.display_name || t('home.greeting')}
+            </h2>
+            <p className="mt-2 text-sm text-white/80">
+              {user?.village || t('home.village')}{user?.district ? ` · ${user.district}` : ''}
+            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/80 sm:text-base">{t('home.subtitle')}</p>
+          </div>
+          <Button
+            className="min-h-14 w-full shrink-0 bg-white px-6 text-base text-primary hover:bg-white/90 md:w-auto"
+            size="lg"
+            onClick={() => {
+              voice.unlock();
+              navigate(triagePath);
+            }}
+            rightIcon={<ArrowRight className="h-5 w-5" />}
+          >
+            {t('nav.newTriage')}
+          </Button>
+        </div>
+      </section>
 
-      <div className="grid gap-5 md:grid-cols-[1.4fr_.6fr]">
-      <Card className="bg-[linear-gradient(135deg,rgba(11,60,93,0.08),rgba(20,128,122,0.12))] p-5 md:p-7">
+      <div className="grid gap-5 md:grid-cols-[1.35fr_.65fr]">
+      <Card className="bg-[linear-gradient(135deg,rgba(11,60,93,0.07),rgba(20,128,122,0.12))] p-5 md:p-8">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white">
           <Stethoscope className="h-7 w-7" strokeWidth={1.8} />
         </div>
@@ -87,6 +103,6 @@ export function HomePage() {
       </div>
       </div>
       </div>
-    </ChwShell>
+    </AppOrChwShell>
   );
 }
